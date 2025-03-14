@@ -1,0 +1,24 @@
+{
+  "presentaciones": [
+    {
+      "id": "demo_test",
+      "titulo": "Test de Demostración",
+      "descripcion": "Un test simple para probar el sistema con todas las funcionalidades",
+      "autor": "Admin SimpleMenti",
+      "fecha_creacion": "2025-03-09T12:00:00",
+      "protegido": true,
+      "num_preguntas": 5,
+      "categorias": ["demo", "prueba"]
+    },
+    {
+      "id": "evaluacion_diagnostica_neuroanatomia",
+      "titulo": "Evaluación Diagnóstica de Neuroanatomía",
+      "descripcion": "Un test para evaluar los conocimientos básicos de neuroanatomía",
+      "autor": "Nicolás Baier Quezada",
+      "fecha_creacion": "2025-03-09T12:00:00",
+      "protegido": true,
+      "num_preguntas": 20,
+      "categorias": ["Neuro", "prueba"]
+    }
+]
+}

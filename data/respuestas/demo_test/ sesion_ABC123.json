@@ -1,0 +1,41 @@
+{
+  "id_sesion": "ABC123",
+  "id_presentacion": "demo_test",
+  "fecha_inicio": "2025-03-09T14:30:00",
+  "fecha_fin": null,
+  "estado": "activa",  
+  "pregunta_actual": 1,
+  "participantes": [
+    {
+      "id": "p001",
+      "fecha_union": "2025-03-09T14:31:05",
+      "respuestas": [
+        {
+          "id_pregunta": 1,
+          "respuesta": "Azul",
+          "tiempo_respuesta": 8,  
+          "correcta": true
+        }
+      ]
+    },
+    {
+      "id": "p002",
+      "fecha_union": "2025-03-09T14:32:12",
+      "respuestas": [
+        {
+          "id_pregunta": 1,
+          "respuesta": "Rojo",
+          "tiempo_respuesta": 5,
+          "correcta": false
+        }
+      ]
+    }
+  ],
+  "estadisticas": {
+    "total_participantes": 2,
+    "preguntas_completadas": 1,
+    "preguntas_por_completar": 3,
+    "porcentaje_respuestas_correctas": 50,
+    "tiempo_promedio_respuesta": 6.5
+  }
+}

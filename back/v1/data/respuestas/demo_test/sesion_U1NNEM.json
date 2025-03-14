@@ -1,0 +1,43 @@
+{
+    "id_sesion": "U1NNEM",
+    "id_presentacion": "demo_test",
+    "fecha_inicio": "2025-03-09T20:59:59",
+    "fecha_fin": null,
+    "estado": "activa",
+    "pregunta_actual": 4,
+    "participantes": [
+        {
+            "id": "p443261",
+            "fecha_union": "2025-03-09T21:02:45",
+            "respuestas": [
+                {
+                    "id_pregunta": 1,
+                    "respuesta": "Rojo",
+                    "tiempo_respuesta": 19
+                },
+                {
+                    "id_pregunta": 2,
+                    "respuesta": "Delf\u00edn",
+                    "tiempo_respuesta": 6
+                },
+                {
+                    "id_pregunta": 3,
+                    "respuesta": "Bien",
+                    "tiempo_respuesta": 8
+                },
+                {
+                    "id_pregunta": 4,
+                    "respuesta": "true",
+                    "tiempo_respuesta": 4
+                }
+            ]
+        }
+    ],
+    "estadisticas": {
+        "total_participantes": 0,
+        "preguntas_completadas": 0,
+        "preguntas_por_completar": 4,
+        "porcentaje_respuestas_correctas": 0,
+        "tiempo_promedio_respuesta": 0
+    }
+}

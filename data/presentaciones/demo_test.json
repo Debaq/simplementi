@@ -1,0 +1,124 @@
+{
+  "id": "demo_test_completo",
+  "titulo": "Test Completo de Demostración",
+  "descripcion": "Una demostración completa que incluye todos los tipos de preguntas y configuraciones del sistema SimpleMenti",
+  "autor": "Admin SimpleMenti",
+  "fecha_creacion": "2025-03-10T14:30:00",
+  "protegido": true,
+  "password": "demo123",
+  "configuracion": {
+    "mostrar_respuestas": "despues_pregunta",
+    "tiempo_por_pregunta": 30,
+    "permitir_retroceder": true,
+    "mostrar_estadisticas": true,
+    "permitir_exportar": true
+  },
+  "preguntas": [
+    {
+      "id": 1,
+      "tipo": "opcion_multiple",
+      "pregunta": "¿Cuál es la capital de Francia?",
+      "imagen": "img/demo_test/paris.jpg",
+      "opciones": [
+        "Londres",
+        "Berlín",
+        "París",
+        "Madrid"
+      ],
+      "respuesta_correcta": "París",
+      "explicacion": "París es la capital de Francia desde el año 987 d.C."
+    },
+    {
+      "id": 2,
+      "tipo": "opcion_multiple",
+      "pregunta": "¿Cuál de estos lenguajes es interpretado y no compilado?",
+      "opciones": [
+        "C++",
+        "Java",
+        "Python",
+        "Swift"
+      ],
+      "respuesta_correcta": "Python",
+      "explicacion": "Python es un lenguaje interpretado, mientras que C++, Java y Swift son principalmente compilados."
+    },
+    {
+      "id": 3,
+      "tipo": "verdadero_falso",
+      "pregunta": "La Tierra es el planeta más grande del sistema solar.",
+      "respuesta_correcta": false,
+      "explicacion": "Júpiter es el planeta más grande del sistema solar, con un diámetro aproximadamente 11 veces mayor que el de la Tierra."
+    },
+    {
+      "id": 4,
+      "tipo": "verdadero_falso",
+      "pregunta": "El agua hierve a 100 grados Celsius a nivel del mar.",
+      "imagen": "img/demo_test/agua_hirviendo.jpg",
+      "respuesta_correcta": true,
+      "explicacion": "El punto de ebullición del agua a nivel del mar es de 100 grados Celsius o 212 grados Fahrenheit."
+    },
+    {
+      "id": 5,
+      "tipo": "nube_palabras",
+      "pregunta": "Menciona un país que te gustaría visitar.",
+      "imagen": "img/demo_test/mapa_mundial.jpg",
+      "mostrar_tiempo_real": true
+    },
+    {
+      "id": 6,
+      "tipo": "nube_palabras",
+      "pregunta": "¿Qué alimento te gusta más?",
+      "mostrar_tiempo_real": true
+    },
+    {
+      "id": 7,
+      "tipo": "palabra_libre",
+      "pregunta": "¿Cuál crees que es el mayor desafío ambiental actual?",
+      "explicacion": "Las respuestas comunes incluyen el cambio climático, la contaminación plástica, la deforestación y la pérdida de biodiversidad."
+    },
+    {
+      "id": 8,
+      "tipo": "palabra_libre",
+      "pregunta": "Describe en una palabra cómo te sientes después de esta presentación.",
+      "imagen": "img/demo_test/emociones.jpg"
+    },
+    {
+      "id": 9,
+      "tipo": "opcion_multiple",
+      "pregunta": "¿Cuál de estos elementos químicos es un gas noble?",
+      "opciones": [
+        "Sodio",
+        "Cloro",
+        "Helio",
+        "Hierro"
+      ],
+      "respuesta_correcta": "Helio",
+      "explicacion": "El helio (He) es un gas noble, lo que significa que tiene su capa de valencia completa y es extremadamente estable."
+    },
+    {
+      "id": 10,
+      "tipo": "opcion_multiple",
+      "pregunta": "¿En qué año comenzó la Primera Guerra Mundial?",
+      "opciones": [
+        "1905",
+        "1914",
+        "1918",
+        "1939"
+      ],
+      "respuesta_correcta": "1914",
+      "explicacion": "La Primera Guerra Mundial comenzó el 28 de julio de 1914 y terminó el 11 de noviembre de 1918."
+    },
+    {
+      "id": 11,
+      "tipo": "verdadero_falso",
+      "pregunta": "La Gran Muralla China es visible desde el espacio a simple vista.",
+      "respuesta_correcta": false,
+      "explicacion": "Contrario a la creencia popular, la Gran Muralla China no es visible a simple vista desde el espacio. Este es un mito común que ha sido desmentido por numerosos astronautas."
+    },
+    {
+      "id": 12,
+      "tipo": "nube_palabras",
+      "pregunta": "Menciona una tecnología que crees que cambiará el mundo en los próximos 10 años.",
+      "mostrar_tiempo_real": true
+    }
+  ]
+}

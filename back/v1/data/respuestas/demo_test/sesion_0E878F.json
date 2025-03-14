@@ -1,0 +1,39 @@
+{
+    "id_sesion": "0E878F",
+    "id_presentacion": "demo_test",
+    "fecha_inicio": "2025-03-09T20:40:05",
+    "fecha_fin": null,
+    "estado": "activa",
+    "pregunta_actual": 3,
+    "participantes": [
+        {
+            "id": "p527834",
+            "fecha_union": "2025-03-09T20:40:25",
+            "respuestas": [
+                {
+                    "id_pregunta": 1,
+                    "respuesta": "Verde",
+                    "tiempo_respuesta": 7
+                }
+            ]
+        },
+        {
+            "id": "p914790",
+            "fecha_union": "2025-03-09T20:46:08",
+            "respuestas": [
+                {
+                    "id_pregunta": 2,
+                    "respuesta": "Cocodrilo",
+                    "tiempo_respuesta": 12
+                }
+            ]
+        }
+    ],
+    "estadisticas": {
+        "total_participantes": 0,
+        "preguntas_completadas": 0,
+        "preguntas_por_completar": 4,
+        "porcentaje_respuestas_correctas": 0,
+        "tiempo_promedio_respuesta": 0
+    }
+}

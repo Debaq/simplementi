@@ -1,0 +1,22 @@
+{
+  "logs": [
+    {
+      "usuario": "admin",
+      "accion": "login",
+      "fecha": "2025-03-10T14:30:00",
+      "ip": "127.0.0.1"
+    },
+    {
+      "usuario": "admin",
+      "accion": "crear_usuario",
+      "fecha": "2025-03-10T14:35:00",
+      "ip": "127.0.0.1"
+    },
+    {
+      "usuario": "admin",
+      "accion": "crear_presentacion",
+      "fecha": "2025-03-10T14:40:00",
+      "ip": "127.0.0.1"
+    }
+  ]
+}

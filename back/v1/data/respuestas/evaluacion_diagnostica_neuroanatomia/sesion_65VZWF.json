@@ -1,0 +1,123 @@
+{
+    "id_sesion": "65VZWF",
+    "id_presentacion": "evaluacion_diagnostica_neuroanatomia",
+    "fecha_inicio": "2025-03-09T21:09:59",
+    "fecha_fin": "2025-03-09T21:25:44",
+    "estado": "finalizada",
+    "pregunta_actual": 20,
+    "participantes": [
+        {
+            "id": "p914790",
+            "fecha_union": "2025-03-09T21:11:12",
+            "respuestas": [
+                {
+                    "id_pregunta": 1,
+                    "respuesta": "Corte transversal u horizontal",
+                    "tiempo_respuesta": 30
+                },
+                {
+                    "id_pregunta": 2,
+                    "respuesta": "De pie, con la mirada al frente, brazos a los lados y palmas hacia adelante",
+                    "tiempo_respuesta": 20
+                },
+                {
+                    "id_pregunta": 3,
+                    "respuesta": "Craneal",
+                    "tiempo_respuesta": 7
+                },
+                {
+                    "id_pregunta": 4,
+                    "respuesta": "Frontal, parietales, temporales y occipital",
+                    "tiempo_respuesta": 16
+                },
+                {
+                    "id_pregunta": 5,
+                    "respuesta": "Aparato de Golgi",
+                    "tiempo_respuesta": 15
+                },
+                {
+                    "id_pregunta": 6,
+                    "respuesta": "Neurofilamentos",
+                    "tiempo_respuesta": 52
+                },
+                {
+                    "id_pregunta": 7,
+                    "respuesta": "S\u00ednfisis",
+                    "tiempo_respuesta": 9
+                },
+                {
+                    "id_pregunta": 8,
+                    "respuesta": "Esfenoides",
+                    "tiempo_respuesta": 302
+                },
+                {
+                    "id_pregunta": 9,
+                    "respuesta": "Cuerpo calloso",
+                    "tiempo_respuesta": 4
+                },
+                {
+                    "id_pregunta": 10,
+                    "respuesta": "Requiere gasto de energ\u00eda (ATP)",
+                    "tiempo_respuesta": 29
+                },
+                {
+                    "id_pregunta": 11,
+                    "respuesta": "T\u00edmpano",
+                    "tiempo_respuesta": 12
+                },
+                {
+                    "id_pregunta": 12,
+                    "respuesta": "Exocitosis",
+                    "tiempo_respuesta": 12
+                },
+                {
+                    "id_pregunta": 13,
+                    "respuesta": "Duramadre",
+                    "tiempo_respuesta": 28
+                },
+                {
+                    "id_pregunta": 14,
+                    "respuesta": "\u00davea (coroides, cuerpo ciliar e iris)",
+                    "tiempo_respuesta": 31
+                },
+                {
+                    "id_pregunta": 15,
+                    "respuesta": "Plano transversal",
+                    "tiempo_respuesta": 12
+                },
+                {
+                    "id_pregunta": 16,
+                    "respuesta": "Envoltura nuclear",
+                    "tiempo_respuesta": 38
+                },
+                {
+                    "id_pregunta": 17,
+                    "respuesta": "Osteoblastos",
+                    "tiempo_respuesta": 7
+                },
+                {
+                    "id_pregunta": 18,
+                    "respuesta": "7 v\u00e9rtebras cervicales, 12 tor\u00e1cicas, 5 lumbares, 5 sacras y 4-5 cocc\u00edgeas",
+                    "tiempo_respuesta": 12
+                },
+                {
+                    "id_pregunta": 19,
+                    "respuesta": "El n\u00facleo",
+                    "tiempo_respuesta": 8
+                },
+                {
+                    "id_pregunta": 20,
+                    "respuesta": "Quiasma \u00f3ptico",
+                    "tiempo_respuesta": 37
+                }
+            ]
+        }
+    ],
+    "estadisticas": {
+        "total_participantes": 0,
+        "preguntas_completadas": 0,
+        "preguntas_por_completar": 20,
+        "porcentaje_respuestas_correctas": 0,
+        "tiempo_promedio_respuesta": 0
+    }
+}

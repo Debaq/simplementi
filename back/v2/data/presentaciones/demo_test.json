@@ -1,0 +1,60 @@
+{
+  "id": "demo_test",
+  "titulo": "Test de Demostración",
+  "descripcion": "Un test simple para probar el sistema con todas las funcionalidades",
+  "autor": "Admin SimpleMenti",
+  "fecha_creacion": "2025-03-09T12:00:00",
+  "protegido": true,
+  "password": "demo123",
+  "configuracion": {
+    "mostrar_respuestas": "despues_pregunta",  
+    "tiempo_por_pregunta": 30,                 
+    "permitir_retroceder": true,
+    "mostrar_estadisticas": true,
+    "permitir_exportar": true
+  },
+  "preguntas": [
+    {
+      "id": 1,
+      "tipo": "opcion_multiple",
+      "pregunta": "¿Cuál es tu color favorito?",
+      "imagen": "img/demo_test/colores.jpg",   
+      "opciones": [
+        "Rojo",
+        "Verde",
+        "Azul",
+        "Amarillo"
+      ],
+      "respuesta_correcta": "Azul",            
+      "explicacion": "El azul es el color más popular según encuestas globales",
+      "imagen_explicacion": "img/demo_test/estadistica_colores.jpg" 
+    },
+    {
+      "id": 2,
+      "tipo": "opcion_multiple",
+      "pregunta": "¿Cuál de estos animales es un mamífero?",
+      "imagen": "img/demo_test/animales.jpg",
+      "opciones": [
+        "Cocodrilo",
+        "Delfín",
+        "Tortuga",
+        "Serpiente"
+      ],
+      "respuesta_correcta": "Delfín",
+      "explicacion": "Los delfines son mamíferos marinos que respiran aire a través de pulmones"
+    },
+    {
+      "id": 3,
+      "tipo": "nube_palabras",
+      "pregunta": "Escribe una palabra que describa cómo te sientes hoy",
+      "imagen": "img/demo_test/emociones.jpg"
+    },
+    {
+      "id": 4,
+      "tipo": "verdadero_falso",
+      "pregunta": "El sol es una estrella",
+      "respuesta_correcta": true,
+      "explicacion": "El sol es efectivamente una estrella de tipo G de la secuencia principal"
+    }
+  ]
+}

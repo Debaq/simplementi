@@ -1,0 +1,300 @@
+{
+    "id": "evaluacion_diagnostica_neuroanatomia",
+    "titulo": "Evaluación Diagnóstica - Neuroanatomía",
+    "descripcion": "Evaluación de conocimientos previos de anatomía y biología celular necesarios para el curso de Neuroanatomía",
+    "autor": "Nicolás Quezada Baier",
+    "fecha_creacion": "2025-03-03T08:00:00",
+    "protegido": true,
+    "password": "neuro2025",
+    "configuracion": {
+      "mostrar_respuestas": "despues_pregunta",
+      "tiempo_por_pregunta": 0,
+      "permitir_retroceder": true,
+      "mostrar_estadisticas": true,
+      "permitir_exportar": true,
+      "mostrar_grafico_durante_pregunta": false
+
+    },
+    "preguntas": [
+      {
+        "id": 1,
+        "tipo": "opcion_multiple",
+        "pregunta": "¿Cuál de los siguientes términos describe un corte que divide al cuerpo en mitades anterior y posterior?",
+        "opciones": [
+          "Corte transversal u horizontal",
+          "Corte sagital",
+          "Corte oblicuo",
+          "Corte frontal o coronal",
+          "Corte tangencial"
+        ],
+        "respuesta_correcta": "Corte frontal o coronal",
+        "explicacion": "El corte frontal o coronal divide el cuerpo en mitades anterior (ventral) y posterior (dorsal)."
+      },
+      {
+        "id": 2,
+        "tipo": "opcion_multiple",
+        "pregunta": "En la posición anatómica estándar, el cuerpo está:",
+        "opciones": [
+          "Sentado, con brazos cruzados y palmas hacia abajo",
+          "De pie, con la mirada al frente, brazos a los lados y palmas hacia adelante",
+          "Acostado en decúbito supino",
+          "De pie, con brazos a los lados y palmas hacia atrás",
+          "Acostado en decúbito prono"
+        ],
+        "respuesta_correcta": "De pie, con la mirada al frente, brazos a los lados y palmas hacia adelante",
+        "explicacion": "La posición anatómica estándar es fundamental para la descripción de todas las estructuras anatómicas y establece referencias espaciales constantes."
+      },
+      {
+        "id": 3,
+        "tipo": "opcion_multiple",
+        "pregunta": "¿Cuál de los siguientes términos indica una estructura más cercana a la cabeza?",
+        "opciones": [
+          "Distal",
+          "Ventral",
+          "Craneal",
+          "Posterior",
+          "Caudal"
+        ],
+        "respuesta_correcta": "Craneal",
+        "explicacion": "El término craneal (o cefálico) indica posición hacia la cabeza o en dirección a ella."
+      },
+      {
+        "id": 4,
+        "tipo": "opcion_multiple",
+        "pregunta": "Los huesos que forman la bóveda craneal son:",
+        "opciones": [
+          "Temporal, esfenoides, etmoides y vómer",
+          "Maxilar, temporal, occipital y mandíbula",
+          "Frontal, parietales, temporales y occipital",
+          "Frontal, etmoides, parietales y cigomático",
+          "Etmoides, esfenoides, frontal y occipital"
+        ],
+        "respuesta_correcta": "Frontal, parietales, temporales y occipital",
+        "explicacion": "La bóveda craneal está formada por estos huesos que protegen al encéfalo en su parte superior y posterior."
+      },
+      {
+        "id": 5,
+        "tipo": "opcion_multiple",
+        "pregunta": "La estructura celular responsable de la síntesis de proteínas es:",
+        "opciones": [
+          "Mitocondria",
+          "Aparato de Golgi",
+          "Vesícula",
+          "Lisosoma",
+          "Ribosoma"
+        ],
+        "respuesta_correcta": "Ribosoma",
+        "explicacion": "Los ribosomas son las estructuras celulares encargadas de la síntesis proteica mediante la traducción del ARN mensajero."
+      },
+      {
+        "id": 6,
+        "tipo": "opcion_multiple",
+        "pregunta": "¿Cuál de los siguientes NO es un componente del citoesqueleto celular?",
+        "opciones": [
+          "Neurofilamentos",
+          "Peroxisoma",
+          "Microfilamentos de actina",
+          "Microtúbulos",
+          "Filamentos intermedios"
+        ],
+        "respuesta_correcta": "Peroxisoma",
+        "explicacion": "El peroxisoma es una organela celular con función metabólica, no un componente del citoesqueleto."
+      },
+      {
+        "id": 7,
+        "tipo": "opcion_multiple",
+        "pregunta": "La unión entre dos vértebras adyacentes que permite cierto grado de movimiento se denomina:",
+        "opciones": [
+          "Gónfosis",
+          "Sindesmosis",
+          "Articulación facetaria",
+          "Sutura",
+          "Sínfisis"
+        ],
+        "respuesta_correcta": "Articulación facetaria",
+        "explicacion": "Las articulaciones facetarias son las que se establecen entre las apófisis articulares de vértebras adyacentes, permitiendo movimientos limitados."
+      },
+      {
+        "id": 8,
+        "tipo": "opcion_multiple",
+        "pregunta": "El agujero magno se encuentra en el hueso:",
+        "opciones": [
+          "Parietal",
+          "Occipital",
+          "Temporal",
+          "Esfenoides",
+          "Etmoides"
+        ],
+        "respuesta_correcta": "Occipital",
+        "explicacion": "El agujero magno es una gran abertura en la base del cráneo, en el hueso occipital, por donde la médula espinal se conecta con el encéfalo."
+      },
+      {
+        "id": 9,
+        "tipo": "opcion_multiple",
+        "pregunta": "¿Qué estructura conecta los hemisferios cerebrales derecho e izquierdo?",
+        "opciones": [
+          "Hipófisis",
+          "Cerebelo",
+          "Bulbo raquídeo",
+          "Médula espinal",
+          "Cuerpo calloso"
+        ],
+        "respuesta_correcta": "Cuerpo calloso",
+        "explicacion": "El cuerpo calloso es el principal haz de fibras nerviosas que conecta ambos hemisferios cerebrales, permitiendo la comunicación entre ellos."
+      },
+      {
+        "id": 10,
+        "tipo": "opcion_multiple",
+        "pregunta": "El transporte activo a través de la membrana celular:",
+        "opciones": [
+          "Es similar a la ósmosis",
+          "Siempre va a favor del gradiente de concentración",
+          "No requiere proteínas transportadoras",
+          "Requiere gasto de energía (ATP)",
+          "Sólo ocurre en tejido muscular"
+        ],
+        "respuesta_correcta": "Requiere gasto de energía (ATP)",
+        "explicacion": "El transporte activo implica el movimiento de sustancias contra su gradiente de concentración, lo que requiere energía en forma de ATP."
+      },
+      {
+        "id": 11,
+        "tipo": "opcion_multiple",
+        "pregunta": "¿Cuál de las siguientes estructuras NO pertenece al oído interno?",
+        "opciones": [
+          "Vestíbulo",
+          "Tímpano",
+          "Cóclea",
+          "Canales semicirculares",
+          "Sáculo"
+        ],
+        "respuesta_correcta": "Tímpano",
+        "explicacion": "El tímpano o membrana timpánica pertenece al oído medio, no al oído interno."
+      },
+      {
+        "id": 12,
+        "tipo": "opcion_multiple",
+        "pregunta": "El proceso celular mediante el cual se degradan componentes celulares dañados o innecesarios se denomina:",
+        "opciones": [
+          "Síntesis proteica",
+          "Exocitosis",
+          "Autofagia",
+          "Endocitosis",
+          "Glucólisis"
+        ],
+        "respuesta_correcta": "Autofagia",
+        "explicacion": "La autofagia es un proceso de degradación y reciclaje de componentes celulares, importante para la renovación celular y respuesta al estrés."
+      },
+      {
+        "id": 13,
+        "tipo": "opcion_multiple",
+        "pregunta": "¿Cuál es la capa más externa de las meninges?",
+        "opciones": [
+          "Periostio",
+          "Duramadre",
+          "Piamadre",
+          "Aracnoides",
+          "Epéndimo"
+        ],
+        "respuesta_correcta": "Duramadre",
+        "explicacion": "La duramadre es la meninge más externa y resistente que protege al sistema nervioso central."
+      },
+      {
+        "id": 14,
+        "tipo": "opcion_multiple",
+        "pregunta": "El ojo humano se compone de tres capas o túnicas. ¿Cuál de las siguientes es la túnica media o vascular?",
+        "opciones": [
+          "Esclerótica y córnea",
+          "Cristalino y humor vítreo",
+          "Retina",
+          "Úvea (coroides, cuerpo ciliar e iris)",
+          "Conjuntiva"
+        ],
+        "respuesta_correcta": "Úvea (coroides, cuerpo ciliar e iris)",
+        "explicacion": "La úvea constituye la capa media del ojo y está formada por estructuras vasculares: coroides, cuerpo ciliar e iris."
+      },
+      {
+        "id": 15,
+        "tipo": "opcion_multiple",
+        "pregunta": "En términos de planos anatómicos, el plano que divide el cuerpo en mitades superior e inferior es el:",
+        "opciones": [
+          "Plano transversal",
+          "Plano sagital",
+          "Plano frontal o coronal",
+          "Plano parasagital",
+          "Plano oblicuo"
+        ],
+        "respuesta_correcta": "Plano transversal",
+        "explicacion": "El plano transversal u horizontal divide el cuerpo en porciones superior (craneal) e inferior (caudal)."
+      },
+      {
+        "id": 16,
+        "tipo": "opcion_multiple",
+        "pregunta": "¿Qué término describe la membrana que rodea al núcleo celular?",
+        "opciones": [
+          "Membrana plasmática",
+          "Envoltura nuclear",
+          "Lamina nuclear",
+          "Cromatina",
+          "Retículo endoplásmico"
+        ],
+        "respuesta_correcta": "Envoltura nuclear",
+        "explicacion": "La envoltura nuclear es una doble membrana que rodea y protege al núcleo celular, separándolo del citoplasma."
+      },
+      {
+        "id": 17,
+        "tipo": "opcion_multiple",
+        "pregunta": "Las células que producen la matriz ósea se denominan:",
+        "opciones": [
+          "Osteocitos",
+          "Fibroblastos",
+          "Osteoclastos",
+          "Condrocitos",
+          "Osteoblastos"
+        ],
+        "respuesta_correcta": "Osteoblastos",
+        "explicacion": "Los osteoblastos son las células responsables de la formación y mineralización de la matriz ósea."
+      },
+      {
+        "id": 18,
+        "tipo": "opcion_multiple",
+        "pregunta": "La columna vertebral humana normalmente presenta:",
+        "opciones": [
+          "7 vértebras cervicales, 10 torácicas, 5 lumbares, 5 sacras y 4 coccígeas",
+          "8 vértebras cervicales, 12 torácicas, 5 lumbares, 5 sacras y 3 coccígeas",
+          "7 vértebras cervicales, 12 torácicas, 5 lumbares, 5 sacras y 4-5 coccígeas",
+          "6 vértebras cervicales, 12 torácicas, 5 lumbares, 5 sacras y 4 coccígeas",
+          "7 vértebras cervicales, 12 torácicas, 7 lumbares, 5 sacras y 4 coccígeas"
+        ],
+        "respuesta_correcta": "7 vértebras cervicales, 12 torácicas, 5 lumbares, 5 sacras y 4-5 coccígeas",
+        "explicacion": "Esta es la composición normal de la columna vertebral humana, aunque puede haber variaciones individuales, especialmente en el número de vértebras coccígeas."
+      },
+      {
+        "id": 19,
+        "tipo": "opcion_multiple",
+        "pregunta": "La principal organela celular que almacena el material genético es:",
+        "opciones": [
+          "El núcleo",
+          "La mitocondria",
+          "El aparato de Golgi",
+          "El retículo endoplásmico",
+          "El lisosoma"
+        ],
+        "respuesta_correcta": "El núcleo",
+        "explicacion": "El núcleo celular contiene el ADN organizado en cromosomas, constituyendo el principal repositorio del material genético de la célula."
+      },
+      {
+        "id": 20,
+        "tipo": "opcion_multiple",
+        "pregunta": "¿Cuál de las siguientes estructuras forma parte de la vía visual?",
+        "opciones": [
+          "Cóclea",
+          "Tímpano",
+          "Hipófisis",
+          "Quiasma óptico",
+          "Nervio vestibulococlear"
+        ],
+        "respuesta_correcta": "Quiasma óptico",
+        "explicacion": "El quiasma óptico es una estructura en forma de X donde se cruzan parcialmente las fibras de los nervios ópticos, formando parte esencial de la vía visual."
+      }
+    ]
+  }

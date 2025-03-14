@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleMenti - PDF + Preguntas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-gradient-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chalkboard me-2"></i>
+                SimpleMenti - PDF + Preguntas
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <!-- Formulario de subida de PDF -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h5 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-file-pdf me-2"></i> Subir y configurar PDF
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="pdf-upload-form">
+                            <div class="mb-3">
+                                <label for="pdf-file" class="form-label">Seleccione un archivo PDF</label>
+                                <input class="form-control" type="file" id="pdf-file" accept="application/pdf">
+                                <div class="form-text">El archivo será procesado en el navegador (no se subirá a ningún servidor).</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="show-thumbnails" checked>
+                                    <label class="form-check-label" for="show-thumbnails">Mostrar miniaturas de páginas</label>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-upload me-2"></i> Procesar PDF
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="row">
+            <!-- Visor principal -->
+            <div class="col-md-8">
+                <div class="content-container">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="m-0 font-weight-bold text-primary" id="current-view-title">
+                                <i class="fas fa-eye me-2"></i> Vista previa
+                            </h5>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" id="view-presentation-mode">
+                                    <i class="fas fa-play me-1"></i> Modo presentación
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="pdf-container">
+                                <div id="pdf-placeholder" class="d-flex flex-column justify-content-center align-items-center h-100">
+                                    <i class="fas fa-file-pdf fa-5x text-muted mb-3"></i>
+                                    <p class="text-muted">Suba un PDF para visualizarlo aquí</p>
+                                </div>
+                                <canvas id="pdf-canvas"></canvas>
+                                
+                                <!-- Controles de navegación -->
+                                <div class="slideshow-controls">
+                                    <button id="prev-page" class="btn btn-light rounded-circle" disabled>
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <span class="pdf-page-count">
+                                        <span id="current-page">0</span> / <span id="total-pages">0</span>
+                                    </span>
+                                    <button id="next-page" class="btn btn-light rounded-circle" disabled>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Indicador de progreso de secuencia -->
+                                <div class="sequence-progress" id="sequence-progress">
+                                    <i class="fas fa-list-ol me-1"></i> 
+                                    <span id="sequence-current">0</span>/<span id="sequence-total">0</span>
+                                </div>
+
+                                <!-- Overlay de preguntas -->
+                                <div class="question-overlay" id="question-overlay">
+                                    <div class="question-card card shadow">
+                                        <div class="card-header bg-primary text-white">
+                                            <h5 class="mb-0">¿Cuál es la capital de Francia?</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="question1" id="option1" value="paris">
+                                                <label class="form-check-label" for="option1">París</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="question1" id="option2" value="madrid">
+                                                <label class="form-check-label" for="option2">Madrid</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="question1" id="option3" value="berlin">
+                                                <label class="form-check-label" for="option3">Berlín</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="question1" id="option4" value="roma">
+                                                <label class="form-check-label" for="option4">Roma</label>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button class="btn btn-success" id="submit-answer">Enviar respuesta</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Miniaturas -->
+                    <div id="thumbnails-container" class="mb-4" style="display: none;">
+                        <h6 class="mb-2 text-primary"><i class="fas fa-images me-2"></i> Miniaturas del documento</h6>
+                        <div class="pdf-thumbnails" id="pdf-thumbnails"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de secuencia -->
+            <div class="col-md-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h5 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-list-ol me-2"></i> Secuencia de contenido
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Organice el orden de diapositivas y preguntas.
+                        </div>
+                        
+                        <div class="sequence-editor">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h6>Elementos en la presentación</h6>
+                                <button class="btn btn-sm btn-primary" id="add-question-btn">
+                                    <i class="fas fa-plus me-1"></i> Agregar pregunta
+                                </button>
+                            </div>
+                            
+                            <div class="sequence-list" id="sequence-list">
+                                <!-- Aquí se mostrarán los elementos de la secuencia -->
+                                <div class="alert alert-secondary text-center">
+                                    Suba un PDF para comenzar a crear la secuencia
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-3">
+                            <button class="btn btn-success" id="preview-sequence-btn" disabled>
+                                <i class="fas fa-play-circle me-2"></i> Previsualizar secuencia
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para insertar pregunta -->
+    <div class="modal fade" id="insertQuestionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Insertar pregunta</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="question-text" class="form-label">Texto de la pregunta</label>
+                        <input type="text" class="form-control" id="question-text" value="¿Cuál es la capital de Francia?">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Opciones</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">A</span>
+                            <input type="text" class="form-control" id="option-a" value="París">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" name="correct-answer" value="0" checked>
+                            </div>
+                        </div>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">B</span>
+                            <input type="text" class="form-control" id="option-b" value="Madrid">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" name="correct-answer" value="1">
+                            </div>
+                        </div>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">C</span>
+                            <input type="text" class="form-control" id="option-c" value="Berlín">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" name="correct-answer" value="2">
+                            </div>
+                        </div>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">D</span>
+                            <input type="text" class="form-control" id="option-d" value="Roma">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" name="correct-answer" value="3">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="insert-position" class="form-label">Insertar después de</label>
+                        <select class="form-select" id="insert-position">
+                            <!-- Las opciones se llenarán dinámicamente -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="insert-question-btn">Insertar pregunta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/pdf-handler.js"></script>
+    <script src="js/sequence-editor.js"></script>
+    <script src="js/presentation-mode.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
