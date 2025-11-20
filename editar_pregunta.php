@@ -16,12 +16,13 @@ if (!isset($_SESSION['admin_auth']) || $_SESSION['admin_auth'] !== true) {
 // Incluir el archivo de funciones de administración
 include('includes/admin/funciones.php');
 
+// --- LÓGICA DE PROCESAMIENTO ---
+
 // Verificar que se proporcionaron los parámetros necesarios
 $id_presentacion = isset($_GET['id']) ? $_GET['id'] : '';
 $pregunta_id = isset($_GET['pregunta_id']) ? (int)$_GET['pregunta_id'] : 0;
 
 if (empty($id_presentacion) || $pregunta_id <= 0) {
-    // Redirigir si falta algún parámetro
     header("Location: admin_panel.php?seccion=presentaciones");
     exit;
 }
@@ -29,23 +30,17 @@ if (empty($id_presentacion) || $pregunta_id <= 0) {
 // Verificar si existe la presentación
 $presentacion_file = "data/presentaciones/$id_presentacion.json";
 if (!file_exists($presentacion_file)) {
-    echo "Error: Presentación no encontrada.";
-    exit;
+    die("Error: Presentación no encontrada.");
 }
 
-// Leer datos de la presentación
-$presentacion_json = file_get_contents($presentacion_file);
-$presentacion_data = json_decode($presentacion_json, true);
-
+$presentacion_data = json_decode(file_get_contents($presentacion_file), true);
 if ($presentacion_data === null) {
-    echo "Error: El archivo de la presentación no tiene un formato JSON válido.";
-    exit;
+    die("Error: El archivo de la presentación no tiene un formato JSON válido.");
 }
 
 // Buscar la pregunta por ID
 $pregunta = null;
 $indice_pregunta = -1;
-
 foreach ($presentacion_data['preguntas'] as $index => $p) {
     if ($p['id'] === $pregunta_id) {
         $pregunta = $p;
@@ -55,258 +50,189 @@ foreach ($presentacion_data['preguntas'] as $index => $p) {
 }
 
 if ($pregunta === null) {
-    echo "Error: Pregunta no encontrada.";
-    exit;
+    die("Error: Pregunta no encontrada.");
 }
 
 // Inicializar variables
 $mensaje = '';
 $tipo_mensaje = '';
+$errores = [];
 
 // Procesar el formulario si se envía
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Recoger datos comunes
-    $pregunta_texto = isset($_POST['pregunta_texto']) ? trim($_POST['pregunta_texto']) : '';
-    $explicacion = isset($_POST['explicacion']) ? trim($_POST['explicacion']) : '';
-    
-    // Validar campos básicos
-    $errores = [];
-    
+    // Recoger y validar datos
+    $pregunta_texto = trim($_POST['pregunta_texto'] ?? '');
     if (empty($pregunta_texto)) {
-        $errores[] = 'El texto de la pregunta es obligatorio';
+        $errores[] = 'El texto de la pregunta es obligatorio.';
     }
-    
+
     if (empty($errores)) {
-        // Actualizar pregunta con datos comunes
+        // Actualizar datos de la pregunta
         $pregunta['pregunta'] = $pregunta_texto;
-        
-        // Actualizar o eliminar explicación
-        if (!empty($explicacion)) {
-            $pregunta['explicacion'] = $explicacion;
-        } elseif (isset($pregunta['explicacion'])) {
-            unset($pregunta['explicacion']);
+        $pregunta['explicacion'] = trim($_POST['explicacion'] ?? '');
+
+        // Lógica de actualización específica por tipo
+        switch ($pregunta['tipo']) {
+            case 'opcion_multiple':
+                $opciones = array_values(array_filter(array_map('trim', $_POST['opciones'] ?? [])));
+                $respuesta_correcta_index = isset($_POST['respuesta_correcta_index']) ? (int)$_POST['respuesta_correcta_index'] : -1;
+                $pregunta['opciones'] = $opciones;
+                if ($respuesta_correcta_index !== -1 && isset($opciones[$respuesta_correcta_index])) {
+                    $pregunta['respuesta_correcta'] = $opciones[$respuesta_correcta_index];
+                } else {
+                    unset($pregunta['respuesta_correcta']);
+                }
+                break;
+            case 'verdadero_falso':
+                $respuesta_correcta = $_POST['respuesta_correcta'] ?? '';
+                if ($respuesta_correcta === 'Verdadero' || $respuesta_correcta === 'Falso') {
+                    $pregunta['respuesta_correcta'] = $respuesta_correcta;
+                } else {
+                    unset($pregunta['respuesta_correcta']);
+                }
+                break;
         }
-        
-        // Procesar imagen de la pregunta si se ha subido una nueva
-        if (isset($_FILES['imagen_pregunta']) && $_FILES['imagen_pregunta']['error'] === UPLOAD_ERR_OK) {
-            $resultado_imagen = procesarImagen($_FILES['imagen_pregunta'], $id_presentacion, $pregunta_id, 'pregunta');
-            if ($resultado_imagen['exito']) {
-                // Guardar la ruta de la nueva imagen
-                $pregunta['imagen'] = $resultado_imagen['ruta'];
-            } else {
-                $errores[] = "Error al procesar la imagen de la pregunta: " . $resultado_imagen['mensaje'];
-            }
-        }
-        
-        // Procesar imagen de la explicación si se ha subido una nueva
-        if (empty($errores) && isset($_FILES['imagen_explicacion']) && $_FILES['imagen_explicacion']['error'] === UPLOAD_ERR_OK) {
-            $resultado_imagen = procesarImagen($_FILES['imagen_explicacion'], $id_presentacion, $pregunta_id, 'explicacion');
-            if ($resultado_imagen['exito']) {
-                // Guardar la ruta de la nueva imagen
-                $pregunta['imagen_explicacion'] = $resultado_imagen['ruta'];
-            } else {
-                $errores[] = "Error al procesar la imagen de la explicación: " . $resultado_imagen['mensaje'];
-            }
-        }
-        
-        // Eliminar imágenes si se solicita
-        if (isset($_POST['eliminar_imagen_pregunta']) && $_POST['eliminar_imagen_pregunta'] === '1') {
-            if (isset($pregunta['imagen']) && file_exists($pregunta['imagen'])) {
-                unlink($pregunta['imagen']);
-            }
-            unset($pregunta['imagen']);
-        }
-        
-        if (isset($_POST['eliminar_imagen_explicacion']) && $_POST['eliminar_imagen_explicacion'] === '1') {
-            if (isset($pregunta['imagen_explicacion']) && file_exists($pregunta['imagen_explicacion'])) {
-                unlink($pregunta['imagen_explicacion']);
-            }
-            unset($pregunta['imagen_explicacion']);
-        }
-        
-        // Procesar datos específicos según tipo de pregunta
-        if (empty($errores)) {
-            switch ($pregunta['tipo']) {
-                case 'opcion_multiple':
-                    // Recoger opciones
-                    $opciones = isset($_POST['opciones']) ? $_POST['opciones'] : [];
-                    
-                    // Verificar que haya opciones
-                    if (empty($opciones)) {
-                        $errores[] = 'Debe proporcionar opciones para la pregunta';
-                        break;
-                    }
-                    
-                    // Eliminar opciones vacías
-                    $opciones = array_filter($opciones, function($opcion) {
-                        return trim($opcion) !== '';
-                    });
-                    
-                    // Verificar que queden opciones después de filtrar
-                    if (empty($opciones)) {
-                        $errores[] = 'Debe proporcionar al menos una opción válida';
-                        break;
-                    }
-                    
-                    // Recoger respuesta correcta
-                    $respuesta_correcta_index = isset($_POST['respuesta_correcta_index']) ? (int)$_POST['respuesta_correcta_index'] : -1;
-                    
-                    // Actualizar opciones
-                    $pregunta['opciones'] = array_values($opciones); // Reindexar array
-                    
-                    // Actualizar respuesta correcta
-                    if ($respuesta_correcta_index >= 0 && $respuesta_correcta_index < count($opciones)) {
-                        $pregunta['respuesta_correcta'] = $opciones[$respuesta_correcta_index];
-                    } elseif (isset($pregunta['respuesta_correcta'])) {
-                        unset($pregunta['respuesta_correcta']);
-                    }
-                    
-                    break;
-                    
-                case 'verdadero_falso':
-                    // Recoger respuesta correcta
-                    $respuesta_correcta = isset($_POST['respuesta_correcta']) ? $_POST['respuesta_correcta'] : '';
-                    
-                    if ($respuesta_correcta === 'true') {
-                        $pregunta['respuesta_correcta'] = 'Verdadero';
-                    } elseif ($respuesta_correcta === 'false') {
-                        $pregunta['respuesta_correcta'] = 'Falso';
-                    } elseif (isset($pregunta['respuesta_correcta'])) {
-                        unset($pregunta['respuesta_correcta']);
-                    }
-                    
-                    break;
-                    
-                case 'nube_palabras':
-                    // Recoger configuración de visualización en tiempo real
-                    $mostrar_tiempo_real = isset($_POST['mostrar_tiempo_real']) && $_POST['mostrar_tiempo_real'] === '1';
-                    $pregunta['mostrar_tiempo_real'] = $mostrar_tiempo_real;
-                    
-                    break;
-            }
-        }
-        
-        if (empty($errores)) {
-            // Actualizar la pregunta en el array
-            $presentacion_data['preguntas'][$indice_pregunta] = $pregunta;
-            
-            // Guardar cambios
-            $result = file_put_contents($presentacion_file, json_encode($presentacion_data, JSON_PRETTY_PRINT));
-            
-            if ($result === false) {
-                $mensaje = 'Error al guardar los cambios en la pregunta.';
-                $tipo_mensaje = 'danger';
-            } else {
-                // Registrar la acción
-                registrarAccion($_SESSION['admin_user'], 'editar_pregunta');
-                
-                $mensaje = 'Pregunta actualizada correctamente.';
-                $tipo_mensaje = 'success';
-            }
+
+        // Guardar los cambios
+        $presentacion_data['preguntas'][$indice_pregunta] = $pregunta;
+        if (file_put_contents($presentacion_file, json_encode($presentacion_data, JSON_PRETTY_PRINT))) {
+            registrarAccion($_SESSION['admin_user'], 'editar_pregunta');
+            $mensaje = 'Pregunta actualizada correctamente.';
+            $tipo_mensaje = 'success';
+        } else {
+            $mensaje = 'Error al guardar los cambios.';
+            $tipo_mensaje = 'danger';
         }
     }
-    
+
     if (!empty($errores)) {
-        $mensaje = 'Por favor, corrija los siguientes errores:<ul>';
-        foreach ($errores as $error) {
-            $mensaje .= '<li>' . $error . '</li>';
-        }
-        $mensaje .= '</ul>';
+        $mensaje = 'Por favor, corrija los errores:<ul><li>' . implode('</li><li>', $errores) . '</li></ul>';
         $tipo_mensaje = 'danger';
     }
 }
 
-// Normalizar datos para formulario según tipo
-$opciones_seleccionadas = [];
-$respuesta_correcta_index = -1;
-$respuesta_correcta_verdadero_falso = '';
+// Preparar datos para el formulario
+$tipo_pregunta_texto = ucfirst(str_replace('_', ' ', $pregunta['tipo']));
 
-switch ($pregunta['tipo']) {
-    case 'opcion_multiple':
-        $opciones_seleccionadas = $pregunta['opciones'] ?? [];
-        
-        // Determinar índice de respuesta correcta
-        if (isset($pregunta['respuesta_correcta'])) {
-            foreach ($opciones_seleccionadas as $index => $opcion) {
-                if ($opcion === $pregunta['respuesta_correcta']) {
-                    $respuesta_correcta_index = $index;
-                    break;
-                }
-            }
-        }
-        break;
-        
-    case 'verdadero_falso':
-        if (isset($pregunta['respuesta_correcta'])) {
-            if ($pregunta['respuesta_correcta'] === 'Verdadero') {
-                $respuesta_correcta_verdadero_falso = 'true';
-            } elseif ($pregunta['respuesta_correcta'] === 'Falso') {
-                $respuesta_correcta_verdadero_falso = 'false';
-            }
-        }
-        break;
-}
+// --- RENDERIZADO DE LA PÁGINA ---
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Pregunta - SimpleMenti</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-light">
 
-// Obtener tipo de pregunta traducido
-$tipo_pregunta_texto = '';
-switch ($pregunta['tipo']) {
-    case 'opcion_multiple':
-        $tipo_pregunta_texto = 'Opción múltiple';
-        break;
-    case 'verdadero_falso':
-        $tipo_pregunta_texto = 'Verdadero/Falso';
-        break;
-    case 'nube_palabras':
-        $tipo_pregunta_texto = 'Nube de palabras';
-        break;
-    case 'palabra_libre':
-        $tipo_pregunta_texto = 'Respuesta libre';
-        break;
-    default:
-        $tipo_pregunta_texto = $pregunta['tipo'];
-}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="admin_panel.php"><i class="fas fa-chalkboard me-2"></i> SimpleMenti Admin</a>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="editar_presentacion.php?id=<?php echo htmlspecialchars($id_presentacion); ?>">
+                    <i class="fas fa-arrow-left me-1"></i> Volver a la presentación
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-// Función para procesar y guardar imágenes
-function procesarImagen($archivo, $id_presentacion, $id_pregunta, $tipo) {
-    // Verificar el tamaño (máximo 2MB)
-    if ($archivo['size'] > 2 * 1024 * 1024) {
-        return [
-            'exito' => false,
-            'mensaje' => 'La imagen excede el tamaño máximo permitido (2MB)'
-        ];
+<div class="container py-5">
+    <h1 class="mb-4">Editar Pregunta <span class="badge bg-secondary"><?php echo htmlspecialchars($tipo_pregunta_texto); ?></span></h1>
+
+    <?php if (!empty($mensaje)): ?>
+    <div class="alert alert-<?php echo $tipo_mensaje; ?> alert-dismissible fade show">
+        <?php echo $mensaje; ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <?php endif; ?>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="">
+                <div class="mb-3">
+                    <label for="pregunta_texto" class="form-label">Texto de la pregunta</label>
+                    <textarea class="form-control" id="pregunta_texto" name="pregunta_texto" rows="3" required><?php echo htmlspecialchars($pregunta['pregunta']); ?></textarea>
+                </div>
+
+                <?php // Formulario específico por tipo de pregunta ?>
+                <?php switch ($pregunta['tipo']):
+                    case 'opcion_multiple': ?>
+                        <h5>Opciones</h5>
+                        <div id="opciones-container">
+                            <?php foreach ($pregunta['opciones'] as $index => $opcion): ?>
+                            <div class="input-group mb-2">
+                                <input type="text" name="opciones[]" class="form-control" value="<?php echo htmlspecialchars($opcion); ?>" required>
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" type="radio" name="respuesta_correcta_index" value="<?php echo $index; ?>" <?php echo ($opcion === ($pregunta['respuesta_correcta'] ?? '')) ? 'checked' : ''; ?>>
+                                </div>
+                                <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove();">Eliminar</button>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="agregar-opcion">Agregar opción</button>
+                        <hr>
+                        <?php break; ?>
+
+                    <?php case 'verdadero_falso': ?>
+                        <h5>Respuesta Correcta</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="respuesta_correcta" id="verdadero" value="Verdadero" <?php echo (($pregunta['respuesta_correcta'] ?? '') === 'Verdadero') ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="verdadero">Verdadero</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="respuesta_correcta" id="falso" value="Falso" <?php echo (($pregunta['respuesta_correcta'] ?? '') === 'Falso') ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="falso">Falso</label>
+                        </div>
+                        <hr>
+                        <?php break; ?>
+
+                <?php endswitch; ?>
+
+                <div class="mb-3">
+                    <label for="explicacion" class="form-label">Explicación (Opcional)</label>
+                    <textarea class="form-control" id="explicacion" name="explicacion" rows="2"><?php echo htmlspecialchars($pregunta['explicacion'] ?? ''); ?></textarea>
+                    <div class="form-text">Aparecerá después de que los participantes hayan respondido.</div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                     <a href="editar_presentacion.php?id=<?php echo htmlspecialchars($id_presentacion); ?>" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const agregarOpcionBtn = document.getElementById('agregar-opcion');
+    if (agregarOpcionBtn) {
+        agregarOpcionBtn.addEventListener('click', function() {
+            const container = document.getElementById('opciones-container');
+            const newIndex = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" name="opciones[]" class="form-control" required>
+                <div class="input-group-text">
+                    <input class="form-check-input mt-0" type="radio" name="respuesta_correcta_index" value="${newIndex}">
+                </div>
+                <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove();">Eliminar</button>
+            `;
+            container.appendChild(div);
+        });
     }
-    
-    // Verificar el tipo de archivo
-    $tipo_archivo = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
-    $tipos_permitidos = ['jpg', 'jpeg', 'png', 'gif'];
-    
-    if (!in_array($tipo_archivo, $tipos_permitidos)) {
-        return [
-            'exito' => false,
-            'mensaje' => 'Tipo de archivo no permitido. Sólo se permiten imágenes JPG, JPEG, PNG y GIF'
-        ];
-    }
-    
-    // Crear directorio si no existe
-    $directorio = "img/presentaciones/$id_presentacion";
-    if (!file_exists($directorio)) {
-        mkdir($directorio, 0755, true);
-    }
-    
-    // Generar nombre único para la imagen
-    $nombre_archivo = $id_pregunta . '_' . $tipo . '_' . time() . '.' . $tipo_archivo;
-    $ruta_destino = $directorio . '/' . $nombre_archivo;
-    
-    // Mover el archivo
-    if (move_uploaded_file($archivo['tmp_name'], $ruta_destino)) {
-        return [
-            'exito' => true,
-            'ruta' => $ruta_destino
-        ];
-    } else {
-        return [
-            'exito' => false,
-            'mensaje' => 'Error al guardar la imagen. Compruebe los permisos de escritura.'
-        ];
-    }
-}
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

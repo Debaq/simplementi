@@ -90,8 +90,44 @@ if (!empty($accion)) {
             
         case 'mover_arriba':
         case 'mover_abajo':
-            // La lógica de reordenamiento se implementa aquí (se mantiene igual)
-            // Código omitido por brevedad
+            if ($pregunta_id > 0) {
+                $indice_pregunta = -1;
+                foreach ($presentacion_data['preguntas'] as $key => $pregunta) {
+                    if ($pregunta['id'] === $pregunta_id) {
+                        $indice_pregunta = $key;
+                        break;
+                    }
+                }
+
+                if ($indice_pregunta !== -1) {
+                    $total_preguntas = count($presentacion_data['preguntas']);
+                    $pregunta_a_mover = $presentacion_data['preguntas'][$indice_pregunta];
+                    $movimiento_realizado = false;
+
+                    if ($accion === 'mover_arriba' && $indice_pregunta > 0) {
+                        // Mover la pregunta hacia arriba
+                        array_splice($presentacion_data['preguntas'], $indice_pregunta, 1);
+                        array_splice($presentacion_data['preguntas'], $indice_pregunta - 1, 0, [$pregunta_a_mover]);
+                        $movimiento_realizado = true;
+                    } elseif ($accion === 'mover_abajo' && $indice_pregunta < $total_preguntas - 1) {
+                        // Mover la pregunta hacia abajo
+                        array_splice($presentacion_data['preguntas'], $indice_pregunta, 1);
+                        array_splice($presentacion_data['preguntas'], $indice_pregunta + 1, 0, [$pregunta_a_mover]);
+                        $movimiento_realizado = true;
+                    }
+
+                    if ($movimiento_realizado) {
+                        // Guardar cambios
+                        file_put_contents($presentacion_file, json_encode($presentacion_data, JSON_PRETTY_PRINT));
+                        $mensaje = "Pregunta reordenada correctamente.";
+                        $tipo_mensaje = "success";
+                        registrarAccion($_SESSION['admin_user'], 'reordenar_pregunta');
+                    }
+                } else {
+                    $mensaje = "La pregunta no fue encontrada.";
+                    $tipo_mensaje = "danger";
+                }
+            }
             break;
     }
 }
