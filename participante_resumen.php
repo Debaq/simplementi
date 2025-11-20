@@ -106,7 +106,16 @@ foreach ($test_data['preguntas'] as $pregunta) {
     $es_correcta = false;
     
     if ($respondida && isset($pregunta['respuesta_correcta'])) {
-        $es_correcta = $respuesta_dada == $pregunta['respuesta_correcta'];
+        // Manejo específico para preguntas de verdadero/falso
+        if ($pregunta['tipo'] == 'verdadero_falso') {
+            // Convertir la respuesta del participante (string 'true' o 'false') a booleano
+            $respuesta_booleana = ($respuesta_dada === 'true');
+            $es_correcta = ($respuesta_booleana === $pregunta['respuesta_correcta']);
+        } else {
+            // Comparación estándar para otros tipos de preguntas
+            $es_correcta = ($respuesta_dada == $pregunta['respuesta_correcta']);
+        }
+        
         if ($es_correcta) {
             $total_correctas++;
         } else {
