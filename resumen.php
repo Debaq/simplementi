@@ -131,7 +131,19 @@ foreach ($preguntas as $pregunta) {
                     
                     // Verificar si es correcta
                     if (isset($pregunta['respuesta_correcta'])) {
-                        if ($valor_respuesta == $pregunta['respuesta_correcta']) {
+                        $es_correcta = false;
+                        
+                        // Para preguntas de verdadero/falso, convertir ambos valores a booleanos para comparar
+                        if ($pregunta['tipo'] == 'verdadero_falso') {
+                            $respuesta_dada_boolean = ($valor_respuesta === 'true');
+                            $respuesta_correcta_boolean = ($pregunta['respuesta_correcta'] === 'Verdadero');
+                            $es_correcta = ($respuesta_dada_boolean === $respuesta_correcta_boolean);
+                        } else {
+                            // Para otros tipos de preguntas, comparar directamente
+                            $es_correcta = ($valor_respuesta == $pregunta['respuesta_correcta']);
+                        }
+                        
+                        if ($es_correcta) {
                             $correctas++;
                             $stats['respuestas_correctas']++;
                         } else {
@@ -422,6 +434,22 @@ if (isset($_GET['finalizar']) && $_GET['finalizar'] == 1) {
                             <strong>Respuesta correcta:</strong> <?php echo htmlspecialchars($resultado['respuesta_correcta']); ?>
                         </div>
                         <?php endif; ?>
+                        
+                        <?php 
+                        // Buscar la pregunta original en test_data para obtener la explicación
+                        $pregunta_original = null;
+                        foreach ($test_data['preguntas'] as $pregunta) {
+                            if ($pregunta['id'] == $resultado['id']) {
+                                $pregunta_original = $pregunta;
+                                break;
+                            }
+                        }
+                        
+                        if ($pregunta_original && isset($pregunta_original['explicacion'])): ?>
+                        <div class="alert alert-info">
+                            <strong>Explicación:</strong> <?php echo htmlspecialchars($pregunta_original['explicacion']); ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
                     <?php elseif ($resultado['tipo'] == 'nube_palabras' || $resultado['tipo'] == 'palabra_libre'): ?>
                     <div class="col-12">
@@ -438,6 +466,22 @@ if (isset($_GET['finalizar']) && $_GET['finalizar'] == 1) {
                                 </div>
                             </div>
                         </div>
+                        
+                        <?php 
+                        // Buscar la pregunta original en test_data para obtener la explicación
+                        $pregunta_original = null;
+                        foreach ($test_data['preguntas'] as $pregunta) {
+                            if ($pregunta['id'] == $resultado['id']) {
+                                $pregunta_original = $pregunta;
+                                break;
+                            }
+                        }
+                        
+                        if ($pregunta_original && isset($pregunta_original['explicacion'])): ?>
+                        <div class="alert alert-info mt-3">
+                            <strong>Explicación:</strong> <?php echo htmlspecialchars($pregunta_original['explicacion']); ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
                     <?php endif; ?>
                 </div>

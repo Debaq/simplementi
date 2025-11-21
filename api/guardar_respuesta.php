@@ -95,6 +95,11 @@ if ($participante_index === -1) {
         ]
     ];
 } else {
+    // Actualizar el nombre del participante si existe en la cookie (por si cambió)
+    if (isset($_COOKIE['participante_nombre'])) {
+        $respuestas_data['participantes'][$participante_index]['nombre'] = $_COOKIE['participante_nombre'];
+    }
+    
     // Buscar si ya respondió esta pregunta
     $respuesta_index = -1;
     foreach ($respuestas_data['participantes'][$participante_index]['respuestas'] as $index => $resp) {

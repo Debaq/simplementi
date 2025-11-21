@@ -158,6 +158,12 @@ function actualizarProgresoNube() {
                 const totalParticipantes = data.total_participantes || 0;
                 const totalRespuestas = data.estadisticas.total_respuestas || 0;
                 
+                // Actualizar también el contador de respuestas general
+                const totalRespuestasEl = document.getElementById('total-respuestas');
+                if (totalRespuestasEl) {
+                    totalRespuestasEl.textContent = totalRespuestas;
+                }
+                
                 if (totalParticipantes > 0) {
                     const porcentaje = Math.min(100, Math.round((totalRespuestas / totalParticipantes) * 100));
                     progressElement.style.width = porcentaje + '%';
@@ -208,7 +214,7 @@ function actualizarProgresoNube() {
         let chart;
         
         function actualizarResultados() {
-            fetch('api/get_resultados.php?codigo=' + codigoSesion + '&pregunta=' + preguntaActual)
+            fetch(serverUrl + 'api/get_resultados.php?codigo=' + codigoSesion + '&pregunta=' + preguntaActual)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

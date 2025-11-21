@@ -339,7 +339,7 @@ $tiempo_promedio = $total_respondidas > 0 ? round($tiempo_total / $total_respond
                         </div>
                         <?php endif; ?>
                         
-                        <?php if (!$item['es_correcta'] && isset($item['pregunta']['explicacion'])): ?>
+                        <?php if (isset($item['pregunta']['explicacion'])): ?>
                         <div class="alert alert-info">
                             <strong>Explicación:</strong> 
                             <?php echo htmlspecialchars($item['pregunta']['explicacion']); ?>
@@ -364,6 +364,9 @@ $tiempo_promedio = $total_respondidas > 0 ? round($tiempo_total / $total_respond
                 <div class="mt-4 text-center">
                     <a href="index.php" class="btn btn-primary">
                         <i class="fas fa-home me-2"></i> Volver al inicio
+                    </a>
+                    <a href="generar_pdf.php?codigo=<?php echo $codigo_sesion; ?>&participante=<?php echo $participante_id; ?>" class="btn btn-success" target="_blank">
+                        <i class="fas fa-file-pdf me-2"></i> Descargar PDF
                     </a>
                 </div>
             </div>

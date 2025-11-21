@@ -69,104 +69,96 @@ try {
     exit;
 }
 
-// Encontrar la pregunta
-$pregunta = null;
-foreach ($preguntas_data['preguntas'] as $p) {
-    if ($p['id'] == $id_pregunta) {
-        $pregunta = $p;
-        break;
-    }
-}
+// El $id_pregunta recibido es el índice 1-based.
+$pregunta_index = $id_pregunta - 1;
 
-if (!$pregunta) {
-    echo json_encode(['success' => false, 'error' => 'Pregunta no encontrada']);
+if (!isset($preguntas_data['preguntas'][$pregunta_index])) {
+    echo json_encode(['success' => false, 'error' => 'Pregunta no encontrada para el índice proporcionado.']);
     exit;
 }
+
+// Obtener la pregunta y su ID único real
+$pregunta = $preguntas_data['preguntas'][$pregunta_index];
+$id_pregunta_unica = $pregunta['id'];
 
 // Contabilizar las respuestas
 $resultados = [];
 $total_participantes = count($respuestas_data['participantes']);
-$total_respuestas = 0;
+$total_respuestas = 0; // Este contará el número bruto de respuestas (ej. palabras en una nube)
 $total_correctas = 0;
 $total_tiempo = 0;
 
-if ($pregunta['tipo'] == 'opcion_multiple' || $pregunta['tipo'] == 'verdadero_falso') {
-    // Inicializar contador para cada opción
-    if ($pregunta['tipo'] == 'opcion_multiple' && isset($pregunta['opciones'])) {
-        foreach ($pregunta['opciones'] as $opcion) {
-            $resultados[$opcion] = 0;
-        }
-    } else if ($pregunta['tipo'] == 'verdadero_falso') {
-        $resultados['true'] = 0;
-        $resultados['false'] = 0;
+// Inicializar resultados para que todas las opciones aparezcan en el gráfico
+if ($pregunta['tipo'] == 'opcion_multiple' && isset($pregunta['opciones'])) {
+    foreach ($pregunta['opciones'] as $opcion) {
+        $resultados[$opcion] = 0;
     }
-    
-    // Contar respuestas
-    foreach ($respuestas_data['participantes'] as $participante) {
-        foreach ($participante['respuestas'] as $respuesta) {
-            if ($respuesta['id_pregunta'] == $id_pregunta) {
-                $total_respuestas++;
-                
-                if (isset($respuesta['tiempo_respuesta'])) {
-                    $total_tiempo += $respuesta['tiempo_respuesta'];
-                }
-                
-                if (isset($resultados[$respuesta['respuesta']])) {
-                    $resultados[$respuesta['respuesta']]++;
-                }
+} else if ($pregunta['tipo'] == 'verdadero_falso') {
+    $resultados['true'] = 0;
+    $resultados['false'] = 0;
+}
 
-                if (isset($pregunta['respuesta_correcta'])) {
-                    if ($pregunta['tipo'] == 'verdadero_falso') {
-                        $respuesta_participante = ($respuesta['respuesta'] === 'true');
-                        if ($respuesta_participante === $pregunta['respuesta_correcta']) {
-                            $total_correctas++;
-                        }
-                    } else {
-                        if ($respuesta['respuesta'] == $pregunta['respuesta_correcta']) {
-                            $total_correctas++;
-                        }
-                    }
-                }
+// Contar respuestas y participantes que han respondido
+$participantes_con_respuesta = [];
+foreach ($respuestas_data['participantes'] as $participante) {
+    foreach ($participante['respuestas'] as $respuesta) {
+        // Usar el ID único de la pregunta para la comparación
+        if (isset($respuesta['id_pregunta']) && $respuesta['id_pregunta'] == $id_pregunta_unica) {
+            $total_respuestas++;
+
+            // Contar participante solo una vez por pregunta
+            if (!in_array($participante['id'], $participantes_con_respuesta)) {
+                $participantes_con_respuesta[] = $participante['id'];
             }
-        }
-    }
-} else if ($pregunta['tipo'] == 'nube_palabras' || $pregunta['tipo'] == 'palabra_libre') {
-    // Contar frecuencia de palabras
-    foreach ($respuestas_data['participantes'] as $participante) {
-        foreach ($participante['respuestas'] as $respuesta) {
-            if ($respuesta['id_pregunta'] == $id_pregunta) {
-                $total_respuestas++;
-                
-                if (isset($respuesta['tiempo_respuesta'])) {
-                    $total_tiempo += $respuesta['tiempo_respuesta'];
-                }
-                
+
+            if (isset($respuesta['tiempo_respuesta'])) {
+                $total_tiempo += $respuesta['tiempo_respuesta'];
+            }
+            
+            // Conteo específico por tipo de pregunta
+            if ($pregunta['tipo'] == 'nube_palabras' || $pregunta['tipo'] == 'palabra_libre') {
                 $palabra = trim($respuesta['respuesta']);
                 if (!empty($palabra)) {
-                    if (isset($resultados[$palabra])) {
-                        $resultados[$palabra]++;
-                    } else {
-                        $resultados[$palabra] = 1;
+                    if (!isset($resultados[$palabra])) $resultados[$palabra] = 0;
+                    $resultados[$palabra]++;
+                }
+            } else { // Opcion multiple y V/F
+                $respuesta_str = strval($respuesta['respuesta']);
+                if (isset($resultados[$respuesta_str])) {
+                    $resultados[$respuesta_str]++;
+                }
+            }
+
+            // Contar correctas
+            if (isset($pregunta['respuesta_correcta'])) {
+                if ($pregunta['tipo'] == 'verdadero_falso') {
+                    $respuesta_bool = filter_var($respuesta['respuesta'], FILTER_VALIDATE_BOOLEAN);
+                    $pregunta_respuesta_correcta_bool = filter_var($pregunta['respuesta_correcta'], FILTER_VALIDATE_BOOLEAN);
+                    if ($respuesta_bool === $pregunta_respuesta_correcta_bool) {
+                        $total_correctas++;
                     }
+                } else if ($respuesta['respuesta'] == $pregunta['respuesta_correcta']) {
+                    $total_correctas++;
                 }
             }
         }
     }
-    
-    // Ordenar por frecuencia (mayor a menor)
+}
+
+$participantes_que_respondieron = count($participantes_con_respuesta);
+
+if ($pregunta['tipo'] == 'nube_palabras' || $pregunta['tipo'] == 'palabra_libre') {
     arsort($resultados);
-    
-    // Limitar a las 20 palabras más frecuentes
     $resultados = array_slice($resultados, 0, 20, true);
 }
 
 // Calcular estadísticas
 $estadisticas = [
-    'total_respuestas' => $total_respuestas,
+    'total_respuestas' => $participantes_que_respondieron,
     'total_correctas' => $total_correctas,
     'porcentaje_correctas' => $total_respuestas > 0 ? round(($total_correctas / $total_respuestas) * 100) : 0,
-    'tiempo_promedio' => $total_respuestas > 0 ? round($total_tiempo / $total_respuestas, 1) : 0,
-    'total_pendientes' => $total_participantes - $total_respuestas
+    'tiempo_promedio' => $participantes_que_respondieron > 0 ? round($total_tiempo / $participantes_que_respondieron, 1) : 0,
+    'total_pendientes' => $total_participantes - $participantes_que_respondieron
 ];
 
 // Devolver los resultados
