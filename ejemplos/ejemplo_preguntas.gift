@@ -43,11 +43,14 @@
 }
 
 // PREGUNTAS DE RESPUESTA LIBRE
-¿Qué opinas sobre el cambio climático? {}
+// Puedes agregar feedback/reflexión que se mostrará después de responder
+¿Qué opinas sobre el cambio climático? {# El cambio climático es uno de los mayores desafíos de nuestra era. Gracias por compartir tu perspectiva.}
 
-Describe en una palabra cómo te sientes hoy {}
+Describe en una palabra cómo te sientes hoy {# No hay respuestas correctas o incorrectas. Tus emociones son válidas.}
 
-¿Cuál es tu lenguaje de programación favorito y por qué? {}
+¿Cuál es tu lenguaje de programación favorito y por qué? {# Cada lenguaje tiene sus fortalezas. La elección depende del contexto y las necesidades del proyecto.}
+
+Comparte una idea para mejorar esta presentación {# Todas las sugerencias son bienvenidas y nos ayudan a mejorar continuamente.}
 
 // MÁS EJEMPLOS DE VERDADERO/FALSO CON FEEDBACK
 ¿Git es un sistema de control de versiones? {TRUE # Correcto! Git es el sistema de control de versiones distribuido más popular.}

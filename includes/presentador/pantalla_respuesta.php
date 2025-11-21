@@ -116,16 +116,25 @@
                 </div>
                 <?php endif; ?>
                 
-                <?php if (isset($pregunta_actual['explicacion'])): ?>
+                <?php if (isset($pregunta_actual['explicacion']) && !empty($pregunta_actual['explicacion'])): ?>
                 <div class="card mb-4">
                     <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">Explicación</h5>
+                        <h5 class="mb-0">
+                            <?php
+                            // Cambiar título según el tipo de pregunta
+                            if ($pregunta_actual['tipo'] == 'palabra_libre' || $pregunta_actual['tipo'] == 'nube_palabras') {
+                                echo 'Reflexión';
+                            } else {
+                                echo 'Explicación';
+                            }
+                            ?>
+                        </h5>
                     </div>
                     <div class="card-body">
                         <p class="lead"><?php echo htmlspecialchars($pregunta_actual['explicacion']); ?></p>
-                        
-                        <?php if (isset($pregunta_actual['imagen_explicacion'])): ?>
-                        <img src="<?php echo htmlspecialchars($pregunta_actual['imagen_explicacion']); ?>" 
+
+                        <?php if (isset($pregunta_actual['imagen_explicacion']) && !empty($pregunta_actual['imagen_explicacion'])): ?>
+                        <img src="<?php echo htmlspecialchars($pregunta_actual['imagen_explicacion']); ?>"
                              class="img-fluid pregunta-imagen mt-3" alt="Imagen explicativa">
                         <?php endif; ?>
                     </div>

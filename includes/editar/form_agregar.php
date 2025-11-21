@@ -115,7 +115,10 @@
                 <p class="text-muted small">El símbolo = marca la respuesta correcta, ~ marca las opciones incorrectas, y # agrega feedback a cada opción.</p>
 
                 <h6 class="mt-3">Respuesta libre</h6>
-                <pre class="bg-light p-2 rounded"><code>¿Qué opinas sobre el cambio climático? {}</code></pre>
+                <pre class="bg-light p-2 rounded"><code>¿Qué opinas sobre el cambio climático? {# Gracias por compartir tu perspectiva.}
+
+Describe cómo te sientes hoy {}</code></pre>
+                <p class="text-muted small">Las preguntas abiertas también pueden tener feedback para dar contexto o reflexión.</p>
 
                 <h6 class="mt-3">Consejos</h6>
                 <ul class="small">

@@ -158,12 +158,35 @@ class GiftParser {
 
     /**
      * Parse pregunta de respuesta corta (convertida a palabra_libre)
+     * Soporta feedback/explicación después de # o =#
      */
     private static function parseShortAnswer($texto, $respuesta) {
+        $explicacion = '';
+
+        // Si hay contenido en la respuesta, puede ser feedback
+        $respuesta = trim($respuesta);
+
+        // Soportar tanto {# feedback} como {=# feedback}
+        if (!empty($respuesta)) {
+            // Remover = inicial si existe
+            if (strpos($respuesta, '=') === 0) {
+                $respuesta = substr($respuesta, 1);
+            }
+
+            // Extraer feedback después de #
+            if (strpos($respuesta, '#') !== false) {
+                $partes = explode('#', $respuesta, 2);
+                $explicacion = self::limpiarTexto(trim($partes[1]));
+            } elseif (!empty($respuesta)) {
+                // Si hay texto sin #, usarlo como explicación
+                $explicacion = self::limpiarTexto($respuesta);
+            }
+        }
+
         return [
             'tipo' => 'palabra_libre',
             'pregunta' => self::limpiarTexto($texto),
-            'explicacion' => ''
+            'explicacion' => $explicacion
         ];
     }
 
