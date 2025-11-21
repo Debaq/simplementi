@@ -58,23 +58,44 @@ if (empty($codigo_sesion)) {
     } elseif ($mostrar_respuesta && isset($pregunta_actual['respuesta_correcta'])) {
         include('includes/presentador/pantalla_respuesta.php');
     } elseif ($pregunta_actual_index <= $total_preguntas) {
-        // Mostrar la pregunta actual
-        ?>
-        <div class="row">
-            <div class="col-lg-8">
-                <?php
-                // Si hay PDF habilitado, mostrar también la pantalla del PDF
-                if (!empty($test_data['pdf_enabled'])) {
-                    include('includes/presentador/pantalla_pdf.php');
-                }
-                include('includes/presentador/pantalla_pregunta.php');
-                ?>
+        // Verificar si hay PDF con secuencia configurada
+        $tiene_pdf_con_secuencia = !empty($test_data['pdf_enabled']) &&
+                                    isset($test_data['pdf_sequence']) &&
+                                    !empty($test_data['pdf_sequence']);
+
+        // Si hay PDF con secuencia, mostrar solo la pantalla de PDF (modo presentación)
+        // Si no, mostrar el flujo tradicional de preguntas
+        if ($tiene_pdf_con_secuencia) {
+            // Modo presentación con PDF - solo mostrar el botón de fullscreen
+            ?>
+            <div class="row">
+                <div class="col-lg-8">
+                    <?php include('includes/presentador/pantalla_pdf.php'); ?>
+                </div>
+                <div class="col-lg-4">
+                    <?php include('includes/presentador/panel_participantes.php'); ?>
+                </div>
             </div>
-            <div class="col-lg-4">
-                <?php include('includes/presentador/panel_participantes.php'); ?>
+            <?php
+        } else {
+            // Modo tradicional - mostrar preguntas individualmente
+            ?>
+            <div class="row">
+                <div class="col-lg-8">
+                    <?php
+                    // Si hay PDF habilitado (pero sin secuencia), mostrar también la pantalla del PDF
+                    if (!empty($test_data['pdf_enabled'])) {
+                        include('includes/presentador/pantalla_pdf.php');
+                    }
+                    include('includes/presentador/pantalla_pregunta.php');
+                    ?>
+                </div>
+                <div class="col-lg-4">
+                    <?php include('includes/presentador/panel_participantes.php'); ?>
+                </div>
             </div>
-        </div>
-        <?php
+            <?php
+        }
     } else {
         include('includes/presentador/pantalla_finalizacion.php');
     }
