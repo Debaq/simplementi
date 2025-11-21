@@ -114,29 +114,44 @@ if (!$item_data) {
             overflow: hidden;
         }
 
-        /* Contenedor principal fullscreen */
-        #presentation-container {
+        /* Layout principal de 2 columnas */
+        #presentation-layout {
+            display: flex;
             width: 100vw;
             height: 100vh;
+        }
+
+        /* Columna de contenido (slides/preguntas) */
+        #content-area {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
             background: #000;
+            position: relative;
+        }
+
+        /* Panel lateral negro */
+        #sidebar-panel {
+            width: 400px;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            border-left: 1px solid #333;
         }
 
         /* Slides del PDF */
         .slide-content {
-            width: 100vw;
-            height: 100vh;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
-            background: #000;
         }
 
         /* Preguntas */
         .question-content {
-            max-width: 900px;
-            width: 90%;
+            max-width: 90%;
+            width: 900px;
             padding: 40px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 20px;
@@ -160,47 +175,121 @@ if (!$item_data) {
             border-radius: 12px;
             font-size: 1.3rem;
             border: 2px solid rgba(255,255,255,0.2);
-            transition: all 0.3s;
         }
 
-        .option-item:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateX(10px);
+        /* Estilos del panel lateral */
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid #333;
         }
 
-        /* Controles de navegación */
-        .nav-controls {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
+        .sidebar-section:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-section h3 {
+            font-size: 1rem;
+            color: #aaa;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        #qr-code-sidebar {
             display: flex;
-            gap: 15px;
-            background: rgba(0,0,0,0.7);
-            padding: 15px 25px;
-            border-radius: 50px;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
+            justify-content: center;
+            margin: 15px 0;
         }
 
-        .nav-btn {
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.3);
-            color: #fff;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+        #qr-code-sidebar canvas {
+            border: 3px solid #fff;
+            border-radius: 8px;
+        }
+
+        .session-code {
+            background: #2a2a2a;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #4e73df;
+        }
+
+        .participant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #2a2a2a;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .participant-item .badge {
+            font-size: 0.75rem;
+        }
+
+        .stats-box {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stats-box .stats-label {
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .stats-box .stats-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4e73df;
+        }
+
+        .progress-custom {
+            height: 25px;
+            border-radius: 8px;
+            background: #2a2a2a;
+        }
+
+        .progress-bar-custom {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: bold;
+            transition: width 0.3s ease;
+        }
+
+        /* Controles de navegación en sidebar */
+        .nav-controls-sidebar {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            background: #2a2a2a;
+            border: 2px solid #444;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
         .nav-btn:hover:not(:disabled) {
-            background: rgba(255,255,255,0.2);
-            transform: scale(1.1);
+            background: #3a3a3a;
+            border-color: #666;
         }
 
         .nav-btn:disabled {
@@ -208,39 +297,30 @@ if (!$item_data) {
             cursor: not-allowed;
         }
 
-        /* Contador de posición */
-        .position-counter {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-        }
-
-        /* Botón de salir */
-        .exit-btn {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            background: rgba(220,53,69,0.8);
+        .exit-btn-sidebar {
+            width: 100%;
+            background: #dc3545;
             border: none;
             color: #fff;
-            padding: 12px 25px;
-            border-radius: 25px;
+            padding: 15px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
+            font-weight: 600;
             transition: all 0.3s;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
         }
 
-        .exit-btn:hover {
-            background: rgba(220,53,69,1);
-            transform: scale(1.05);
+        .exit-btn-sidebar:hover {
+            background: #c82333;
+        }
+
+        .position-counter-sidebar {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #aaa;
+            padding: 10px;
+            background: #2a2a2a;
+            border-radius: 8px;
         }
 
         /* Animaciones */
@@ -303,6 +383,29 @@ if (!$item_data) {
             color: rgba(255,255,255,0.6);
             font-size: 0.9rem;
         }
+
+        /* Scrollbar personalizado */
+        #sidebar-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #sidebar-panel::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        #sidebar-panel::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        #sidebar-panel::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        .participants-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -312,86 +415,155 @@ if (!$item_data) {
         <div class="loader-text">Cargando presentación...</div>
         <div class="loader-progress" id="loader-progress">0 / 0</div>
     </div>
-    <div id="presentation-container">
-        <?php if ($item_data['type'] === 'slide'): ?>
-            <!-- Mostrar slide del PDF -->
-            <img src="<?php echo htmlspecialchars($item_data['image']); ?>"
-                 alt="Slide <?php echo $item_data['number']; ?>"
-                 class="slide-content">
 
-        <?php elseif ($item_data['type'] === 'question'): ?>
-            <!-- Mostrar pregunta -->
-            <div class="question-content">
-                <h1><?php echo htmlspecialchars($item_data['pregunta']); ?></h1>
-
-                <?php if ($item_data['tipo'] === 'opcion_multiple' && isset($item_data['opciones'])): ?>
-                    <div class="question-options">
-                        <?php foreach ($item_data['opciones'] as $index => $opcion): ?>
-                            <div class="option-item">
-                                <strong><?php echo chr(65 + $index); ?>.</strong>
-                                <?php echo htmlspecialchars($opcion); ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-
-                <?php elseif ($item_data['tipo'] === 'verdadero_falso'): ?>
-                    <div class="question-options">
-                        <div class="option-item"><strong>A.</strong> Verdadero</div>
-                        <div class="option-item"><strong>B.</strong> Falso</div>
-                    </div>
-
-                <?php elseif ($item_data['tipo'] === 'palabra_libre'): ?>
-                    <div class="alert alert-light mt-4">
-                        <i class="fas fa-keyboard"></i> Los participantes escribirán su respuesta
-                    </div>
-
-                <?php elseif ($item_data['tipo'] === 'nube_palabras'): ?>
-                    <div class="alert alert-light mt-4">
-                        <i class="fas fa-cloud"></i> Los participantes enviarán palabras
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-    </div>
-
-    <!-- Contador de posición -->
-    <div class="position-counter">
-        <i class="fas fa-list-ol me-2"></i>
-        <?php echo ($sequence_index + 1); ?> / <?php echo $total_items; ?>
-    </div>
-
-    <!-- Botón de salir -->
-    <button class="exit-btn" onclick="exitPresentation()">
-        <i class="fas fa-times me-2"></i> Salir
-    </button>
-
-    <!-- Controles de navegación -->
-    <div class="nav-controls">
-        <button class="nav-btn" id="prev-btn"
-                <?php echo $sequence_index <= 0 ? 'disabled' : ''; ?>
-                onclick="navigate(-1)">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-
-        <div style="color: #fff; display: flex; align-items: center; padding: 0 15px;">
+    <!-- Layout principal -->
+    <div id="presentation-layout">
+        <!-- Área de contenido (slides/preguntas) -->
+        <div id="content-area">
             <?php if ($item_data['type'] === 'slide'): ?>
-                <i class="fas fa-file-pdf"></i>
-            <?php else: ?>
-                <i class="fas fa-question-circle"></i>
+                <!-- Mostrar slide del PDF -->
+                <img src="<?php echo htmlspecialchars($item_data['image']); ?>"
+                     alt="Slide <?php echo $item_data['number']; ?>"
+                     class="slide-content">
+
+            <?php elseif ($item_data['type'] === 'question'): ?>
+                <!-- Mostrar pregunta -->
+                <div class="question-content">
+                    <h1><?php echo htmlspecialchars($item_data['pregunta']); ?></h1>
+
+                    <?php if ($item_data['tipo'] === 'opcion_multiple' && isset($item_data['opciones'])): ?>
+                        <div class="question-options">
+                            <?php foreach ($item_data['opciones'] as $index => $opcion): ?>
+                                <div class="option-item">
+                                    <strong><?php echo chr(65 + $index); ?>.</strong>
+                                    <?php echo htmlspecialchars($opcion); ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                    <?php elseif ($item_data['tipo'] === 'verdadero_falso'): ?>
+                        <div class="question-options">
+                            <div class="option-item"><strong>A.</strong> Verdadero</div>
+                            <div class="option-item"><strong>B.</strong> Falso</div>
+                        </div>
+
+                    <?php elseif ($item_data['tipo'] === 'palabra_libre'): ?>
+                        <div class="alert alert-light mt-4">
+                            <i class="fas fa-keyboard"></i> Los participantes escribirán su respuesta
+                        </div>
+
+                    <?php elseif ($item_data['tipo'] === 'nube_palabras'): ?>
+                        <div class="alert alert-light mt-4">
+                            <i class="fas fa-cloud"></i> Los participantes enviarán palabras
+                        </div>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
         </div>
 
-        <button class="nav-btn" id="next-btn"
-                <?php echo $sequence_index >= $total_items - 1 ? 'disabled' : ''; ?>
-                onclick="navigate(1)">
-            <i class="fas fa-chevron-right"></i>
-        </button>
+        <!-- Panel lateral -->
+        <div id="sidebar-panel">
+            <!-- Posición en la secuencia -->
+            <div class="sidebar-section">
+                <div class="position-counter-sidebar">
+                    <i class="fas fa-list-ol me-2"></i>
+                    <strong><?php echo ($sequence_index + 1); ?> / <?php echo $total_items; ?></strong>
+                    <div style="font-size: 0.85rem; margin-top: 5px; color: #666;">
+                        <?php if ($item_data['type'] === 'slide'): ?>
+                            <i class="fas fa-file-pdf me-1"></i> Slide
+                        <?php else: ?>
+                            <i class="fas fa-question-circle me-1"></i> Pregunta
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <?php if ($item_data['type'] === 'slide'): ?>
+                <!-- Información de acceso para slides -->
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-qrcode me-2"></i>Acceso a la Presentación</h3>
+                    <div id="qr-code-sidebar"></div>
+                    <div class="session-code">
+                        <?php echo $codigo_sesion; ?>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; color: #aaa; font-size: 0.85rem;">
+                        Escanea el código o usa el código de sesión
+                    </div>
+                </div>
+
+            <?php else: ?>
+                <!-- Información de participantes para preguntas -->
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-users me-2"></i>Participantes</h3>
+                    <div class="stats-box">
+                        <div class="stats-label">Conectados</div>
+                        <div class="stats-value" id="total-participantes-sidebar">0</div>
+                    </div>
+                    <div class="stats-box">
+                        <div class="stats-label">Respuestas recibidas</div>
+                        <div class="stats-value" id="total-respuestas-sidebar">0</div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <div style="color: #aaa; font-size: 0.85rem; margin-bottom: 8px;">
+                            Progreso de respuestas
+                        </div>
+                        <div class="progress-custom">
+                            <div class="progress-bar-custom" id="progress-bar-sidebar" style="width: 0%">
+                                0%
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <div style="color: #aaa; font-size: 0.85rem; margin-bottom: 8px;">
+                            Estado de participantes
+                        </div>
+                        <div class="participants-list" id="participants-list-sidebar">
+                            <div style="text-align: center; color: #666; padding: 20px;">
+                                Esperando participantes...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <!-- Controles de navegación -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-gamepad me-2"></i>Controles</h3>
+                <div class="nav-controls-sidebar">
+                    <button class="nav-btn" id="prev-btn"
+                            <?php echo $sequence_index <= 0 ? 'disabled' : ''; ?>
+                            onclick="navigate(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="nav-btn" id="next-btn"
+                            <?php echo $sequence_index >= $total_items - 1 ? 'disabled' : ''; ?>
+                            onclick="navigate(1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div style="text-align: center; margin-top: 10px; color: #666; font-size: 0.85rem;">
+                    <i class="fas fa-keyboard me-1"></i> Usa ← → o las flechas del teclado
+                </div>
+            </div>
+
+            <!-- Botón de salir -->
+            <div class="sidebar-section">
+                <button class="exit-btn-sidebar" onclick="exitPresentation()">
+                    <i class="fas fa-times me-2"></i> Salir de la Presentación
+                </button>
+            </div>
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script>
         const codigo = '<?php echo $codigo_sesion; ?>';
         const currentIndex = <?php echo $sequence_index; ?>;
         const totalItems = <?php echo $total_items; ?>;
+        const itemType = '<?php echo $item_data['type']; ?>';
+        const serverUrl = window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 
         // Array con todas las imágenes para precargar
         const allImages = [
@@ -407,6 +579,74 @@ if (!$item_data) {
             echo implode(",\n            ", $image_paths);
             ?>
         ];
+
+        // Generar código QR si estamos en un slide
+        if (itemType === 'slide') {
+            document.addEventListener('DOMContentLoaded', function() {
+                new QRCode(document.getElementById('qr-code-sidebar'), {
+                    text: serverUrl + 'participante.php?codigo=' + codigo,
+                    width: 180,
+                    height: 180,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            });
+        }
+
+        // Actualizar información de participantes para preguntas
+        function updateParticipantInfo() {
+            if (itemType !== 'question') return;
+
+            fetch(serverUrl + 'api/get_resultados.php?codigo=' + codigo + '&pregunta=' + currentIndex)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Actualizar contadores
+                        const totalParticipantes = data.total_participantes || 0;
+                        const totalRespuestas = data.estadisticas.total_respuestas || 0;
+
+                        document.getElementById('total-participantes-sidebar').textContent = totalParticipantes;
+                        document.getElementById('total-respuestas-sidebar').textContent = totalRespuestas;
+
+                        // Calcular y actualizar porcentaje
+                        const porcentaje = totalParticipantes > 0 ?
+                            Math.round((totalRespuestas / totalParticipantes) * 100) : 0;
+                        const progressBar = document.getElementById('progress-bar-sidebar');
+                        progressBar.style.width = porcentaje + '%';
+                        progressBar.textContent = porcentaje + '%';
+
+                        // Actualizar lista de participantes
+                        const participantsList = document.getElementById('participants-list-sidebar');
+                        if (data.participantes && data.participantes.length > 0) {
+                            participantsList.innerHTML = '';
+                            data.participantes.forEach(p => {
+                                const respondido = p.respuestas.some(r => r.id_pregunta == currentIndex);
+                                const div = document.createElement('div');
+                                div.className = 'participant-item';
+                                div.innerHTML = `
+                                    <span>Participante ${p.id}</span>
+                                    <span class="badge ${respondido ? 'bg-success' : 'bg-secondary'}">
+                                        <i class="fas fa-${respondido ? 'check' : 'clock'}"></i>
+                                    </span>
+                                `;
+                                participantsList.appendChild(div);
+                            });
+                        } else {
+                            participantsList.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Esperando participantes...</div>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error obteniendo info de participantes:', error);
+                });
+        }
+
+        // Actualizar periódicamente si es una pregunta
+        if (itemType === 'question') {
+            updateParticipantInfo();
+            setInterval(updateParticipantInfo, 2000);
+        }
 
         // Precargar todas las imágenes
         function preloadImages() {
