@@ -16,7 +16,7 @@ $response = [
 try {
     // Validar datos recibidos
     if (!isset($_POST['presentacion_id']) || !isset($_POST['num_pages']) || !isset($_POST['images'])) {
-        throw new Exception('Datos incompletos');
+        throw new Exception('Datos incompletos: faltan campos requeridos');
     }
 
     $presentacion_id = preg_replace('/[^a-zA-Z0-9_]/', '', $_POST['presentacion_id']);
@@ -25,12 +25,16 @@ try {
     $images_json = $_POST['images'];
     $images = json_decode($images_json, true);
 
+    if ($images === null) {
+        throw new Exception('Error al decodificar JSON de imágenes: ' . json_last_error_msg());
+    }
+
     if (!$images || count($images) === 0) {
         throw new Exception('No se recibieron imágenes');
     }
 
     if (count($images) !== $num_pages) {
-        throw new Exception('El número de imágenes no coincide con el número de páginas');
+        throw new Exception('El número de imágenes (' . count($images) . ') no coincide con el número de páginas (' . $num_pages . ')');
     }
 
     // Directorio para guardar las imágenes

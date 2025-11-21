@@ -278,8 +278,12 @@
                         progressBar.classList.remove('progress-bar-striped', 'progress-bar-animated');
                         progressBar.classList.add('bg-success');
 
-                        // Mostrar mensaje de éxito
-                        alert(`PDF procesado exitosamente.\n${numPages} páginas convertidas a imágenes.\nGuarda los cambios para aplicar.`);
+                        // Mostrar mensaje de éxito con instrucciones claras
+                        alert(`✅ PDF procesado exitosamente!\n\n` +
+                              `📄 ${numPages} páginas convertidas (imágenes + miniaturas)\n` +
+                              `💾 Tamaño total: ${result.pdf_data.total_size_mb} MB\n\n` +
+                              `⚠️ IMPORTANTE: Haz clic en "Guardar cambios" al final de la página para aplicar los cambios.\n\n` +
+                              `Luego podrás configurar el orden de las diapositivas en la pestaña "Preguntas".`);
 
                         // Agregar campo hidden con los datos del PDF
                         const hiddenInput = document.createElement('input');
@@ -287,6 +291,22 @@
                         hiddenInput.name = 'pdf_data';
                         hiddenInput.value = JSON.stringify(result.pdf_data);
                         pdfFileInput.form.appendChild(hiddenInput);
+
+                        // Log para debugging
+                        console.log('PDF procesado:', result.pdf_data);
+                        console.log('Imágenes generadas:', result.pdf_data.images.length);
+                        console.log('Primera imagen:', result.pdf_data.images[0]);
+
+                        // Resaltar botón de guardar
+                        const saveButton = document.querySelector('button[type="submit"]');
+                        if (saveButton) {
+                            saveButton.classList.add('btn-lg');
+                            saveButton.style.animation = 'pulse 1s infinite';
+                            setTimeout(() => {
+                                saveButton.style.animation = '';
+                                saveButton.classList.remove('btn-lg');
+                            }, 5000);
+                        }
 
                     } else {
                         throw new Error(result.message || 'Error al procesar el PDF');
