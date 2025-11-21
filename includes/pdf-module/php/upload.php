@@ -2,8 +2,8 @@
 // Este archivo se encargará de la subida y almacenamiento de PDFs
 // Implementación básica para el futuro
 
-// Directorio para almacenar PDFs
-$upload_dir = '../uploads/pdfs/';
+// Directorio para almacenar PDFs (ruta absoluta desde la raíz del proyecto)
+$upload_dir = '../../../data/uploads/pdfs/';
 
 // Asegurarse de que el directorio existe
 if (!file_exists($upload_dir)) {
@@ -38,7 +38,7 @@ if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK
             $response['success'] = true;
             $response['message'] = 'Archivo subido correctamente.';
             $response['file_id'] = $file_id;
-            $response['file_url'] = 'uploads/pdfs/' . $new_file_name;
+            $response['file_url'] = 'data/uploads/pdfs/' . $new_file_name;
         } else {
             $response['message'] = 'Error al guardar el archivo.';
         }
