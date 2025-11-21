@@ -79,8 +79,12 @@ foreach ($respuestas_data['participantes'] as $index => $participante) {
 
 // Si el participante no existe, crear uno nuevo
 if ($participante_index === -1) {
+    // Obtener el nombre de la cookie
+    $nombre_participante = isset($_COOKIE['participante_nombre']) ? $_COOKIE['participante_nombre'] : 'Anónimo';
+
     $respuestas_data['participantes'][] = [
         'id' => $id_participante,
+        'nombre' => $nombre_participante, // Añadir el nombre
         'fecha_union' => date('Y-m-d\TH:i:s'),
         'respuestas' => [
             [

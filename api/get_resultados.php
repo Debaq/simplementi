@@ -114,9 +114,18 @@ if ($pregunta['tipo'] == 'opcion_multiple' || $pregunta['tipo'] == 'verdadero_fa
                 if (isset($resultados[$respuesta['respuesta']])) {
                     $resultados[$respuesta['respuesta']]++;
                 }
-                
-                if (isset($pregunta['respuesta_correcta']) && $respuesta['respuesta'] == $pregunta['respuesta_correcta']) {
-                    $total_correctas++;
+
+                if (isset($pregunta['respuesta_correcta'])) {
+                    if ($pregunta['tipo'] == 'verdadero_falso') {
+                        $respuesta_participante = ($respuesta['respuesta'] === 'true');
+                        if ($respuesta_participante === $pregunta['respuesta_correcta']) {
+                            $total_correctas++;
+                        }
+                    } else {
+                        if ($respuesta['respuesta'] == $pregunta['respuesta_correcta']) {
+                            $total_correctas++;
+                        }
+                    }
                 }
             }
         }

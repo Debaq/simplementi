@@ -98,6 +98,31 @@ foreach ($participante['respuestas'] as $respuesta) {
     }
 }
 
+// Habilitar o deshabilitar el logging para depuración
+define('ENABLE_LOGGING', true);
+
+// Función para registrar detalles de la comparación de resultados
+function log_result_details($log_file, $pregunta, $respuesta_dada, $respuesta_correcta, $es_correcta, $tipo_pregunta, $respuesta_booleana = null) {
+    if (!ENABLE_LOGGING) return;
+
+    $log_message = "-------------------------------------------------\n";
+    $log_message .= "Timestamp: " . date('Y-m-d H:i:s') . "\n";
+    $log_message .= "Pregunta ID: {$pregunta['id']} | Tipo: $tipo_pregunta\n";
+    $log_message .= "Pregunta: {$pregunta['pregunta']}\n";
+    $log_message .= "Respuesta Dada: '$respuesta_dada' (Tipo: " . gettype($respuesta_dada) . ")\n";
+    $log_message .= "Respuesta Correcta: '$respuesta_correcta' (Tipo: " . gettype($respuesta_correcta) . ")\n";
+
+    if ($tipo_pregunta == 'verdadero_falso') {
+        $log_message .= "Respuesta Convertida a Booleano: " . ($respuesta_booleana ? 'true' : 'false') . " (Tipo: " . gettype($respuesta_booleana) . ")\n";
+    }
+
+    $log_message .= "==> ¿Es Correcta?: " . ($es_correcta ? 'SI' : 'NO') . "\n";
+    $log_message .= "-------------------------------------------------\n\n";
+
+    // Usar FILE_APPEND para no sobrescribir el log
+    file_put_contents($log_file, $log_message, FILE_APPEND);
+}
+
 // Para cada pregunta, verificar si la respuesta es correcta
 $preguntas_con_respuestas = [];
 foreach ($test_data['preguntas'] as $pregunta) {
@@ -106,16 +131,24 @@ foreach ($test_data['preguntas'] as $pregunta) {
     $es_correcta = false;
     
     if ($respondida && isset($pregunta['respuesta_correcta'])) {
-        // Manejo específico para preguntas de verdadero/falso
-        if ($pregunta['tipo'] == 'verdadero_falso') {
-            // Convertir la respuesta del participante (string 'true' o 'false') a booleano
-            $respuesta_booleana = ($respuesta_dada === 'true');
-            $es_correcta = ($respuesta_booleana === $pregunta['respuesta_correcta']);
+        $log_file = __DIR__ . '/data/results_log.txt';
+        $tipo_pregunta = $pregunta['tipo'];
+        $respuesta_booleana = null;
+
+        if ($tipo_pregunta == 'verdadero_falso') {
+            // Para preguntas de verdadero/falso, convertimos tanto la respuesta dada como la correcta a booleanos
+            $respuesta_dada_boolean = ($respuesta_dada === 'true');
+            // La respuesta correcta se guarda como 'Verdadero'/'Falso', convertimos a booleano
+            $respuesta_correcta_boolean = ($pregunta['respuesta_correcta'] === 'Verdadero');
+            $es_correcta = ($respuesta_dada_boolean === $respuesta_correcta_boolean);
+            $respuesta_booleana = $respuesta_dada_boolean;
         } else {
-            // Comparación estándar para otros tipos de preguntas
             $es_correcta = ($respuesta_dada == $pregunta['respuesta_correcta']);
         }
         
+        // Registrar el detalle de la comparación
+        log_result_details($log_file, $pregunta, $respuesta_dada, $pregunta['respuesta_correcta'], $es_correcta, $tipo_pregunta, $respuesta_booleana);
+
         if ($es_correcta) {
             $total_correctas++;
         } else {

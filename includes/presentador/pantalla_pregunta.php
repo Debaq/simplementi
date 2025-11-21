@@ -136,7 +136,7 @@
         </button>
         <?php endif; ?>
         
-        <button id="btn-siguiente" class="btn btn-primary" <?php echo $pregunta_actual_index >= $total_preguntas ? 'disabled' : ''; ?>>
+        <button id="btn-siguiente" class="btn btn-primary">
             <?php if ($pregunta_actual_index >= $total_preguntas): ?>
             <i class="fas fa-flag-checkered me-2"></i> Finalizar
             <?php else: ?>

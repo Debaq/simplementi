@@ -77,6 +77,7 @@ $participantes = [];
 foreach ($session_data['participantes'] as $participante) {
     $participantes[] = [
         'ID Participante' => $participante['id'],
+        'Nombre' => $participante['nombre'] ?? 'Anónimo',
         'Fecha unión' => $participante['fecha_union'] ?? 'N/A',
         'Total respuestas' => count($participante['respuestas']),
         'Última actividad' => $participante['respuestas'] ? $participante['respuestas'][count($participante['respuestas']) - 1]['tiempo_respuesta'] ?? 'N/A' : 'Sin actividad'
@@ -92,12 +93,24 @@ foreach ($test_data['preguntas'] as $pregunta) {
     foreach ($session_data['participantes'] as $participante) {
         foreach ($participante['respuestas'] as $respuesta) {
             if ($respuesta['id_pregunta'] == $pregunta['id']) {
+                $es_correcta = 'N/A';
+                if (isset($pregunta['respuesta_correcta'])) {
+                    if ($pregunta['tipo'] == 'verdadero_falso') {
+                        // Convertir la respuesta de string a booleano para una comparación estricta
+                        $respuesta_participante = ($respuesta['respuesta'] === 'true');
+                        $es_correcta = ($respuesta_participante === $pregunta['respuesta_correcta']) ? 'Sí' : 'No';
+                    } else {
+                        // Lógica de comparación para otros tipos de pregunta
+                        $es_correcta = ($respuesta['respuesta'] == $pregunta['respuesta_correcta']) ? 'Sí' : 'No';
+                    }
+                }
+
                 $respuestas_pregunta[] = [
                     'ID Participante' => $participante['id'],
+                    'Nombre' => $participante['nombre'] ?? 'Anónimo',
                     'Respuesta' => $respuesta['respuesta'],
                     'Tiempo respuesta (s)' => $respuesta['tiempo_respuesta'] ?? 'N/A',
-                    'Correcta' => isset($pregunta['respuesta_correcta']) ? 
-                                 ($respuesta['respuesta'] == $pregunta['respuesta_correcta'] ? 'Sí' : 'No') : 'N/A'
+                    'Correcta' => $es_correcta
                 ];
             }
         }
