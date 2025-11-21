@@ -39,9 +39,72 @@
                 <div class="form-text">Separadas por comas, ej: educación, matemáticas, primaria</div>
             </div>
             
+            <!-- Opción de PDF (BETA) -->
+            <div class="card mb-3 border-warning">
+                <div class="card-header bg-warning bg-opacity-10">
+                    <h6 class="mb-0 text-warning">
+                        <i class="fas fa-flask me-2"></i> Funcionalidad Experimental - PDF
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Versión Beta:</strong> Esta funcionalidad está en pruebas. Permite usar un PDF como base de la presentación intercalando preguntas entre las diapositivas.
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="usar_pdf" name="usar_pdf" value="1"
+                               <?php echo !empty($presentacion_data['pdf_enabled']) ? 'checked' : ''; ?>>
+                        <label class="form-check-label" for="usar_pdf">
+                            <strong>Usar PDF como base de presentación</strong>
+                        </label>
+                    </div>
+
+                    <div id="pdf-upload-section" style="<?php echo !empty($presentacion_data['pdf_enabled']) ? '' : 'display: none;'; ?>">
+                        <?php if (!empty($presentacion_data['pdf_file'])): ?>
+                            <div class="alert alert-success mb-3">
+                                <i class="fas fa-file-pdf me-2"></i> PDF actual:
+                                <strong><?php echo htmlspecialchars(basename($presentacion_data['pdf_file'])); ?></strong>
+                                (<?php echo isset($presentacion_data['pdf_pages']) ? $presentacion_data['pdf_pages'] : 0; ?> páginas)
+                                <button type="button" class="btn btn-sm btn-outline-danger float-end" id="remove-pdf-btn">
+                                    <i class="fas fa-trash"></i> Eliminar PDF
+                                </button>
+                            </div>
+                        <?php else: ?>
+                            <div class="mb-3">
+                                <label for="pdf_file" class="form-label">Subir archivo PDF</label>
+                                <input class="form-control" type="file" id="pdf_file" name="pdf_file" accept="application/pdf">
+                                <div class="form-text">
+                                    El PDF se convertirá automáticamente a imágenes optimizadas para móviles.
+                                    Tamaño máximo recomendado: 10MB
+                                </div>
+                            </div>
+
+                            <div id="pdf-processing-status" style="display: none;">
+                                <div class="progress mb-2">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         role="progressbar" id="pdf-progress-bar" style="width: 0%"></div>
+                                </div>
+                                <small id="pdf-status-text" class="text-muted">Procesando PDF...</small>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="form-text">
+                            <strong>Cómo funciona:</strong>
+                            <ul class="small mb-0">
+                                <li>Sube un PDF y el sistema creará diapositivas automáticamente</li>
+                                <li>Puedes intercalar preguntas entre las páginas del PDF</li>
+                                <li>Las páginas se convierten a imágenes optimizadas para móviles</li>
+                                <li>Los participantes verán las imágenes del PDF + las preguntas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="mb-3">
                 <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="protegido" name="protegido" value="1" 
+                    <input class="form-check-input" type="checkbox" id="protegido" name="protegido" value="1"
                            <?php echo $presentacion_data['protegido'] ? 'checked' : ''; ?>>
                     <label class="form-check-label" for="protegido">Proteger con contraseña</label>
                 </div>

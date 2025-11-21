@@ -12,7 +12,8 @@ $datos_actualizados = [
     'tiempo_por_pregunta' => isset($_POST['tiempo_por_pregunta']) ? intval($_POST['tiempo_por_pregunta']) : 0,
     'permitir_retroceder' => isset($_POST['permitir_retroceder']) && $_POST['permitir_retroceder'] === '1',
     'mostrar_estadisticas' => isset($_POST['mostrar_estadisticas']) && $_POST['mostrar_estadisticas'] === '1',
-    'permitir_exportar' => isset($_POST['permitir_exportar']) && $_POST['permitir_exportar'] === '1'
+    'permitir_exportar' => isset($_POST['permitir_exportar']) && $_POST['permitir_exportar'] === '1',
+    'usar_pdf' => isset($_POST['usar_pdf']) && $_POST['usar_pdf'] === '1'
 ];
 
 // Validar campos básicos
@@ -51,7 +52,51 @@ if (empty($errores)) {
     $presentacion_data['configuracion']['permitir_retroceder'] = $datos_actualizados['permitir_retroceder'];
     $presentacion_data['configuracion']['mostrar_estadisticas'] = $datos_actualizados['mostrar_estadisticas'];
     $presentacion_data['configuracion']['permitir_exportar'] = $datos_actualizados['permitir_exportar'];
-    
+
+    // Manejar datos del PDF (BETA)
+    if ($datos_actualizados['usar_pdf']) {
+        // Si se activó el PDF, verificar si hay datos nuevos
+        if (isset($_POST['pdf_data'])) {
+            $pdf_data = json_decode($_POST['pdf_data'], true);
+            if ($pdf_data) {
+                $presentacion_data['pdf_enabled'] = true;
+                $presentacion_data['pdf_file'] = $pdf_data['name'];
+                $presentacion_data['pdf_pages'] = $pdf_data['pages'];
+                $presentacion_data['pdf_images'] = $pdf_data['images'];
+                $presentacion_data['pdf_directory'] = $pdf_data['directory'];
+                $presentacion_data['pdf_updated_at'] = $pdf_data['created_at'];
+            }
+        } elseif (!isset($presentacion_data['pdf_enabled'])) {
+            // Si se activó pero no hay datos, marcar como pendiente
+            $presentacion_data['pdf_enabled'] = true;
+        }
+    } else {
+        // Si se desactivó el PDF, mantener los datos pero deshabilitar
+        $presentacion_data['pdf_enabled'] = false;
+    }
+
+    // Manejar eliminación de PDF
+    if (isset($_POST['remove_pdf']) && $_POST['remove_pdf'] === '1') {
+        $presentacion_data['pdf_enabled'] = false;
+        unset($presentacion_data['pdf_file']);
+        unset($presentacion_data['pdf_pages']);
+        unset($presentacion_data['pdf_images']);
+        unset($presentacion_data['pdf_directory']);
+        unset($presentacion_data['pdf_updated_at']);
+
+        // Eliminar archivos físicos
+        $pdf_dir = 'data/uploads/pdfs/' . $id_presentacion;
+        if (file_exists($pdf_dir)) {
+            $files = glob($pdf_dir . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+            rmdir($pdf_dir);
+        }
+    }
+
     // Guardar cambios en el archivo de la presentación
     $result = file_put_contents($presentacion_file, json_encode($presentacion_data, JSON_PRETTY_PRINT));
     
