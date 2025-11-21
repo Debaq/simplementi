@@ -334,14 +334,36 @@ $tiempo_promedio = $total_respondidas > 0 ? round($tiempo_total / $total_respond
                         
                         <?php if (isset($item['pregunta']['respuesta_correcta']) && !$item['es_correcta']): ?>
                         <div class="alert alert-success">
-                            <strong>Respuesta correcta:</strong> 
+                            <strong>Respuesta correcta:</strong>
                             <?php echo htmlspecialchars($item['pregunta']['respuesta_correcta']); ?>
                         </div>
                         <?php endif; ?>
-                        
-                        <?php if (isset($item['pregunta']['explicacion'])): ?>
+
+                        <?php
+                        // Mostrar feedback específico de la opción que eligió el participante
+                        if (isset($item['pregunta']['feedbacks']) && !empty($item['pregunta']['feedbacks'])) {
+                            $feedback_a_mostrar = null;
+
+                            // Buscar el feedback de la respuesta dada
+                            foreach ($item['pregunta']['feedbacks'] as $opcion => $feedback) {
+                                if ($opcion == $item['respuesta_dada']) {
+                                    $feedback_a_mostrar = $feedback;
+                                    break;
+                                }
+                            }
+
+                            // Mostrar el feedback si existe
+                            if ($feedback_a_mostrar): ?>
+                        <div class="alert <?php echo $item['es_correcta'] ? 'alert-success' : 'alert-warning'; ?>">
+                            <strong><i class="fas fa-comment-dots me-2"></i>Retroalimentación:</strong>
+                            <?php echo htmlspecialchars($feedback_a_mostrar); ?>
+                        </div>
+                            <?php endif; ?>
+                        <?php } ?>
+
+                        <?php if (isset($item['pregunta']['explicacion']) && !empty($item['pregunta']['explicacion'])): ?>
                         <div class="alert alert-info">
-                            <strong>Explicación:</strong> 
+                            <strong><i class="fas fa-info-circle me-2"></i>Explicación:</strong>
                             <?php echo htmlspecialchars($item['pregunta']['explicacion']); ?>
                         </div>
                         <?php endif; ?>

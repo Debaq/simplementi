@@ -99,35 +99,44 @@
             <div class="modal-body">
                 <p>El formato GIFT permite importar preguntas de forma rápida. Cada pregunta debe estar separada por una línea en blanco.</p>
 
+                <div class="alert alert-info">
+                    <strong>Diferencia importante:</strong>
+                    <ul class="mb-0 small">
+                        <li><strong>Feedback (#)</strong>: Retroalimentación específica por cada opción. Cada participante ve solo el feedback de su respuesta.</li>
+                        <li><strong>Explicación</strong>: Contexto general de la pregunta (se agrega manualmente después de importar). Todos la ven.</li>
+                    </ul>
+                </div>
+
                 <h6 class="mt-3">Verdadero/Falso</h6>
-                <pre class="bg-light p-2 rounded"><code>¿La tierra es plana? {FALSE # ¡Correcto! La tierra es redonda.}
+                <pre class="bg-light p-2 rounded"><code>¿La tierra es plana? {FALSE # ¡Correcto! La tierra es un esferoide oblato.}
 
 ¿El agua hierve a 100°C? {TRUE # Exacto, a nivel del mar.}</code></pre>
-                <p class="text-muted small">El símbolo # permite agregar retroalimentación (feedback).</p>
+                <p class="text-muted small">El # agrega feedback para quien responda correctamente.</p>
 
                 <h6 class="mt-3">Opción múltiple</h6>
                 <pre class="bg-light p-2 rounded"><code>¿Cuál es la capital de Francia? {
-=París # ¡Correcto! París es la capital.
-~Londres # Londres es la capital del Reino Unido.
-~Madrid # Madrid es la capital de España.
-~Roma # Roma es la capital de Italia.
+=París # ¡Correcto! Capital desde el siglo XII.
+~Londres # No, Londres es del Reino Unido.
+~Madrid # Incorrecto, Madrid es de España.
+~Roma # No, Roma es de Italia.
 }</code></pre>
-                <p class="text-muted small">El símbolo = marca la respuesta correcta, ~ marca las opciones incorrectas, y # agrega feedback a cada opción.</p>
+                <p class="text-muted small">Cada participante verá solo el feedback de la opción que eligió.</p>
 
                 <h6 class="mt-3">Respuesta libre</h6>
-                <pre class="bg-light p-2 rounded"><code>¿Qué opinas sobre el cambio climático? {# Gracias por compartir tu perspectiva.}
+                <pre class="bg-light p-2 rounded"><code>¿Qué opinas sobre el cambio climático? {# Gracias por tu reflexión valiosa.}
 
 Describe cómo te sientes hoy {}</code></pre>
-                <p class="text-muted small">Las preguntas abiertas también pueden tener feedback para dar contexto o reflexión.</p>
+                <p class="text-muted small">En preguntas abiertas, el feedback funciona como reflexión general.</p>
 
                 <h6 class="mt-3">Consejos</h6>
                 <ul class="small">
                     <li>Cada pregunta debe terminar con llaves { }</li>
                     <li>Separe las preguntas con una línea en blanco</li>
-                    <li>Las líneas que comienzan con // son comentarios y se ignoran</li>
-                    <li>Use # para agregar retroalimentación (feedback) que se mostrará al responder</li>
-                    <li>El feedback de la respuesta correcta se mostrará como explicación</li>
-                    <li>El feedback de cada opción se mostrará junto a esa opción</li>
+                    <li>Las líneas que comienzan con // son comentarios</li>
+                    <li><strong>Feedback (#)</strong>: Específico por opción, cada participante ve el suyo</li>
+                    <li><strong>Explicación</strong>: General de la pregunta, todos la ven (agregar manualmente)</li>
+                    <li>Para V/F: el feedback va con la respuesta correcta</li>
+                    <li>Para opciones múltiples: agrega feedback a TODAS las opciones (correctas e incorrectas)</li>
                     <li>Puede usar caracteres especiales escapándolos: \=, \~, \#, \{, \}</li>
                 </ul>
             </div>

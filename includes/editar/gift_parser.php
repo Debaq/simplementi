@@ -64,25 +64,44 @@ class GiftParser {
 
     /**
      * Parse pregunta de Verdadero/Falso
+     * El formato es: {TRUE/FALSE # feedback para la respuesta correcta}
+     * El feedback es para quien responda correctamente
      */
     private static function parseTrueFalse($texto, $respuesta) {
+        $explicacion = ''; // Explicación general (opcional)
+        $feedbacks = []; // Feedbacks por opción
+
         // Extraer feedback si existe (después de #)
-        $explicacion = '';
         if (strpos($respuesta, '#') !== false) {
             $partes = explode('#', $respuesta, 2);
             $respuesta = trim($partes[0]);
-            $explicacion = self::limpiarTexto(trim($partes[1]));
+            $feedback_correcto = self::limpiarTexto(trim($partes[1]));
+
+            // El feedback va asociado a la respuesta correcta
+            $respuesta_limpia = strtoupper(trim($respuesta));
+            $es_verdadero = ($respuesta_limpia === 'TRUE' || $respuesta_limpia === 'T');
+
+            if (!empty($feedback_correcto)) {
+                $feedbacks[$es_verdadero ? 'true' : 'false'] = $feedback_correcto;
+            }
         }
 
         $respuesta_limpia = strtoupper(trim($respuesta));
         $es_verdadero = ($respuesta_limpia === 'TRUE' || $respuesta_limpia === 'T');
 
-        return [
+        $resultado = [
             'tipo' => 'verdadero_falso',
             'pregunta' => self::limpiarTexto($texto),
             'respuesta_correcta' => $es_verdadero,
-            'explicacion' => $explicacion
+            'explicacion' => $explicacion // Vacío por defecto
         ];
+
+        // Agregar feedbacks si existen
+        if (!empty($feedbacks)) {
+            $resultado['feedbacks'] = $feedbacks;
+        }
+
+        return $resultado;
     }
 
     /**
@@ -91,8 +110,8 @@ class GiftParser {
     private static function parseMultipleChoice($texto, $opciones_texto) {
         $opciones = [];
         $respuesta_correcta = null;
-        $explicacion = '';
-        $feedbacks = []; // Array para almacenar feedback por opción
+        $explicacion = ''; // Explicación general de la pregunta (no por opción)
+        $feedbacks = []; // Array para almacenar feedback específico por opción
 
         // Dividir por ~ o =
         $partes = preg_split('/([~=])/', $opciones_texto, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -117,17 +136,13 @@ class GiftParser {
                     if (!empty($texto_opcion)) {
                         $opciones[] = self::limpiarTexto($texto_opcion);
 
-                        // Guardar feedback por opción
+                        // Guardar feedback específico de esta opción
                         if (!empty($feedback_opcion)) {
                             $feedbacks[self::limpiarTexto($texto_opcion)] = $feedback_opcion;
                         }
 
                         if ($es_correcta) {
                             $respuesta_correcta = self::limpiarTexto($texto_opcion);
-                            // Usar el feedback de la respuesta correcta como explicación principal
-                            if (!empty($feedback_opcion)) {
-                                $explicacion = $feedback_opcion;
-                            }
                         }
                     }
                 }
@@ -145,10 +160,10 @@ class GiftParser {
             'pregunta' => self::limpiarTexto($texto),
             'opciones' => $opciones,
             'respuesta_correcta' => $respuesta_correcta,
-            'explicacion' => $explicacion
+            'explicacion' => $explicacion // Vacío por defecto, es opcional
         ];
 
-        // Si hay feedbacks para opciones incorrectas, agregarlos como campo adicional
+        // Agregar feedbacks específicos por opción
         if (!empty($feedbacks)) {
             $resultado['feedbacks'] = $feedbacks;
         }

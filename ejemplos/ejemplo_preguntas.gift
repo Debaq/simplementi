@@ -2,12 +2,13 @@
 // Las líneas que comienzan con // son comentarios
 
 // PREGUNTAS DE VERDADERO/FALSO
-// Puedes agregar feedback después del símbolo #
-¿La tierra es plana? {FALSE # Correcto! La tierra es un esferoide oblato.}
+// El # agrega feedback para quien responda correctamente
+// La explicación general es opcional y se puede agregar manualmente después
+¿La tierra es plana? {FALSE # ¡Correcto! La tierra es un esferoide oblato, achatada en los polos.}
 
-¿El agua hierve a 100°C al nivel del mar? {TRUE # ¡Exacto! A nivel del mar, el agua hierve a 100°C o 212°F.}
+¿El agua hierve a 100°C al nivel del mar? {TRUE # ¡Exacto! A nivel del mar (1 atmósfera), el agua hierve a 100°C o 212°F.}
 
-¿Python es un lenguaje de programación compilado? {F # Correcto, Python es principalmente interpretado, aunque puede ser compilado a bytecode.}
+¿Python es un lenguaje de programación compilado? {F # Bien! Python es interpretado, aunque puede compilarse a bytecode para optimización.}
 
 // PREGUNTAS DE OPCIÓN MÚLTIPLE
 // El símbolo = marca la respuesta correcta
@@ -43,14 +44,15 @@
 }
 
 // PREGUNTAS DE RESPUESTA LIBRE
-// Puedes agregar feedback/reflexión que se mostrará después de responder
-¿Qué opinas sobre el cambio climático? {# El cambio climático es uno de los mayores desafíos de nuestra era. Gracias por compartir tu perspectiva.}
+// Para preguntas abiertas, la "explicación" funciona como reflexión/feedback general
+// que se mostrará a todos los participantes después de responder
+¿Qué opinas sobre el cambio climático? {# El cambio climático es uno de los mayores desafíos globales. Cada perspectiva enriquece el diálogo.}
 
-Describe en una palabra cómo te sientes hoy {# No hay respuestas correctas o incorrectas. Tus emociones son válidas.}
+Describe en una palabra cómo te sientes hoy {# Gracias por compartir. Tus emociones son válidas y forman parte de tu experiencia de aprendizaje.}
 
-¿Cuál es tu lenguaje de programación favorito y por qué? {# Cada lenguaje tiene sus fortalezas. La elección depende del contexto y las necesidades del proyecto.}
+¿Cuál es tu lenguaje de programación favorito y por qué? {# Cada lenguaje tiene fortalezas únicas. La elección depende del contexto y las necesidades específicas del proyecto.}
 
-Comparte una idea para mejorar esta presentación {# Todas las sugerencias son bienvenidas y nos ayudan a mejorar continuamente.}
+Comparte una idea para mejorar esta presentación {# Excelente! La retroalimentación constructiva nos ayuda a mejorar continuamente. Valoramos tu aporte.}
 
 // MÁS EJEMPLOS DE VERDADERO/FALSO CON FEEDBACK
 ¿Git es un sistema de control de versiones? {TRUE # Correcto! Git es el sistema de control de versiones distribuido más popular.}
