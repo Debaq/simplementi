@@ -2,8 +2,8 @@
 // Este archivo se encargará de guardar la secuencia de la presentación
 // Implementación básica para el futuro
 
-// Directorio para almacenar secuencias
-$sequences_dir = '../data/sequences/';
+// Directorio para almacenar secuencias (ruta absoluta desde la raíz del proyecto)
+$sequences_dir = '../../../data/sequences/';
 
 // Asegurarse de que el directorio existe
 if (!file_exists($sequences_dir)) {

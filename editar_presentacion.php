@@ -129,6 +129,53 @@ if (!empty($accion)) {
                 }
             }
             break;
+
+        // Acciones para la secuencia PDF
+        case 'mover_seq_arriba':
+        case 'mover_seq_abajo':
+            $seq_index = isset($_GET['seq_index']) ? (int)$_GET['seq_index'] : -1;
+
+            if ($seq_index >= 0 && isset($presentacion_data['pdf_sequence'])) {
+                $total_items = count($presentacion_data['pdf_sequence']);
+                $item_a_mover = $presentacion_data['pdf_sequence'][$seq_index];
+                $movimiento_realizado = false;
+
+                if ($accion === 'mover_seq_arriba' && $seq_index > 0) {
+                    // Mover elemento hacia arriba
+                    array_splice($presentacion_data['pdf_sequence'], $seq_index, 1);
+                    array_splice($presentacion_data['pdf_sequence'], $seq_index - 1, 0, [$item_a_mover]);
+                    $movimiento_realizado = true;
+                } elseif ($accion === 'mover_seq_abajo' && $seq_index < $total_items - 1) {
+                    // Mover elemento hacia abajo
+                    array_splice($presentacion_data['pdf_sequence'], $seq_index, 1);
+                    array_splice($presentacion_data['pdf_sequence'], $seq_index + 1, 0, [$item_a_mover]);
+                    $movimiento_realizado = true;
+                }
+
+                if ($movimiento_realizado) {
+                    // Guardar cambios
+                    file_put_contents($presentacion_file, json_encode($presentacion_data, JSON_PRETTY_PRINT));
+                    $mensaje = "Secuencia reordenada correctamente.";
+                    $tipo_mensaje = "success";
+                    registrarAccion($_SESSION['admin_user'], 'reordenar_secuencia');
+                }
+            }
+            break;
+
+        case 'eliminar_de_seq':
+            $seq_index = isset($_GET['seq_index']) ? (int)$_GET['seq_index'] : -1;
+
+            if ($seq_index >= 0 && isset($presentacion_data['pdf_sequence'])) {
+                // Eliminar elemento de la secuencia
+                array_splice($presentacion_data['pdf_sequence'], $seq_index, 1);
+
+                // Guardar cambios
+                file_put_contents($presentacion_file, json_encode($presentacion_data, JSON_PRETTY_PRINT));
+                $mensaje = "Elemento quitado de la secuencia.";
+                $tipo_mensaje = "success";
+                registrarAccion($_SESSION['admin_user'], 'eliminar_de_secuencia');
+            }
+            break;
     }
 }
 

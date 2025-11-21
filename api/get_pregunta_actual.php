@@ -37,13 +37,21 @@ try {
         throw new Exception('El archivo de sesión no tiene un formato JSON válido');
     }
 
-    // Devolver los datos correctamente incluyendo el estado de la sesión
-    echo json_encode([
+    // Preparar respuesta
+    $response = [
         'success' => true,
         'pregunta_actual' => $session_data['pregunta_actual'],
         'estado' => $session_data['estado'],
         'timestamp' => time() // Añadir timestamp para evitar caché
-    ]);
+    ];
+
+    // Agregar slide del PDF si está disponible
+    if (isset($session_data['pdf_slide_actual'])) {
+        $response['pdf_slide'] = $session_data['pdf_slide_actual'];
+    }
+
+    // Devolver los datos
+    echo json_encode($response);
 } catch (Exception $e) {
     // Devolver error en formato JSON
     echo json_encode([

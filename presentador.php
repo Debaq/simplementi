@@ -62,7 +62,13 @@ if (empty($codigo_sesion)) {
         ?>
         <div class="row">
             <div class="col-lg-8">
-                <?php include('includes/presentador/pantalla_pregunta.php'); ?>
+                <?php
+                // Si hay PDF habilitado, mostrar también la pantalla del PDF
+                if (!empty($test_data['pdf_enabled'])) {
+                    include('includes/presentador/pantalla_pdf.php');
+                }
+                include('includes/presentador/pantalla_pregunta.php');
+                ?>
             </div>
             <div class="col-lg-4">
                 <?php include('includes/presentador/panel_participantes.php'); ?>

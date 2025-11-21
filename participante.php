@@ -102,6 +102,11 @@ $tiempo_limite = isset($test_data['configuracion']['tiempo_por_pregunta']) ?
 // Incluir el header
 include('includes/participante/head.php');
 
+// Si hay PDF habilitado, mostrar la pantalla del PDF
+if (!empty($test_data['pdf_enabled'])) {
+    include('includes/participante/pantalla_pdf.php');
+}
+
 // Mostrar pregunta o mensaje de respuesta enviada
 include('includes/participante/pantalla_pregunta.php');
 
