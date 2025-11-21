@@ -54,38 +54,72 @@ try {
         }
     }
 
-    // Guardar cada imagen
+    // Guardar cada imagen (full y thumbnail)
     $saved_images = [];
-    foreach ($images as $index => $imageData) {
-        // Extraer datos de la imagen (data:image/webp;base64,...)
-        if (preg_match('/^data:image\/(webp|jpeg|png);base64,(.+)$/', $imageData, $matches)) {
+    foreach ($images as $index => $imageObj) {
+        $page_num = $index + 1;
+
+        // Verificar que tengamos ambas versiones
+        if (!isset($imageObj['full']) || !isset($imageObj['thumb'])) {
+            throw new Exception('Datos de imagen incompletos en página ' . $page_num);
+        }
+
+        // ====== GUARDAR IMAGEN COMPLETA ======
+        if (preg_match('/^data:image\/(webp|jpeg|png);base64,(.+)$/', $imageObj['full'], $matches)) {
             $extension = $matches[1] === 'webp' ? 'webp' : 'jpg';
             $base64_data = $matches[2];
             $binary_data = base64_decode($base64_data);
 
             if ($binary_data === false) {
-                throw new Exception('Error al decodificar imagen ' . ($index + 1));
+                throw new Exception('Error al decodificar imagen completa ' . $page_num);
             }
 
-            // Nombre del archivo
-            $page_num = $index + 1;
             $filename = sprintf('page_%03d.%s', $page_num, $extension);
             $filepath = $presentation_dir . '/' . $filename;
 
-            // Guardar archivo
             if (file_put_contents($filepath, $binary_data) === false) {
-                throw new Exception('Error al guardar imagen ' . $page_num);
+                throw new Exception('Error al guardar imagen completa ' . $page_num);
             }
 
-            $saved_images[] = [
-                'page' => $page_num,
-                'filename' => $filename,
-                'path' => 'data/uploads/pdfs/' . $presentacion_id . '/' . $filename,
-                'size' => filesize($filepath)
-            ];
+            $full_path = 'data/uploads/pdfs/' . $presentacion_id . '/' . $filename;
+            $full_size = filesize($filepath);
         } else {
-            throw new Exception('Formato de imagen inválido en página ' . ($index + 1));
+            throw new Exception('Formato de imagen completa inválido en página ' . $page_num);
         }
+
+        // ====== GUARDAR MINIATURA ======
+        if (preg_match('/^data:image\/(webp|jpeg|png);base64,(.+)$/', $imageObj['thumb'], $matches)) {
+            $extension = $matches[1] === 'webp' ? 'webp' : 'jpg';
+            $base64_data = $matches[2];
+            $binary_data = base64_decode($base64_data);
+
+            if ($binary_data === false) {
+                throw new Exception('Error al decodificar miniatura ' . $page_num);
+            }
+
+            $thumb_filename = sprintf('page_%03d_thumb.%s', $page_num, $extension);
+            $thumb_filepath = $presentation_dir . '/' . $thumb_filename;
+
+            if (file_put_contents($thumb_filepath, $binary_data) === false) {
+                throw new Exception('Error al guardar miniatura ' . $page_num);
+            }
+
+            $thumb_path = 'data/uploads/pdfs/' . $presentacion_id . '/' . $thumb_filename;
+            $thumb_size = filesize($thumb_filepath);
+        } else {
+            throw new Exception('Formato de miniatura inválido en página ' . $page_num);
+        }
+
+        // Agregar ambas versiones a la lista
+        $saved_images[] = [
+            'page' => $page_num,
+            'filename' => $filename,
+            'path' => $full_path,
+            'size' => $full_size,
+            'thumb_filename' => $thumb_filename,
+            'thumb_path' => $thumb_path,
+            'thumb_size' => $thumb_size
+        ];
     }
 
     // Preparar datos para devolver

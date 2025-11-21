@@ -101,7 +101,7 @@ $total_slides = $tiene_pdf ? count($presentacion_data['pdf_images']) : 0;
 
                                 <div class="d-flex align-items-center flex-grow-1 ms-3">
                                     <div class="me-3">
-                                        <img src="<?php echo htmlspecialchars($slide_data['path']); ?>"
+                                        <img src="<?php echo htmlspecialchars(isset($slide_data['thumb_path']) ? $slide_data['thumb_path'] : $slide_data['path']); ?>"
                                              alt="Slide <?php echo $slide_number; ?>"
                                              style="width: 80px; height: auto; border: 1px solid #ddd;">
                                     </div>

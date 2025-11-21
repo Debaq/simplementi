@@ -199,13 +199,13 @@
 
                     statusText.textContent = `Convirtiendo ${numPages} páginas a imágenes...`;
 
-                    // Convertir cada página a imagen
+                    // Convertir cada página a imagen (full y thumbnail)
                     const images = [];
                     for (let pageNum = 1; pageNum <= numPages; pageNum++) {
                         const page = await pdf.getPage(pageNum);
 
-                        // Renderizar página a canvas con escala optimizada para móviles
-                        const scale = 1.5; // Escala adecuada para buena calidad
+                        // ====== IMAGEN COMPLETA (800px) ======
+                        const scale = 1.5;
                         const viewport = page.getViewport({ scale });
 
                         // Limitar ancho máximo a 800px para móviles
@@ -224,12 +224,31 @@
                         }).promise;
 
                         // Convertir canvas a WebP (mejor compresión)
-                        // Si el navegador no soporta WebP, usar JPEG
                         const imageFormat = canvas.toDataURL('image/webp', 0.8).indexOf('data:image/webp') === 0 ? 'image/webp' : 'image/jpeg';
                         const quality = imageFormat === 'image/webp' ? 0.8 : 0.75;
                         const imageDataUrl = canvas.toDataURL(imageFormat, quality);
 
-                        images.push(imageDataUrl);
+                        // ====== MINIATURA (150px) ======
+                        const thumbMaxWidth = 150;
+                        const thumbScale = viewport.width > thumbMaxWidth ? (thumbMaxWidth / viewport.width) * scale : scale * 0.2;
+                        const thumbViewport = page.getViewport({ scale: thumbScale });
+
+                        const thumbCanvas = document.createElement('canvas');
+                        thumbCanvas.width = thumbViewport.width;
+                        thumbCanvas.height = thumbViewport.height;
+                        const thumbCtx = thumbCanvas.getContext('2d');
+
+                        await page.render({
+                            canvasContext: thumbCtx,
+                            viewport: thumbViewport
+                        }).promise;
+
+                        const thumbDataUrl = thumbCanvas.toDataURL(imageFormat, quality);
+
+                        images.push({
+                            full: imageDataUrl,
+                            thumb: thumbDataUrl
+                        });
 
                         // Actualizar progreso
                         const progress = Math.round((pageNum / numPages) * 100);
