@@ -130,6 +130,56 @@ if ($seccion === 'presentaciones') {
     } else {
         $logs = [];
     }
+} elseif ($seccion === 'realizadas') {
+    // Cargar sesiones realizadas (finalizadas)
+    $sesiones_realizadas = [];
+
+    // Cargar información de presentaciones para obtener títulos
+    $presentaciones_info = [];
+    if (file_exists('data/index.json')) {
+        $index_json = file_get_contents('data/index.json');
+        $index_data = json_decode($index_json, true);
+        foreach ($index_data['presentaciones'] as $pres) {
+            $presentaciones_info[$pres['id']] = $pres;
+        }
+    }
+
+    // Buscar todas las sesiones en el directorio de respuestas
+    if (is_dir('data/respuestas')) {
+        $presentaciones_dirs = scandir('data/respuestas');
+        foreach ($presentaciones_dirs as $presentacion_dir) {
+            if ($presentacion_dir === '.' || $presentacion_dir === '..') continue;
+
+            $path_presentacion = 'data/respuestas/' . $presentacion_dir;
+            if (is_dir($path_presentacion)) {
+                $archivos_sesion = scandir($path_presentacion);
+                foreach ($archivos_sesion as $archivo) {
+                    if ($archivo === '.' || $archivo === '..') continue;
+                    if (strpos($archivo, 'sesion_') === 0 && strpos($archivo, '.json') !== false) {
+                        $path_completo = $path_presentacion . '/' . $archivo;
+                        $sesion_json = file_get_contents($path_completo);
+                        $sesion_data = json_decode($sesion_json, true);
+
+                        // Solo incluir sesiones finalizadas
+                        if ($sesion_data && isset($sesion_data['estado']) && $sesion_data['estado'] === 'finalizada') {
+                            // Agregar información adicional
+                            $sesion_data['titulo_presentacion'] = isset($presentaciones_info[$sesion_data['id_presentacion']])
+                                ? $presentaciones_info[$sesion_data['id_presentacion']]['titulo']
+                                : 'Sin título';
+                            $sesiones_realizadas[] = $sesion_data;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Ordenar sesiones por fecha de finalización (más reciente primero)
+    usort($sesiones_realizadas, function($a, $b) {
+        $fecha_a = isset($a['fecha_fin']) ? strtotime($a['fecha_fin']) : 0;
+        $fecha_b = isset($b['fecha_fin']) ? strtotime($b['fecha_fin']) : 0;
+        return $fecha_b - $fecha_a;
+    });
 }
 ?>
 <!DOCTYPE html>
@@ -261,6 +311,11 @@ if ($seccion === 'presentaciones') {
                 <li class="nav-item">
                     <a class="nav-link <?php echo $seccion === 'logs' ? 'active' : ''; ?>" href="?seccion=logs">
                         <i class="fas fa-fw fa-list"></i> Registro de actividad
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo $seccion === 'realizadas' ? 'active' : ''; ?>" href="?seccion=realizadas">
+                        <i class="fas fa-fw fa-chart-bar"></i> Presentaciones Realizadas
                     </a>
                 </li>
                 <li class="nav-item">
@@ -532,10 +587,90 @@ if ($seccion === 'presentaciones') {
                     </div>
                 </div>
             </div>
+            <?php elseif ($seccion === 'realizadas'): ?>
+            <!-- Presentaciones Realizadas -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Presentaciones Realizadas</h1>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Sesiones finalizadas</h6>
+                    <span class="badge bg-primary"><?php echo count($sesiones_realizadas); ?> sesiones</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Presentación</th>
+                                    <th>Fecha inicio</th>
+                                    <th>Fecha fin</th>
+                                    <th>Participantes</th>
+                                    <th>Preguntas</th>
+                                    <th>% Acierto</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($sesiones_realizadas)): ?>
+                                <tr>
+                                    <td colspan="8" class="text-center">No hay presentaciones realizadas.</td>
+                                </tr>
+                                <?php else: ?>
+                                <?php foreach ($sesiones_realizadas as $sesion): ?>
+                                <tr>
+                                    <td><code><?php echo htmlspecialchars($sesion['id_sesion']); ?></code></td>
+                                    <td><?php echo htmlspecialchars($sesion['titulo_presentacion']); ?></td>
+                                    <td><?php echo isset($sesion['fecha_inicio']) ? date('d/m/Y H:i', strtotime($sesion['fecha_inicio'])) : '-'; ?></td>
+                                    <td><?php echo isset($sesion['fecha_fin']) ? date('d/m/Y H:i', strtotime($sesion['fecha_fin'])) : '-'; ?></td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            <?php echo isset($sesion['estadisticas']['total_participantes']) ? $sesion['estadisticas']['total_participantes'] : count($sesion['participantes']); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $completadas = isset($sesion['estadisticas']['preguntas_completadas']) ? $sesion['estadisticas']['preguntas_completadas'] : 0;
+                                        echo $completadas;
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $porcentaje = isset($sesion['estadisticas']['porcentaje_respuestas_correctas'])
+                                            ? $sesion['estadisticas']['porcentaje_respuestas_correctas']
+                                            : 0;
+                                        $color_badge = $porcentaje >= 70 ? 'success' : ($porcentaje >= 50 ? 'warning' : 'danger');
+                                        ?>
+                                        <span class="badge bg-<?php echo $color_badge; ?>">
+                                            <?php echo number_format($porcentaje, 1); ?>%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="detalle_sesion.php?codigo=<?php echo urlencode($sesion['id_sesion']); ?>"
+                                               class="btn btn-primary" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="resumen.php?codigo=<?php echo urlencode($sesion['id_sesion']); ?>"
+                                               class="btn btn-success" title="Ver informe general" target="_blank">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <?php endif; ?>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
