@@ -72,43 +72,109 @@ if ($pregunta_actual_index > count($test_data['preguntas'])) {
     exit;
 }
 
-// Obtener la pregunta actual
-$pregunta_actual = $test_data['preguntas'][$pregunta_actual_index - 1];
-
-// Verificar si el participante ya respondió esta pregunta
+// Identificar al participante
 $participante_id = isset($_COOKIE['participante_id']) ? $_COOKIE['participante_id'] : '';
 if (empty($participante_id)) {
     $participante_id = 'p' . mt_rand(100000, 999999);
     setcookie('participante_id', $participante_id, time() + 86400 * 30, '/'); // 30 días
 }
 
-// Comprobar si ya respondió a esta pregunta
-$ya_respondio = false;
-foreach ($session_data['participantes'] as $participante) {
-    if ($participante['id'] == $participante_id) {
-        foreach ($participante['respuestas'] as $respuesta) {
-            if ($respuesta['id_pregunta'] == $pregunta_actual['id']) {
-                $ya_respondio = true;
-                break 2;
+// Verificar si hay PDF con secuencia habilitado
+$tiene_secuencia_pdf = !empty($test_data['pdf_enabled']) && isset($test_data['pdf_sequence']);
+
+if ($tiene_secuencia_pdf) {
+    // Modo secuencia: seguir la secuencia del presentador
+    $sequence = $test_data['pdf_sequence'];
+    $sequence_index = isset($session_data['pdf_sequence_index']) ? intval($session_data['pdf_sequence_index']) : 0;
+
+    // Validar índice
+    if ($sequence_index < 0 || $sequence_index >= count($sequence)) {
+        $sequence_index = 0;
+    }
+
+    $current_item = $sequence[$sequence_index];
+
+    // Incluir el header
+    include('includes/participante/head.php');
+
+    if ($current_item['type'] === 'slide') {
+        // Mostrar solo el slide
+        $slide_number = $current_item['number'];
+        $slide_data = $test_data['pdf_images'][$slide_number - 1];
+
+        include('includes/participante/pantalla_pdf_fullscreen.php');
+    } elseif ($current_item['type'] === 'question') {
+        // Mostrar pregunta
+        $question_id = $current_item['id'];
+        $pregunta_actual = null;
+
+        // Buscar la pregunta por ID
+        foreach ($test_data['preguntas'] as $pregunta) {
+            if ($pregunta['id'] === $question_id) {
+                $pregunta_actual = $pregunta;
+                break;
+            }
+        }
+
+        if (!$pregunta_actual) {
+            echo "<div class='alert alert-danger'>Error: Pregunta no encontrada</div>";
+            exit;
+        }
+
+        // Obtener índice de pregunta para mostrar "Pregunta X de Y"
+        $pregunta_actual_index = array_search($pregunta_actual, $test_data['preguntas']) + 1;
+
+        // Comprobar si ya respondió a esta pregunta
+        $ya_respondio = false;
+        foreach ($session_data['participantes'] as $participante) {
+            if ($participante['id'] == $participante_id) {
+                foreach ($participante['respuestas'] as $respuesta) {
+                    if ($respuesta['id_pregunta'] == $pregunta_actual['id']) {
+                        $ya_respondio = true;
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        // Determinar si es una pregunta con tiempo límite
+        $tiempo_limite = isset($test_data['configuracion']['tiempo_por_pregunta']) ?
+                         intval($test_data['configuracion']['tiempo_por_pregunta']) : 0;
+
+        include('includes/participante/pantalla_pregunta.php');
+    }
+} else {
+    // Modo antiguo: mostrar pregunta basada en pregunta_actual_index
+    $pregunta_actual = $test_data['preguntas'][$pregunta_actual_index - 1];
+
+    // Comprobar si ya respondió a esta pregunta
+    $ya_respondio = false;
+    foreach ($session_data['participantes'] as $participante) {
+        if ($participante['id'] == $participante_id) {
+            foreach ($participante['respuestas'] as $respuesta) {
+                if ($respuesta['id_pregunta'] == $pregunta_actual['id']) {
+                    $ya_respondio = true;
+                    break 2;
+                }
             }
         }
     }
+
+    // Determinar si es una pregunta con tiempo límite
+    $tiempo_limite = isset($test_data['configuracion']['tiempo_por_pregunta']) ?
+                     intval($test_data['configuracion']['tiempo_por_pregunta']) : 0;
+
+    // Incluir el header
+    include('includes/participante/head.php');
+
+    // Si hay PDF habilitado (sin secuencia), mostrar la pantalla del PDF
+    if (!empty($test_data['pdf_enabled'])) {
+        include('includes/participante/pantalla_pdf.php');
+    }
+
+    // Mostrar pregunta o mensaje de respuesta enviada
+    include('includes/participante/pantalla_pregunta.php');
 }
-
-// Determinar si es una pregunta con tiempo límite
-$tiempo_limite = isset($test_data['configuracion']['tiempo_por_pregunta']) ? 
-                 intval($test_data['configuracion']['tiempo_por_pregunta']) : 0;
-                 
-// Incluir el header
-include('includes/participante/head.php');
-
-// Si hay PDF habilitado, mostrar la pantalla del PDF
-if (!empty($test_data['pdf_enabled'])) {
-    include('includes/participante/pantalla_pdf.php');
-}
-
-// Mostrar pregunta o mensaje de respuesta enviada
-include('includes/participante/pantalla_pregunta.php');
 
 // Incluir scripts
 include('includes/participante/scripts.php');
