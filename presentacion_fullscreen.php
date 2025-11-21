@@ -127,9 +127,10 @@ if (!$item_data) {
 
         /* Slides del PDF */
         .slide-content {
-            max-width: 95vw;
-            max-height: 95vh;
+            width: 100vw;
+            height: 100vh;
             object-fit: contain;
+            background: #000;
         }
 
         /* Preguntas */
@@ -257,9 +258,60 @@ if (!$item_data) {
         .slide-content, .question-content {
             animation: fadeIn 0.3s ease-out;
         }
+
+        /* Loader de precarga */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #preloader.hidden {
+            display: none;
+        }
+
+        .loader-spinner {
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .loader-progress {
+            margin-top: 10px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Cargando presentación...</div>
+        <div class="loader-progress" id="loader-progress">0 / 0</div>
+    </div>
     <div id="presentation-container">
         <?php if ($item_data['type'] === 'slide'): ?>
             <!-- Mostrar slide del PDF -->
@@ -341,6 +393,66 @@ if (!$item_data) {
         const currentIndex = <?php echo $sequence_index; ?>;
         const totalItems = <?php echo $total_items; ?>;
 
+        // Array con todas las imágenes para precargar
+        const allImages = [
+            <?php
+            $image_paths = [];
+            foreach ($sequence as $item) {
+                if ($item['type'] === 'slide') {
+                    $slide_num = $item['number'];
+                    $image_path = $test_data['pdf_images'][$slide_num - 1]['path'];
+                    $image_paths[] = '"' . addslashes($image_path) . '"';
+                }
+            }
+            echo implode(",\n            ", $image_paths);
+            ?>
+        ];
+
+        // Precargar todas las imágenes
+        function preloadImages() {
+            return new Promise((resolve, reject) => {
+                if (allImages.length === 0) {
+                    resolve();
+                    return;
+                }
+
+                let loadedCount = 0;
+                const totalImages = allImages.length;
+                const progressElement = document.getElementById('loader-progress');
+
+                progressElement.textContent = `0 / ${totalImages} imágenes`;
+
+                const imagePromises = allImages.map((src, index) => {
+                    return new Promise((resolveImg) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            loadedCount++;
+                            progressElement.textContent = `${loadedCount} / ${totalImages} imágenes`;
+                            resolveImg();
+                        };
+                        img.onerror = () => {
+                            console.warn('Error al cargar imagen:', src);
+                            loadedCount++;
+                            progressElement.textContent = `${loadedCount} / ${totalImages} imágenes`;
+                            resolveImg(); // Continuar aunque falle
+                        };
+                        img.src = src;
+                    });
+                });
+
+                Promise.all(imagePromises).then(() => {
+                    console.log('Todas las imágenes precargadas');
+                    resolve();
+                }).catch(reject);
+            });
+        }
+
+        // Ocultar preloader y mostrar presentación
+        function hidePreloader() {
+            const preloader = document.getElementById('preloader');
+            preloader.classList.add('hidden');
+        }
+
         // Navegación
         function navigate(direction) {
             const newIndex = currentIndex + direction;
@@ -383,9 +495,22 @@ if (!$item_data) {
             }
         });
 
-        // Entrar automáticamente en fullscreen al cargar
-        window.addEventListener('load', function() {
-            enterFullscreen();
+        // Inicializar presentación
+        window.addEventListener('load', async function() {
+            try {
+                // Primero precargar todas las imágenes
+                await preloadImages();
+
+                // Ocultar preloader
+                hidePreloader();
+
+                // Entrar en fullscreen
+                enterFullscreen();
+            } catch (error) {
+                console.error('Error al inicializar presentación:', error);
+                hidePreloader();
+                enterFullscreen();
+            }
         });
 
         // Actualizar participantes con el índice actual
