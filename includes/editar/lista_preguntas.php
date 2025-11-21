@@ -100,17 +100,29 @@ $total_slides = $tiene_pdf ? count($presentacion_data['pdf_images']) : 0;
                                 </div>
 
                                 <div class="d-flex align-items-center flex-grow-1 ms-3">
-                                    <div class="me-3">
+                                    <div class="me-3 position-relative">
                                         <img src="<?php echo htmlspecialchars(isset($slide_data['thumb_path']) ? $slide_data['thumb_path'] : $slide_data['path']); ?>"
                                              alt="Slide <?php echo $slide_number; ?>"
-                                             style="width: 80px; height: auto; border: 1px solid #ddd;">
+                                             class="slide-thumbnail"
+                                             data-full-image="<?php echo htmlspecialchars($slide_data['path']); ?>"
+                                             data-slide-number="<?php echo $slide_number; ?>"
+                                             style="width: 80px; height: auto; border: 1px solid #ddd; cursor: pointer;"
+                                             title="Doble click para ampliar">
+                                        <!-- Ícono de ampliar -->
+                                        <button class="btn btn-sm btn-light preview-slide-btn"
+                                                data-full-image="<?php echo htmlspecialchars($slide_data['path']); ?>"
+                                                data-slide-number="<?php echo $slide_number; ?>"
+                                                style="position: absolute; bottom: 2px; right: 2px; padding: 2px 6px; opacity: 0.9;"
+                                                title="Ver en grande">
+                                            <i class="fas fa-search-plus" style="font-size: 0.8rem;"></i>
+                                        </button>
                                     </div>
                                     <div class="flex-grow-1">
                                         <h6 class="mb-1">
                                             <i class="fas fa-file-pdf text-primary me-2"></i>
                                             <strong>Slide <?php echo $slide_number; ?></strong> del PDF
                                         </h6>
-                                        <small class="text-muted">Diapositiva del documento</small>
+                                        <small class="text-muted">Diapositiva del documento · Doble click para ampliar</small>
                                     </div>
                                 </div>
 
@@ -514,3 +526,64 @@ $total_slides = $tiene_pdf ? count($presentacion_data['pdf_images']) : 0;
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Modal para vista previa de diapositivas -->
+<div class="modal fade" id="slidePreviewModal" tabindex="-1" aria-labelledby="slidePreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="slidePreviewModalLabel">
+                    <i class="fas fa-file-pdf text-primary me-2"></i>
+                    <span id="slidePreviewTitle">Slide</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" style="background-color: #f8f9fa;">
+                <img id="slidePreviewImage" src="" alt="Slide Preview" style="max-width: 100%; height: auto; border: 2px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            </div>
+            <div class="modal-footer">
+                <small class="text-muted me-auto">Haz clic fuera del modal o presiona ESC para cerrar</small>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = new bootstrap.Modal(document.getElementById('slidePreviewModal'));
+    const modalImage = document.getElementById('slidePreviewImage');
+    const modalTitle = document.getElementById('slidePreviewTitle');
+
+    // Función para mostrar la vista previa
+    function showSlidePreview(fullImagePath, slideNumber) {
+        modalImage.src = fullImagePath;
+        modalTitle.textContent = `Slide ${slideNumber} del PDF`;
+        modal.show();
+    }
+
+    // Evento de doble click en las miniaturas
+    document.querySelectorAll('.slide-thumbnail').forEach(function(img) {
+        img.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const fullImage = this.getAttribute('data-full-image');
+            const slideNumber = this.getAttribute('data-slide-number');
+            showSlidePreview(fullImage, slideNumber);
+        });
+    });
+
+    // Evento de click en el botón de ampliar
+    document.querySelectorAll('.preview-slide-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const fullImage = this.getAttribute('data-full-image');
+            const slideNumber = this.getAttribute('data-slide-number');
+            showSlidePreview(fullImage, slideNumber);
+        });
+    });
+});
+</script>
