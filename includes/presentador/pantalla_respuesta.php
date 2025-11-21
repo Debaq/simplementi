@@ -25,15 +25,26 @@
                 <div class="row mb-4">
                     <div class="col-md-12">
                         <div class="list-group">
-                            <?php foreach($pregunta_actual['opciones'] as $index => $opcion): ?>
-                            <div class="list-group-item <?php echo ($opcion == $pregunta_actual['respuesta_correcta']) ? 'list-group-item-success' : ''; ?>">
+                            <?php foreach($pregunta_actual['opciones'] as $index => $opcion):
+                                $es_correcta = ($opcion == $pregunta_actual['respuesta_correcta']);
+                                $tiene_feedback = isset($pregunta_actual['feedbacks'][$opcion]) && !empty($pregunta_actual['feedbacks'][$opcion]);
+                            ?>
+                            <div class="list-group-item <?php echo $es_correcta ? 'list-group-item-success' : ''; ?>">
                                 <div class="d-flex align-items-center">
-                                    <span class="badge <?php echo ($opcion == $pregunta_actual['respuesta_correcta']) ? 'bg-success' : 'bg-secondary'; ?> me-2"><?php echo $index + 1; ?></span>
-                                    <span><?php echo htmlspecialchars($opcion); ?></span>
-                                    <?php if ($opcion == $pregunta_actual['respuesta_correcta']): ?>
+                                    <span class="badge <?php echo $es_correcta ? 'bg-success' : 'bg-secondary'; ?> me-2"><?php echo $index + 1; ?></span>
+                                    <span class="flex-grow-1"><?php echo htmlspecialchars($opcion); ?></span>
+                                    <?php if ($es_correcta): ?>
                                     <span class="ms-auto"><i class="fas fa-check-circle text-success"></i></span>
                                     <?php endif; ?>
                                 </div>
+                                <?php if ($tiene_feedback): ?>
+                                <div class="mt-2 ps-4">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <?php echo htmlspecialchars($pregunta_actual['feedbacks'][$opcion]); ?>
+                                    </small>
+                                </div>
+                                <?php endif; ?>
                             </div>
                             <?php endforeach; ?>
                         </div>
