@@ -1,24 +1,32 @@
 <?php
-session_start();
-require_once 'includes/funciones.php';
-require_once 'includes/editar/gift_parser.php';
+// Mostrar todos los errores para desarrollo
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Verificar autenticación
-if (!isset($_SESSION['usuario'])) {
-    header('Location: index.php');
+// Iniciar la sesión PHP
+session_start();
+
+// Verificar si el usuario está autenticado como administrador
+if (!isset($_SESSION['admin_auth']) || $_SESSION['admin_auth'] !== true) {
+    header("Location: admin_login.php");
     exit;
 }
 
+// Incluir el archivo de funciones de administración
+include('includes/admin/funciones.php');
+require_once 'includes/editar/gift_parser.php';
+
 // Verificar que se haya enviado un archivo
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: editar.php?id=' . ($_GET['id'] ?? ''));
+    header('Location: admin_panel.php?seccion=presentaciones');
     exit;
 }
 
 $id_presentacion = $_POST['id'] ?? '';
 if (empty($id_presentacion)) {
     $_SESSION['error'] = 'ID de presentación no válido';
-    header('Location: presentaciones.php');
+    header('Location: admin_panel.php?seccion=presentaciones');
     exit;
 }
 
@@ -27,7 +35,7 @@ $archivo_presentacion = "data/presentaciones/$id_presentacion.json";
 // Verificar que existe la presentación
 if (!file_exists($archivo_presentacion)) {
     $_SESSION['error'] = 'Presentación no encontrada';
-    header('Location: presentaciones.php');
+    header('Location: admin_panel.php?seccion=presentaciones');
     exit;
 }
 
@@ -37,7 +45,7 @@ $presentacion = json_decode(file_get_contents($archivo_presentacion), true);
 // Verificar que se subió un archivo
 if (!isset($_FILES['archivo_gift']) || $_FILES['archivo_gift']['error'] !== UPLOAD_ERR_OK) {
     $_SESSION['error'] = 'Error al subir el archivo. Por favor intente nuevamente.';
-    header('Location: editar.php?id=' . $id_presentacion);
+    header('Location: editar_presentacion.php?id=' . $id_presentacion);
     exit;
 }
 
@@ -48,7 +56,7 @@ $nombre_archivo = $_FILES['archivo_gift']['name'];
 $extension = strtolower(pathinfo($nombre_archivo, PATHINFO_EXTENSION));
 if (!in_array($extension, ['txt', 'gift'])) {
     $_SESSION['error'] = 'El archivo debe ser .txt o .gift';
-    header('Location: editar.php?id=' . $id_presentacion);
+    header('Location: editar_presentacion.php?id=' . $id_presentacion);
     exit;
 }
 
@@ -57,7 +65,7 @@ $contenido = file_get_contents($archivo_temporal);
 
 if ($contenido === false) {
     $_SESSION['error'] = 'No se pudo leer el archivo';
-    header('Location: editar.php?id=' . $id_presentacion);
+    header('Location: editar_presentacion.php?id=' . $id_presentacion);
     exit;
 }
 
@@ -67,7 +75,7 @@ try {
 
     if (empty($preguntas_nuevas)) {
         $_SESSION['error'] = 'No se encontraron preguntas válidas en el archivo GIFT';
-        header('Location: editar.php?id=' . $id_presentacion);
+        header('Location: editar_presentacion.php?id=' . $id_presentacion);
         exit;
     }
 
@@ -76,7 +84,7 @@ try {
 
     if (!empty($errores)) {
         $_SESSION['error'] = 'Errores en el archivo GIFT:<br>' . implode('<br>', $errores);
-        header('Location: editar.php?id=' . $id_presentacion);
+        header('Location: editar_presentacion.php?id=' . $id_presentacion);
         exit;
     }
 
@@ -113,6 +121,9 @@ try {
     if (file_put_contents($archivo_presentacion, json_encode($presentacion, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
         $cantidad = count($preguntas_nuevas);
         $_SESSION['mensaje'] = "Se importaron exitosamente $cantidad pregunta(s) desde el archivo GIFT";
+
+        // Registrar la acción
+        registrarAccion($_SESSION['admin_user'], 'importar_gift');
     } else {
         $_SESSION['error'] = 'Error al guardar las preguntas';
     }
@@ -121,5 +132,5 @@ try {
     $_SESSION['error'] = 'Error al procesar el archivo: ' . $e->getMessage();
 }
 
-header('Location: editar.php?id=' . $id_presentacion);
+header('Location: editar_presentacion.php?id=' . $id_presentacion);
 exit;
