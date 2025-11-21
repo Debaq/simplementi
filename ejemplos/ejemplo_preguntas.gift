@@ -1,0 +1,75 @@
+// Archivo de ejemplo de formato GIFT para SimpleMenti
+// Las líneas que comienzan con // son comentarios
+
+// PREGUNTAS DE VERDADERO/FALSO
+¿La tierra es plana? {FALSE}
+
+¿El agua hierve a 100°C al nivel del mar? {TRUE}
+
+¿Python es un lenguaje de programación compilado? {F}
+
+// PREGUNTAS DE OPCIÓN MÚLTIPLE
+¿Cuál es la capital de Francia? {
+=París
+~Londres
+~Madrid
+~Berlín
+}
+
+¿En qué año se descubrió América? {
+~1490
+~1491
+=1492
+~1493
+}
+
+¿Qué lenguaje se usa principalmente para el desarrollo web del lado del cliente? {
+~Python
+~Java
+=JavaScript
+~C++
+~Ruby
+}
+
+¿Cuál es el planeta más grande del sistema solar? {
+~Tierra
+~Marte
+=Júpiter
+~Saturno
+}
+
+// PREGUNTAS DE RESPUESTA LIBRE
+¿Qué opinas sobre el cambio climático? {}
+
+Describe en una palabra cómo te sientes hoy {}
+
+¿Cuál es tu lenguaje de programación favorito y por qué? {}
+
+// MÁS EJEMPLOS DE VERDADERO/FALSO
+¿Git es un sistema de control de versiones? {TRUE}
+
+¿HTML es un lenguaje de programación? {FALSE}
+
+¿La capital de Japón es Tokio? {T}
+
+// MÁS EJEMPLOS DE OPCIÓN MÚLTIPLE
+¿Cuál de estos NO es un framework de JavaScript? {
+~React
+~Vue
+~Angular
+=Django
+}
+
+¿Qué significa HTTP? {
+=HyperText Transfer Protocol
+~HyperText Transmission Protocol
+~High Transfer Text Protocol
+~Home Tool Transfer Protocol
+}
+
+¿Cuántos continentes hay en la Tierra? {
+~5
+~6
+=7
+~8
+}
