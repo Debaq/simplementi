@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SimpleMenti - Control Activo</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SimpleMenti">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/img/icon-192.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/control-movil.css">
@@ -175,6 +183,9 @@
         const serverUrl = window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 
         let currentState = null;
+        let isOnline = navigator.onLine;
+        let consecutiveErrors = 0;
+        const MAX_CONSECUTIVE_ERRORS = 3;
 
         // Elementos DOM
         const btnPrev = document.getElementById('btn-prev');
@@ -186,6 +197,53 @@
         const handsList = document.getElementById('hands-list');
         const questionsList = document.getElementById('questions-list');
         const interactionsCount = document.getElementById('interactions-count');
+
+        // ============================================================
+        // MONITOREO DE CONEXIÓN
+        // ============================================================
+
+        // Detectar cambios en conectividad
+        window.addEventListener('online', () => {
+            isOnline = true;
+            consecutiveErrors = 0;
+            actualizarEstadoConexion(true);
+            obtenerEstado(); // Sincronizar inmediatamente
+        });
+
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            actualizarEstadoConexion(false);
+        });
+
+        function actualizarEstadoConexion(conectado) {
+            const badge = document.querySelector('.badge');
+            if (conectado) {
+                badge.className = 'badge bg-success';
+                badge.innerHTML = '<i class="fas fa-circle me-1" style="font-size: 8px;"></i> Conectado';
+            } else {
+                badge.className = 'badge bg-danger';
+                badge.innerHTML = '<i class="fas fa-circle me-1" style="font-size: 8px;"></i> Sin conexión';
+            }
+        }
+
+        // ============================================================
+        // VIBRATION FEEDBACK (Haptic)
+        // ============================================================
+
+        function vibrar(patron) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(patron);
+            }
+        }
+
+        // Patrones de vibración
+        const VIBRATION = {
+            LIGHT: 10,      // Toque ligero
+            MEDIUM: 20,     // Toque medio
+            HEAVY: 50,      // Toque fuerte
+            SUCCESS: [10, 50, 10],  // Patrón de éxito
+            ERROR: [50, 100, 50, 100, 50]  // Patrón de error
+        };
 
         // Navegación
         btnPrev.addEventListener('click', () => retroceder());
@@ -200,6 +258,7 @@
 
         // Función para avanzar
         async function avanzar() {
+            vibrar(VIBRATION.LIGHT); // Feedback al tocar
             btnNext.disabled = true;
             btnNext.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Avanzando...';
 
@@ -215,15 +274,26 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    vibrar(VIBRATION.SUCCESS); // Feedback de éxito
+                    consecutiveErrors = 0;
                     // Actualizar UI
                     actualizarSlideIndicator(data.current_item);
                     await obtenerEstado(); // Refresh completo
                 } else {
+                    vibrar(VIBRATION.ERROR); // Feedback de error
                     alert('Error: ' + data.message);
                 }
             } catch (error) {
                 console.error('Error al avanzar:', error);
-                alert('Error de conexión');
+                consecutiveErrors++;
+                vibrar(VIBRATION.ERROR);
+
+                if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+                    actualizarEstadoConexion(false);
+                    alert('Error de conexión persistente. Verifica tu conexión a Internet.');
+                } else {
+                    alert('Error de conexión');
+                }
             } finally {
                 btnNext.disabled = false;
                 btnNext.innerHTML = 'Siguiente <i class="fas fa-chevron-right ms-2"></i>';
@@ -232,6 +302,7 @@
 
         // Función para retroceder
         async function retroceder() {
+            vibrar(VIBRATION.LIGHT); // Feedback al tocar
             btnPrev.disabled = true;
             btnPrev.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Retrocediendo...';
 
@@ -247,15 +318,26 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    vibrar(VIBRATION.SUCCESS); // Feedback de éxito
+                    consecutiveErrors = 0;
                     // Actualizar UI
                     actualizarSlideIndicator(data.current_item);
                     await obtenerEstado(); // Refresh completo
                 } else {
+                    vibrar(VIBRATION.ERROR); // Feedback de error
                     alert('Error: ' + data.message);
                 }
             } catch (error) {
                 console.error('Error al retroceder:', error);
-                alert('Error de conexión');
+                consecutiveErrors++;
+                vibrar(VIBRATION.ERROR);
+
+                if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+                    actualizarEstadoConexion(false);
+                    alert('Error de conexión persistente. Verifica tu conexión a Internet.');
+                } else {
+                    alert('Error de conexión');
+                }
             } finally {
                 btnPrev.disabled = false;
                 btnPrev.innerHTML = '<i class="fas fa-chevron-left me-2"></i> Anterior';
@@ -271,11 +353,23 @@
                 if (data.success) {
                     currentState = data;
                     actualizarUI(data);
+                    consecutiveErrors = 0;
+                    if (!isOnline) {
+                        isOnline = true;
+                        actualizarEstadoConexion(true);
+                    }
                 } else {
                     console.error('Error al obtener estado:', data.message);
+                    consecutiveErrors++;
                 }
             } catch (error) {
                 console.error('Error al obtener estado:', error);
+                consecutiveErrors++;
+
+                // Si hay muchos errores consecutivos, marcar como desconectado
+                if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+                    actualizarEstadoConexion(false);
+                }
             }
         }
 
@@ -408,6 +502,7 @@
         // Toggle del puntero
         pointerToggle.addEventListener('change', async (e) => {
             pointerEnabled = e.target.checked;
+            vibrar(pointerEnabled ? VIBRATION.SUCCESS : VIBRATION.MEDIUM); // Feedback al activar/desactivar
 
             // Mostrar/ocultar touchpad
             pointerTouchpad.style.display = pointerEnabled ? 'block' : 'none';
@@ -428,9 +523,11 @@
                 const data = await response.json();
                 if (!data.success) {
                     console.error('Error al toggle puntero:', data.message);
+                    vibrar(VIBRATION.ERROR);
                 }
             } catch (error) {
                 console.error('Error:', error);
+                vibrar(VIBRATION.ERROR);
             }
         });
 
@@ -527,6 +624,73 @@
 
         // Actualizar cada 3 segundos
         setInterval(obtenerEstado, 3000);
+
+        // ============================================================
+        // SERVICE WORKER (PWA)
+        // ============================================================
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('[PWA] Service Worker registrado:', registration.scope);
+
+                    // Detectar actualizaciones del Service Worker
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // Hay una nueva versión disponible
+                                console.log('[PWA] Nueva versión disponible');
+
+                                // Opcional: mostrar notificación al usuario
+                                if (confirm('Hay una nueva versión disponible. ¿Actualizar ahora?')) {
+                                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
+                } catch (error) {
+                    console.log('[PWA] Error al registrar Service Worker:', error);
+                }
+            });
+
+            // Recargar cuando se activa un nuevo Service Worker
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
+            });
+        }
+
+        // Detectar instalación de PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+
+            // Guardar el evento para mostrarlo más tarde
+            const installPrompt = e;
+
+            // Opcional: mostrar botón de instalación personalizado
+            console.log('[PWA] PWA puede ser instalada');
+
+            // Mostrar prompt de instalación (opcional)
+            setTimeout(() => {
+                installPrompt.prompt();
+                installPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('[PWA] Usuario aceptó instalación');
+                    }
+                });
+            }, 5000); // Después de 5 segundos de uso
+        });
+
+        // Detectar cuando la PWA está instalada
+        window.addEventListener('appinstalled', () => {
+            console.log('[PWA] Aplicación instalada exitosamente');
+        });
     </script>
 </body>
 </html>

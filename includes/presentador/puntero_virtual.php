@@ -16,6 +16,9 @@
 #pointer-canvas {
     width: 100%;
     height: 100%;
+    /* Optimizaciones de rendimiento */
+    will-change: transform;
+    transform: translateZ(0); /* Forzar aceleración por hardware */
 }
 
 /* Animación del puntero */
@@ -35,10 +38,15 @@
 (function() {
     const overlay = document.getElementById('pointer-overlay');
     const canvas = document.getElementById('pointer-canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', {
+        alpha: true,
+        desynchronized: true, // Mejor rendimiento en algunos navegadores
+        willReadFrequently: false
+    });
 
     let currentPointer = null;
     let animationFrame = null;
+    let lastDrawnPointer = null; // Para evitar redibujar innecesariamente
 
     // Función para obtener posición del puntero
     async function obtenerPosicionPuntero() {
@@ -74,12 +82,24 @@
         canvas.height = window.innerHeight;
     }
 
-    window.addEventListener('resize', resizeCanvas);
+    // Debounce para resize (evitar redimensionar demasiado seguido)
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resizeCanvas, 100);
+    });
     resizeCanvas();
 
     // Dibujar el puntero
     function drawPointer() {
         if (!currentPointer) return;
+
+        // Optimización: solo redibujar si la posición cambió significativamente
+        if (lastDrawnPointer &&
+            Math.abs(lastDrawnPointer.x - currentPointer.x) < 0.001 &&
+            Math.abs(lastDrawnPointer.y - currentPointer.y) < 0.001) {
+            return; // Posición prácticamente idéntica, no redibujar
+        }
 
         // Limpiar canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -87,6 +107,9 @@
         // Calcular posición en píxeles
         const x = currentPointer.x * canvas.width;
         const y = currentPointer.y * canvas.height;
+
+        // Guardar última posición dibujada
+        lastDrawnPointer = { x: currentPointer.x, y: currentPointer.y };
 
         // Dibujar círculo exterior (glow)
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, 30);
