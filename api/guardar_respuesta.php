@@ -55,7 +55,7 @@ try {
         echo json_encode(['success' => false, 'error' => 'No se pudo leer el archivo de sesión']);
         exit;
     }
-    
+
     $respuestas_data = json_decode($respuestas_json, true);
     if ($respuestas_data === null) {
         header('Content-Type: application/json');
@@ -66,6 +66,20 @@ try {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'error' => 'Error al leer el archivo de sesión: ' . $e->getMessage()]);
     exit;
+}
+
+// Cargar configuración de la presentación para verificar intentos únicos
+$test_id = $respuestas_data['id_presentacion'];
+$test_file = "../data/presentaciones/$test_id.json";
+
+$un_solo_intento = false;
+if (file_exists($test_file)) {
+    $test_json = file_get_contents($test_file);
+    $test_data = json_decode($test_json, true);
+    if ($test_data !== null) {
+        $un_solo_intento = isset($test_data['configuracion']['un_solo_intento']) &&
+                          $test_data['configuracion']['un_solo_intento'] === true;
+    }
 }
 
 // Buscar si el participante ya existe
@@ -108,13 +122,26 @@ if ($participante_index === -1) {
             break;
         }
     }
-    
-    // Si ya respondió, actualizar la respuesta
+
+    // Si ya respondió esta pregunta
     if ($respuesta_index !== -1) {
+        // Verificar si está habilitado el modo de un solo intento
+        if ($un_solo_intento) {
+            // No permitir cambiar la respuesta
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Ya has respondido esta pregunta y no puedes cambiar tu respuesta.',
+                'single_attempt' => true
+            ]);
+            exit;
+        }
+
+        // Si no hay restricción, actualizar la respuesta
         $respuestas_data['participantes'][$participante_index]['respuestas'][$respuesta_index]['respuesta'] = $respuesta;
         $respuestas_data['participantes'][$participante_index]['respuestas'][$respuesta_index]['tiempo_respuesta'] = $tiempo_respuesta;
     } else {
-        // Si no, agregar la respuesta
+        // Si no ha respondido, agregar la respuesta
         $respuestas_data['participantes'][$participante_index]['respuestas'][] = [
             'id_pregunta' => $id_pregunta,
             'respuesta' => $respuesta,
