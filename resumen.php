@@ -306,17 +306,21 @@ if (isset($_GET['finalizar']) && $_GET['finalizar'] == 1) {
             <div class="col-md-4 text-end">
                 <div class="btn-group me-2">
                     <button id="btn-exportar" class="btn btn-success">
-                        <i class="fas fa-download me-2"></i> Exportar resultados
+                        <i class="fas fa-download me-2"></i> Exportar
                     </button>
                     <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
                         <span class="visually-hidden">Más opciones</span>
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#" id="export-results-only"><i class="fas fa-table me-2"></i>Exportar resultados (Excel)</a></li>
+                        <li><a class="dropdown-item" href="#" id="export-gift"><i class="fas fa-file-download me-2"></i>Exportar preguntas (GIFT)</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li class="dropdown-header"><small class="text-muted"><i class="fas fa-info-circle me-1"></i>Los estudiantes pueden exportar su PDF con anotaciones desde su visor</small></li>
                     </ul>
                 </div>
+                <button type="button" class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#modal-compartir-sesion">
+                    <i class="fas fa-share-nodes me-2"></i> Compartir
+                </button>
                 <a href="presentador.php?codigo=<?php echo $codigo_sesion; ?>" class="btn btn-primary">
                     <i class="fas fa-chalkboard me-2"></i> Volver a la presentación
                 </a>
@@ -708,7 +712,167 @@ function generarGrafico(id, labels, data, respuestaCorrecta) {
                     exportarResultados();
                 });
             }
+
+            // Botón de exportar preguntas en GIFT
+            const exportGiftBtn = document.getElementById('export-gift');
+            if (exportGiftBtn) {
+                exportGiftBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const testId = '<?php echo $test_id; ?>';
+                    window.location.href = `api/exportar_gift.php?id=${testId}`;
+                });
+            }
         });
+    </script>
+
+    <!-- Modal para compartir sesión -->
+    <div class="modal fade" id="modal-compartir-sesion" tabindex="-1" aria-labelledby="modal-compartir-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="modal-compartir-label">
+                        <i class="fas fa-share-nodes me-2"></i>Compartir sesión
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Código de sesión:</strong> <?php echo htmlspecialchars($codigo_sesion); ?>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6><i class="fas fa-users me-2"></i>Link para participantes</h6>
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control" id="link-participante" readonly>
+                            <button class="btn btn-outline-primary" type="button" id="copy-link-participante">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                        <small class="text-muted">Comparte este link para que los participantes se unan a la sesión.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6><i class="fas fa-code me-2"></i>Código embed (iframe)</h6>
+                        <textarea class="form-control mb-2" id="embed-html" rows="3" readonly></textarea>
+                        <button class="btn btn-sm btn-outline-primary" type="button" id="copy-embed">
+                            <i class="fas fa-copy"></i> Copiar código
+                        </button>
+                        <small class="text-muted d-block mt-1">Inserta este código en tu sitio web, LMS o presentación.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6><i class="fas fa-code me-2"></i>Código embed responsive (Bootstrap)</h6>
+                        <textarea class="form-control mb-2" id="embed-responsive" rows="3" readonly></textarea>
+                        <button class="btn btn-sm btn-outline-primary" type="button" id="copy-embed-responsive">
+                            <i class="fas fa-copy"></i> Copiar código
+                        </button>
+                        <small class="text-muted d-block mt-1">Versión responsive del embed que se adapta al tamaño de la pantalla.</small>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <h6><i class="fas fa-qrcode me-2"></i>Código QR para participantes</h6>
+                        <div class="text-center" id="qr-code-container-sesion">
+                            <img id="qr-code-img-sesion" src="" alt="Código QR" class="img-fluid border p-2" style="max-width: 300px; display: none;">
+                            <br>
+                            <button type="button" class="btn btn-outline-primary mt-2" id="btn-generar-qr-sesion">
+                                <i class="fas fa-qrcode me-1"></i>Generar código QR
+                            </button>
+                            <a id="btn-descargar-qr-sesion" href="#" download="qr-sesion-<?php echo $codigo_sesion; ?>.png" class="btn btn-success mt-2" style="display: none;">
+                                <i class="fas fa-download me-1"></i>Descargar QR
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Sugerencia:</strong> Puedes insertar el código embed directamente en tus diapositivas de PowerPoint, Google Slides, o cualquier plataforma que soporte iframes.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Cargar información de compartir cuando se abre el modal
+    const modalCompartir = document.getElementById('modal-compartir-sesion');
+    if (modalCompartir) {
+        modalCompartir.addEventListener('show.bs.modal', function() {
+            const codigoSesion = '<?php echo $codigo_sesion; ?>';
+
+            // Cargar datos desde la API
+            fetch(`api/generar_link_embed.php?codigo=${codigoSesion}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('link-participante').value = data.links.participante;
+                        document.getElementById('embed-html').value = data.embed.html;
+                        document.getElementById('embed-responsive').value = data.embed.responsive;
+
+                        // Guardar URL del QR
+                        document.getElementById('btn-generar-qr-sesion').dataset.qrUrl = data.qr_api;
+                        document.getElementById('btn-descargar-qr-sesion').href = data.qr_api;
+                    } else {
+                        alert('Error al cargar información: ' + (data.error || 'Error desconocido'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al cargar la información de compartir');
+                });
+        });
+    }
+
+    // Función para copiar al portapapeles
+    function copiarAlPortapapeles(elementId, buttonId) {
+        const element = document.getElementById(elementId);
+        const button = document.getElementById(buttonId);
+
+        if (element && button) {
+            button.addEventListener('click', function() {
+                element.select();
+                document.execCommand('copy');
+
+                const originalHTML = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Copiado';
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-success');
+
+                setTimeout(() => {
+                    this.innerHTML = originalHTML;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-outline-primary');
+                }, 2000);
+            });
+        }
+    }
+
+    // Inicializar funciones de copiar
+    copiarAlPortapapeles('link-participante', 'copy-link-participante');
+    copiarAlPortapapeles('embed-html', 'copy-embed');
+    copiarAlPortapapeles('embed-responsive', 'copy-embed-responsive');
+
+    // Generar código QR
+    const btnGenerarQRSesion = document.getElementById('btn-generar-qr-sesion');
+    const qrCodeImgSesion = document.getElementById('qr-code-img-sesion');
+    const btnDescargarQRSesion = document.getElementById('btn-descargar-qr-sesion');
+
+    if (btnGenerarQRSesion && qrCodeImgSesion) {
+        btnGenerarQRSesion.addEventListener('click', function() {
+            const qrUrl = this.dataset.qrUrl;
+            if (qrUrl) {
+                qrCodeImgSesion.src = qrUrl;
+                qrCodeImgSesion.style.display = 'block';
+                btnGenerarQRSesion.style.display = 'none';
+                btnDescargarQRSesion.style.display = 'inline-block';
+            }
+        });
+    }
     </script>
 </body>
 </html>

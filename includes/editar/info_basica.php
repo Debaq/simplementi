@@ -259,3 +259,131 @@
         </form>
     </div>
 </div>
+
+<!-- Sección de exportación y compartir -->
+<div class="card shadow mt-4">
+    <div class="card-header py-3 bg-success text-white">
+        <h6 class="m-0 font-weight-bold">
+            <i class="fas fa-share-alt me-2"></i>Exportar y compartir
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <h6><i class="fas fa-download me-2"></i>Exportar preguntas</h6>
+                <p class="text-muted small">Descargue las preguntas en formato GIFT para importarlas en otras plataformas educativas (Moodle, Canvas, etc.)</p>
+                <button type="button" class="btn btn-outline-success" id="btn-exportar-gift">
+                    <i class="fas fa-file-download me-2"></i>Descargar GIFT
+                </button>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <h6><i class="fas fa-link me-2"></i>Link de acceso</h6>
+                <p class="text-muted small">Genere links y códigos embed para compartir esta presentación</p>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-compartir">
+                    <i class="fas fa-share-nodes me-2"></i>Generar links
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para compartir -->
+<div class="modal fade" id="modal-compartir" tabindex="-1" aria-labelledby="modal-compartir-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modal-compartir-label">
+                    <i class="fas fa-share-nodes me-2"></i>Compartir presentación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Nota:</strong> Para obtener los links de una sesión específica, primero debe iniciar una sesión desde la página principal.
+                    Estos enlaces son para compartir la presentación directamente.
+                </div>
+
+                <div class="mb-4">
+                    <h6><i class="fas fa-link me-2"></i>Link directo a la presentación</h6>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="link-presentacion" readonly
+                               value="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/') . '/../index.php?test=' . urlencode($id_presentacion); ?>">
+                        <button class="btn btn-outline-primary" type="button" id="copy-link-presentacion">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <small class="text-muted">Este link llevará a los usuarios a la página de inicio donde pueden unirse a una sesión activa.</small>
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <h6><i class="fas fa-qrcode me-2"></i>Código QR</h6>
+                    <p class="text-muted small">Genere un código QR para que los participantes escaneen y accedan fácilmente</p>
+                    <div class="text-center" id="qr-code-container">
+                        <img id="qr-code-img" src="" alt="Código QR" class="img-fluid" style="max-width: 300px; display: none;">
+                        <br>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="btn-generar-qr">
+                            <i class="fas fa-qrcode me-1"></i>Generar código QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Botón para exportar preguntas en formato GIFT
+    const btnExportarGift = document.getElementById('btn-exportar-gift');
+    if (btnExportarGift) {
+        btnExportarGift.addEventListener('click', function() {
+            const presentacionId = '<?php echo $id_presentacion; ?>';
+            window.location.href = `api/exportar_gift.php?id=${presentacionId}`;
+        });
+    }
+
+    // Copiar link de presentación
+    const btnCopyLink = document.getElementById('copy-link-presentacion');
+    const linkInput = document.getElementById('link-presentacion');
+
+    if (btnCopyLink && linkInput) {
+        btnCopyLink.addEventListener('click', function() {
+            linkInput.select();
+            document.execCommand('copy');
+
+            const icon = this.querySelector('i');
+            const originalHTML = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i> Copiado';
+            this.classList.remove('btn-outline-primary');
+            this.classList.add('btn-success');
+
+            setTimeout(() => {
+                this.innerHTML = originalHTML;
+                this.classList.remove('btn-success');
+                this.classList.add('btn-outline-primary');
+            }, 2000);
+        });
+    }
+
+    // Generar código QR
+    const btnGenerarQR = document.getElementById('btn-generar-qr');
+    const qrCodeImg = document.getElementById('qr-code-img');
+
+    if (btnGenerarQR && qrCodeImg) {
+        btnGenerarQR.addEventListener('click', function() {
+            const link = linkInput.value;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
+            qrCodeImg.src = qrUrl;
+            qrCodeImg.style.display = 'block';
+            btnGenerarQR.style.display = 'none';
+        });
+    }
+});
+</script>
