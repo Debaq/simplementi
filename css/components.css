@@ -1,0 +1,122 @@
+/* ============================================
+   COMPONENTS - Componentes reutilizables
+   ============================================ */
+
+/* Cards */
+.card-modern {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+}
+
+.card-header-gradient {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    padding: var(--spacing-md);
+    border: none;
+}
+
+/* Botones */
+.btn-primary-modern {
+    background: var(--primary-blue);
+    border: none;
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+    color: white;
+}
+
+.btn-primary-modern:hover {
+    background: var(--primary-blue-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-blue);
+    color: white;
+}
+
+.btn-success-modern {
+    background: var(--success-green);
+    border: none;
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+    color: white;
+}
+
+.btn-success-modern:hover {
+    background: var(--success-green-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-green);
+    color: white;
+}
+
+/* Icon boxes */
+.icon-box {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.icon-box i {
+    font-size: 1.2rem;
+    color: white;
+}
+
+/* Dividers */
+.divider-modern {
+    position: relative;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.divider-modern span {
+    background: white;
+    padding: 0 var(--spacing-md);
+    color: var(--gray-400);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.divider-modern::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gray-200);
+}
+
+/* Badges */
+.badge-modern {
+    background: #EFF6FF;
+    color: var(--primary-blue);
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Input moderno */
+.input-modern {
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: 10px 15px;
+    transition: var(--transition-fast);
+}
+
+.input-modern:focus {
+    border-color: var(--success-green);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    outline: none;
+}

@@ -104,205 +104,10 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
     <title>SimpleMenti - tmeduca.org</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #fafafa;
-            min-height: 100vh;
-        }
-
-        .hero-section {
-            padding: 2rem 0 1.5rem;
-        }
-
-        .logo-container {
-            background: white;
-            border-radius: 12px;
-            padding: 15px 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            display: inline-block;
-            margin-bottom: 10px;
-            border-left: 4px solid #0066FF;
-        }
-
-        .logo-text {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1F2937;
-            margin: 0;
-        }
-
-        .tagline {
-            color: #6B7280;
-            font-size: 1rem;
-            font-weight: 400;
-        }
-
-        .main-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            border: 1px solid #E5E7EB;
-            overflow: hidden;
-        }
-
-        .card-header-custom {
-            background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
-            padding: 15px;
-            border: none;
-        }
-
-        .action-btn {
-            background: #0066FF;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            color: white;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .action-btn:hover {
-            background: #0052CC;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
-            color: white;
-        }
-
-        .join-btn {
-            background: #10B981;
-        }
-
-        .join-btn:hover {
-            background: #059669;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .divider {
-            position: relative;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .divider span {
-            background: white;
-            padding: 0 15px;
-            color: #9CA3AF;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #E5E7EB;
-        }
-
-        .join-section {
-            background: #F9FAFB;
-            border-radius: 12px;
-            padding: 20px;
-            border: 2px dashed #D1D5DB;
-        }
-
-        .code-input {
-            border: 2px solid #D1D5DB;
-            border-radius: 8px;
-            padding: 10px 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-align: center;
-        }
-
-        .code-input:focus {
-            border-color: #10B981;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-            outline: none;
-        }
-
-        .presentations-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            border: 1px solid #E5E7EB;
-            overflow: hidden;
-        }
-
-        .presentation-item {
-            border-radius: 10px;
-            border: 1px solid #E5E7EB;
-            transition: all 0.2s ease;
-            height: 100%;
-            background: white;
-        }
-
-        .presentation-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            border-color: #0066FF;
-        }
-
-        .presentation-badge {
-            background: #EFF6FF;
-            color: #0066FF;
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .start-btn {
-            background: #0066FF;
-            border: none;
-            border-radius: 8px;
-            padding: 10px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .start-btn:hover {
-            background: #0052CC;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
-        }
-
-        .footer-custom {
-            background: white;
-            border-top: 1px solid #E5E7EB;
-            margin-top: 40px;
-            padding: 20px 0;
-        }
-
-        .footer-text {
-            color: #6B7280;
-            font-weight: 400;
-        }
-
-        .icon-box {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
-        .icon-box i {
-            font-size: 1.2rem;
-            color: white;
-        }
-    </style>
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
     <div class="container py-4">
@@ -321,8 +126,8 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
         <!-- Main Action Card -->
         <div class="row justify-content-center mb-4">
             <div class="col-lg-7 col-md-9">
-                <div class="card main-card">
-                    <div class="card-header-custom text-center">
+                <div class="card card-modern">
+                    <div class="card-header-gradient text-center">
                         <h5 class="mb-0 text-white">
                             <i class="fas fa-bars me-2"></i>
                             ¿Qué deseas hacer?
@@ -334,13 +139,13 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
                             <div class="icon-box mx-auto">
                                 <i class="fas fa-chalkboard-teacher"></i>
                             </div>
-                            <a href="admin_login.php" class="action-btn">
+                            <a href="admin_login.php" class="btn-primary-modern text-decoration-none">
                                 <i class="fas fa-plus-circle me-2"></i> Crear Presentación
                             </a>
                         </div>
 
                         <!-- Divider -->
-                        <div class="divider">
+                        <div class="divider-modern">
                             <span>o</span>
                         </div>
 
@@ -365,7 +170,7 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
                                         required>
                                 </div>
                                 <div class="d-grid">
-                                    <button class="action-btn join-btn" type="submit">
+                                    <button class="btn-success-modern" type="submit">
                                         <i class="fas fa-sign-in-alt me-2"></i> Unirse
                                     </button>
                                 </div>
@@ -406,7 +211,7 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
                                         </p>
 
                                         <div class="mb-2">
-                                            <span class="presentation-badge">
+                                            <span class="badge-modern">
                                                 <i class="fas fa-question-circle me-1"></i>
                                                 <?php echo $presentacion['num_preguntas']; ?> preguntas
                                             </span>
@@ -421,7 +226,7 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
                                     </div>
                                     <div class="card-footer bg-transparent border-0 p-2">
                                         <a href="?test=<?php echo urlencode($presentacion['id']); ?>"
-                                           class="btn start-btn w-100 text-white">
+                                           class="btn btn-primary-modern w-100 text-decoration-none">
                                             <i class="fas fa-play me-2"></i> Iniciar
                                         </a>
                                     </div>

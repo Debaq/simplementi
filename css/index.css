@@ -1,0 +1,97 @@
+/* ============================================
+   INDEX - Estilos específicos para index.php
+   ============================================ */
+
+body {
+    background-color: var(--bg-main);
+    min-height: 100vh;
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 2rem 0 1.5rem;
+}
+
+.logo-container {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 15px 30px;
+    box-shadow: var(--shadow-sm);
+    display: inline-block;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--primary-blue);
+}
+
+.logo-text {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.tagline {
+    color: var(--gray-600);
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+/* Join Section */
+.join-section {
+    background: var(--bg-light);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    border: 2px dashed var(--gray-300);
+}
+
+.code-input {
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: 10px 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.code-input:focus {
+    border-color: var(--success-green);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    outline: none;
+}
+
+/* Presentation Cards */
+.presentations-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+}
+
+.presentation-item {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    transition: var(--transition-fast);
+    height: 100%;
+    background: white;
+}
+
+.presentation-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-blue);
+}
+
+/* Footer */
+.footer-custom {
+    background: white;
+    border-top: 1px solid var(--gray-200);
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+.footer-text {
+    color: var(--gray-600);
+    font-weight: 400;
+}
