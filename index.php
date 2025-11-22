@@ -106,7 +106,7 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            background-color: #f5f7fa;
+            background-color: #fafafa;
             min-height: 100vh;
         }
 
@@ -116,48 +116,48 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
 
         .logo-container {
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 15px 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             display: inline-block;
             margin-bottom: 10px;
-            border-left: 4px solid #2c3e50;
+            border-left: 4px solid #0066FF;
         }
 
         .logo-text {
             font-size: 2rem;
             font-weight: 700;
-            color: #2c3e50;
+            color: #1F2937;
             margin: 0;
         }
 
         .tagline {
-            color: #546e7a;
+            color: #6B7280;
             font-size: 1rem;
             font-weight: 400;
         }
 
         .main-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
             overflow: hidden;
         }
 
         .card-header-custom {
-            background: #2c3e50;
+            background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
             padding: 15px;
             border: none;
         }
 
         .action-btn {
-            background: #34495e;
+            background: #0066FF;
             border: none;
             padding: 12px 30px;
             font-size: 1rem;
-            font-weight: 500;
-            border-radius: 4px;
+            font-weight: 600;
+            border-radius: 8px;
             transition: all 0.2s ease;
             color: white;
             text-decoration: none;
@@ -165,16 +165,19 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
         }
 
         .action-btn:hover {
-            background: #2c3e50;
+            background: #0052CC;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
             color: white;
         }
 
         .join-btn {
-            background: #27ae60;
+            background: #10B981;
         }
 
         .join-btn:hover {
-            background: #229954;
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .divider {
@@ -186,7 +189,7 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
         .divider span {
             background: white;
             padding: 0 15px;
-            color: #6c757d;
+            color: #9CA3AF;
             font-weight: 500;
             font-size: 0.9rem;
         }
@@ -198,19 +201,19 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
             left: 0;
             right: 0;
             height: 1px;
-            background: #dee2e6;
+            background: #E5E7EB;
         }
 
         .join-section {
-            background: #f8f9fa;
-            border-radius: 8px;
+            background: #F9FAFB;
+            border-radius: 12px;
             padding: 20px;
-            border: 2px dashed #dee2e6;
+            border: 2px dashed #D1D5DB;
         }
 
         .code-input {
-            border: 2px solid #dee2e6;
-            border-radius: 4px;
+            border: 2px solid #D1D5DB;
+            border-radius: 8px;
             padding: 10px 15px;
             font-size: 1.1rem;
             font-weight: 600;
@@ -220,21 +223,22 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
         }
 
         .code-input:focus {
-            border-color: #27ae60;
-            box-shadow: 0 0 0 0.2rem rgba(39, 174, 96, 0.15);
+            border-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            outline: none;
         }
 
         .presentations-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
             overflow: hidden;
         }
 
         .presentation-item {
-            border-radius: 6px;
-            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            border: 1px solid #E5E7EB;
             transition: all 0.2s ease;
             height: 100%;
             background: white;
@@ -242,50 +246,52 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
 
         .presentation-item:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-color: #2c3e50;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-color: #0066FF;
         }
 
         .presentation-badge {
-            background: #34495e;
-            color: white;
+            background: #EFF6FF;
+            color: #0066FF;
             padding: 5px 12px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
             display: inline-block;
         }
 
         .start-btn {
-            background: #2c3e50;
+            background: #0066FF;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             padding: 10px;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.2s ease;
         }
 
         .start-btn:hover {
-            background: #34495e;
+            background: #0052CC;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
         }
 
         .footer-custom {
             background: white;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid #E5E7EB;
             margin-top: 40px;
             padding: 20px 0;
         }
 
         .footer-text {
-            color: #546e7a;
+            color: #6B7280;
             font-weight: 400;
         }
 
         .icon-box {
             width: 40px;
             height: 40px;
-            background: #2c3e50;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;

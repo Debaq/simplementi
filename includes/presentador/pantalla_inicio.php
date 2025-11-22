@@ -1,22 +1,22 @@
-<!-- Pantalla de introducción con QR - Diseño profesional -->
+<!-- Pantalla de introducción con QR - Diseño moderno -->
 <style>
     .startup-screen {
         margin-bottom: 20px;
     }
 
     .qr-section {
-        background: #2c3e50;
-        border-radius: 8px;
+        background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
+        border-radius: 12px;
         padding: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.15);
     }
 
     .qr-wrapper {
         background: white;
         padding: 15px;
-        border-radius: 6px;
+        border-radius: 10px;
         display: inline-block;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .qr-container-enhanced {
@@ -26,31 +26,33 @@
     }
 
     .session-code-badge {
-        background: #34495e;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
         color: white;
         padding: 12px 25px;
-        border-radius: 6px;
+        border-radius: 10px;
         font-size: 1.5rem;
         font-weight: bold;
         letter-spacing: 5px;
         display: inline-block;
         margin: 15px 0 10px;
         font-family: 'Courier New', monospace;
+        border: 2px solid rgba(255, 255, 255, 0.3);
     }
 
     .url-copy-section {
-        background: #f8f9fa;
-        border-radius: 6px;
+        background: #F9FAFB;
+        border-radius: 10px;
         padding: 15px;
-        border: 1px solid #dee2e6;
+        border: 1px solid #E5E7EB;
     }
 
     .participants-counter {
-        background: #2c3e50;
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
         color: white;
         padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
     }
 
     .participants-number {
@@ -59,23 +61,25 @@
     }
 
     .btn-start-presentation {
-        background: #27ae60;
+        background: #10B981;
         border: none;
         padding: 12px 30px;
         font-size: 1.1rem;
         font-weight: 600;
-        border-radius: 4px;
+        border-radius: 8px;
         transition: all 0.2s ease;
     }
 
     .btn-start-presentation:hover {
-        background: #229954;
+        background: #059669;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
 
     .presentation-title {
         font-size: 1.8rem;
         font-weight: bold;
-        color: #2c3e50;
+        color: #1F2937;
         margin-bottom: 20px;
     }
 
@@ -87,22 +91,24 @@
     }
 
     .copy-btn-enhanced {
-        background: #34495e;
+        background: #0066FF;
         border: none;
         transition: all 0.2s ease;
     }
 
     .copy-btn-enhanced:hover {
-        background: #2c3e50;
+        background: #0052CC;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
     }
 
     .info-card {
         background: white;
-        border-radius: 6px;
+        border-radius: 10px;
         padding: 15px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         margin-bottom: 15px;
-        border: 1px solid #e0e0e0;
+        border: 1px solid #E5E7EB;
     }
 </style>
 
