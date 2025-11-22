@@ -98,6 +98,50 @@
                                 <li>Los participantes verán las imágenes del PDF + las preguntas</li>
                             </ul>
                         </div>
+
+                        <hr class="my-3">
+
+                        <!-- Opciones de audio y modo asíncrono -->
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-microphone me-2"></i>
+                            <strong>Modo asíncrono con audio:</strong> Graba tu voz en cada diapositiva para que los estudiantes puedan ver la presentación sin tu presencia.
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="habilitar_audio" name="habilitar_audio" value="1"
+                                   <?php echo !empty($config['habilitar_audio']) ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="habilitar_audio">
+                                <strong>Habilitar grabaciones de audio por diapositiva</strong>
+                            </label>
+                        </div>
+
+                        <div id="audio-options-section" style="<?php echo !empty($config['habilitar_audio']) ? '' : 'display: none;'; ?>">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="modo_asincrono" name="modo_asincrono" value="1"
+                                       <?php echo !empty($config['modo_asincrono']) ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="modo_asincrono">
+                                    <strong>Permitir modo asíncrono</strong> - Los estudiantes pueden ver la presentación sin el presentador
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="un_solo_intento" name="un_solo_intento" value="1"
+                                       <?php echo !empty($config['un_solo_intento']) ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="un_solo_intento">
+                                    <strong>Permitir solo un intento por pregunta</strong> - Los estudiantes no podrán cambiar sus respuestas
+                                </label>
+                            </div>
+
+                            <?php if (!empty($presentacion_data['pdf_file'])): ?>
+                            <div class="alert alert-success mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>¿Cómo grabar audio?</strong> Ve a la pestaña de "Grabaciones de audio" para grabar tu voz en cada diapositiva.
+                                <?php if (!empty($presentacion_data['audios_grabados'])): ?>
+                                <br><span class="badge bg-success mt-2"><?php echo count($presentacion_data['audios_grabados']); ?> diapositivas con audio</span>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -383,6 +427,16 @@ document.addEventListener('DOMContentLoaded', function() {
             qrCodeImg.src = qrUrl;
             qrCodeImg.style.display = 'block';
             btnGenerarQR.style.display = 'none';
+        });
+    }
+
+    // Toggle sección de opciones de audio
+    const habilitarAudioCheckbox = document.getElementById('habilitar_audio');
+    const audioOptionsSection = document.getElementById('audio-options-section');
+
+    if (habilitarAudioCheckbox && audioOptionsSection) {
+        habilitarAudioCheckbox.addEventListener('change', function() {
+            audioOptionsSection.style.display = this.checked ? '' : 'none';
         });
     }
 });

@@ -318,6 +318,16 @@ include('includes/editar/head.php');
                 <i class="fas fa-plus-circle me-1"></i> Agregar pregunta
             </a>
         </li>
+        <?php if (!empty($presentacion_data['pdf_enabled']) && !empty($config['habilitar_audio'])): ?>
+        <li class="nav-item">
+            <a class="nav-link" id="audio-tab" data-bs-toggle="pill" href="#audio" role="tab">
+                <i class="fas fa-microphone me-1"></i> Grabaciones de audio
+                <?php if (!empty($presentacion_data['audios_grabados'])): ?>
+                <span class="badge bg-success"><?php echo count($presentacion_data['audios_grabados']); ?></span>
+                <?php endif; ?>
+            </a>
+        </li>
+        <?php endif; ?>
     </ul>
     
     <!-- Contenido de las pestañas -->
@@ -336,6 +346,13 @@ include('includes/editar/head.php');
         <div class="tab-pane fade" id="agregar" role="tabpanel">
             <?php include('includes/editar/form_agregar.php'); ?>
         </div>
+
+        <!-- Pestaña de grabaciones de audio -->
+        <?php if (!empty($presentacion_data['pdf_enabled']) && !empty($config['habilitar_audio'])): ?>
+        <div class="tab-pane fade" id="audio" role="tabpanel">
+            <?php include('includes/editar/grabaciones_audio.php'); ?>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -19,7 +19,10 @@ $datos_actualizados = [
     'permitir_marcadores' => isset($_POST['permitir_marcadores']) && $_POST['permitir_marcadores'] === '1',
     'permitir_navegacion_libre' => isset($_POST['permitir_navegacion_libre']) && $_POST['permitir_navegacion_libre'] === '1',
     'permitir_interacciones' => isset($_POST['permitir_interacciones']) && $_POST['permitir_interacciones'] === '1',
-    'usar_pdf' => isset($_POST['usar_pdf']) && $_POST['usar_pdf'] === '1'
+    'usar_pdf' => isset($_POST['usar_pdf']) && $_POST['usar_pdf'] === '1',
+    'habilitar_audio' => isset($_POST['habilitar_audio']) && $_POST['habilitar_audio'] === '1',
+    'modo_asincrono' => isset($_POST['modo_asincrono']) && $_POST['modo_asincrono'] === '1',
+    'un_solo_intento' => isset($_POST['un_solo_intento']) && $_POST['un_solo_intento'] === '1'
 ];
 
 // Validar campos básicos
@@ -64,6 +67,11 @@ if (empty($errores)) {
     $presentacion_data['configuracion']['permitir_marcadores'] = $datos_actualizados['permitir_marcadores'];
     $presentacion_data['configuracion']['permitir_navegacion_libre'] = $datos_actualizados['permitir_navegacion_libre'];
     $presentacion_data['configuracion']['permitir_interacciones'] = $datos_actualizados['permitir_interacciones'];
+
+    // Configuraciones de audio (BETA)
+    $presentacion_data['configuracion']['habilitar_audio'] = $datos_actualizados['habilitar_audio'];
+    $presentacion_data['configuracion']['modo_asincrono'] = $datos_actualizados['modo_asincrono'];
+    $presentacion_data['configuracion']['un_solo_intento'] = $datos_actualizados['un_solo_intento'];
 
     // Manejar datos del PDF (BETA)
     if ($datos_actualizados['usar_pdf']) {
