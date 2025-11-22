@@ -1,0 +1,5 @@
+# Ignorar todos los archivos de vinculación (son temporales)
+*.json
+
+# Mantener este directorio en git
+!.gitignore
