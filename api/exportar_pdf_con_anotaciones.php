@@ -188,6 +188,29 @@ if (!empty($test_data['pdf_images'])) {
                 $pdf->drawAnnotations($anotaciones_slide, $img_width, $img_height);
             }
 
+            // Buscar notas para esta diapositiva
+            $notas_slide = null;
+            if (isset($participante['notas'])) {
+                foreach ($participante['notas'] as $nota) {
+                    if ($nota['slide_number'] === $slide_number) {
+                        $notas_slide = $nota['contenido'];
+                        break;
+                    }
+                }
+            }
+
+            // Agregar notas si existen (en la parte inferior de la página)
+            if ($notas_slide && !empty(trim($notas_slide))) {
+                $pdf->SetY($page_height + 15);
+                $pdf->SetFont('helvetica', 'B', 9);
+                $pdf->SetTextColor(78, 115, 223);
+                $pdf->Cell(0, 5, 'Notas:', 0, 1);
+
+                $pdf->SetFont('helvetica', '', 8);
+                $pdf->SetTextColor(50, 50, 50);
+                $pdf->MultiCell(0, 4, $notas_slide, 0, 'L');
+            }
+
             // Agregar número de slide
             $pdf->SetFont('helvetica', 'B', 10);
             $pdf->SetTextColor(100, 100, 100);

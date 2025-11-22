@@ -422,6 +422,92 @@
         transform: scale(1.3);
     }
 
+    /* Panel de notas */
+    #notes-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 2px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s ease-out;
+        transform: translateY(calc(100% - 50px));
+        z-index: 998;
+    }
+
+    #notes-panel.expanded {
+        transform: translateY(0);
+    }
+
+    #notes-header {
+        padding: 12px 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    #notes-header:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    #notes-header h6 {
+        margin: 0;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #notes-body {
+        padding: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    #notes-textarea {
+        width: 100%;
+        min-height: 150px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: #fff;
+        padding: 15px;
+        font-size: 14px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        resize: vertical;
+    }
+
+    #notes-textarea:focus {
+        outline: none;
+        border-color: #4e73df;
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    #notes-textarea::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    #notes-status {
+        margin-top: 10px;
+        text-align: right;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    #notes-status.saved {
+        color: #1cc88a;
+    }
+
+    .notes-hint {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 10px;
+    }
+
     /* Modal de texto */
     #text-modal {
         position: fixed;
@@ -505,6 +591,176 @@
         margin: 0;
         color: #666;
     }
+
+    /* Botón de modo oscuro */
+    #dark-mode-toggle {
+        position: fixed;
+        bottom: 70px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background: rgba(0, 0, 0, 0.7);
+        border: none;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #dark-mode-toggle:hover {
+        background: rgba(0, 0, 0, 0.9);
+        transform: scale(1.1);
+    }
+
+    /* Estilos para modo oscuro */
+    body.dark-mode {
+        background: #1a1a1a;
+    }
+
+    body.dark-mode #slide-container {
+        background: #0d0d0d;
+    }
+
+    body.dark-mode #toolbar {
+        background: rgba(20, 20, 20, 0.95);
+        border: 1px solid #333;
+    }
+
+    body.dark-mode .tool-btn,
+    body.dark-mode .size-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    body.dark-mode .tool-btn:hover,
+    body.dark-mode .size-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-mode .tool-btn.active,
+    body.dark-mode .size-btn.active {
+        background: #4e73df;
+    }
+
+    body.dark-mode #navigation-controls {
+        background: rgba(20, 20, 20, 0.95);
+        border: 1px solid #333;
+    }
+
+    body.dark-mode #navigation-controls button {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    body.dark-mode #navigation-controls button:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-mode #navigation-controls #sync-toggle.synced {
+        background: rgba(28, 200, 138, 0.2);
+        color: #1cc88a;
+    }
+
+    body.dark-mode #slide-info {
+        background: rgba(20, 20, 20, 0.9);
+        border: 1px solid #333;
+    }
+
+    body.dark-mode #dark-mode-toggle {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    body.dark-mode #dark-mode-toggle:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    body.dark-mode #notes-panel {
+        background: rgba(20, 20, 20, 0.98);
+        border-top: 1px solid #333;
+    }
+
+    body.dark-mode #notes-header {
+        background: rgba(30, 30, 30, 0.95);
+        border-bottom: 1px solid #444;
+    }
+
+    body.dark-mode #notes-header h6 {
+        color: #fff;
+    }
+
+    body.dark-mode #notes-textarea {
+        background: rgba(40, 40, 40, 0.95);
+        color: #fff;
+        border-color: #444;
+    }
+
+    body.dark-mode #notes-textarea::placeholder {
+        color: #888;
+    }
+
+    body.dark-mode .notes-hint {
+        background: rgba(78, 115, 223, 0.15);
+        border-left-color: #4e73df;
+        color: #aaa;
+    }
+
+    body.dark-mode #notes-status {
+        color: #aaa;
+    }
+
+    body.dark-mode #text-modal,
+    body.dark-mode #question-modal {
+        background: rgba(30, 30, 30, 0.98);
+        color: #fff;
+        border: 1px solid #444;
+    }
+
+    body.dark-mode #text-input,
+    body.dark-mode #question-input {
+        background: rgba(40, 40, 40, 0.95);
+        color: #fff;
+        border-color: #555;
+    }
+
+    body.dark-mode #text-input::placeholder,
+    body.dark-mode #question-input::placeholder {
+        color: #888;
+    }
+
+    body.dark-mode .form-check-label {
+        color: #ccc;
+    }
+
+    body.dark-mode .modal-btn-secondary {
+        background: #555;
+    }
+
+    body.dark-mode #loading-indicator {
+        background: rgba(20, 20, 20, 0.95);
+        color: #fff;
+    }
+
+    body.dark-mode #interaction-panel {
+        background: rgba(20, 20, 20, 0.95);
+        border: 1px solid #333;
+    }
+
+    body.dark-mode .interaction-btn {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode .interaction-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-mode #reaction-picker {
+        background: rgba(20, 20, 20, 0.98);
+        border: 1px solid #333;
+    }
 </style>
 
 <div id="slide-container">
@@ -529,6 +785,21 @@
     </button>
     <button class="tool-btn" id="tool-eraser" title="Borrador">
         <i class="fas fa-eraser"></i>
+    </button>
+
+    <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.2); margin: 0 5px;"></div>
+
+    <button class="tool-btn" id="tool-arrow" title="Flecha">
+        <i class="fas fa-arrow-right"></i>
+    </button>
+    <button class="tool-btn" id="tool-line" title="Línea recta">
+        <i class="fas fa-minus"></i>
+    </button>
+    <button class="tool-btn" id="tool-circle" title="Círculo">
+        <i class="far fa-circle"></i>
+    </button>
+    <button class="tool-btn" id="tool-rectangle" title="Rectángulo">
+        <i class="far fa-square"></i>
     </button>
 
     <div class="size-selector">
@@ -606,6 +877,10 @@
     Slide <span id="current-slide"><?php echo $slide_number; ?></span> / <span id="total-slides"><?php echo count($test_data['pdf_images']); ?></span>
 </div>
 
+<button id="dark-mode-toggle" title="Modo oscuro">
+    <i class="fas fa-moon"></i>
+</button>
+
 <div id="loading-indicator">
     <div class="loading-spinner"></div>
     <span>Sincronizando...</span>
@@ -642,6 +917,25 @@
     </div>
 </div>
 
+<!-- Panel de notas -->
+<div id="notes-panel">
+    <div id="notes-header" onclick="toggleNotes()">
+        <h6>
+            <i class="fas fa-sticky-note"></i>
+            Notas del Slide <?php echo $slide_number; ?>
+            <span id="notes-char-count">0 caracteres</span>
+        </h6>
+        <i class="fas fa-chevron-up" id="notes-chevron"></i>
+    </div>
+    <div id="notes-body">
+        <div class="notes-hint">
+            <i class="fas fa-lightbulb"></i> Escribe tus notas aquí. Se guardan automáticamente para cada diapositiva.
+        </div>
+        <textarea id="notes-textarea" placeholder="Escribe tus notas sobre esta diapositiva..."></textarea>
+        <div id="notes-status">Sin guardar</div>
+    </div>
+</div>
+
 <script>
 const codigo = '<?php echo $codigo_sesion; ?>';
 const participanteId = '<?php echo $participante_id; ?>';
@@ -668,6 +962,9 @@ let currentSize = 4;
 let strokes = [];
 let currentStroke = null;
 let textPosition = null;
+let shapeStartPoint = null; // Para formas geométricas
+let tempCanvas = null; // Canvas temporal para preview de formas
+let tempCtx = null;
 
 // Inicializar canvas
 function initCanvas() {
@@ -758,21 +1055,42 @@ function startDrawing(e) {
     isDrawing = true;
     const coords = getCanvasCoordinates(e);
 
-    currentStroke = {
-        tool: currentTool,
-        color: currentColor,
-        size: currentSize,
-        points: [coords]
-    };
+    // Para formas geométricas, guardar punto inicial
+    if (['arrow', 'line', 'circle', 'rectangle'].includes(currentTool)) {
+        shapeStartPoint = coords;
+        currentStroke = {
+            tool: currentTool,
+            color: currentColor,
+            size: currentSize,
+            startPoint: coords,
+            endPoint: coords
+        };
+    } else {
+        currentStroke = {
+            tool: currentTool,
+            color: currentColor,
+            size: currentSize,
+            points: [coords]
+        };
+    }
 }
 
 function draw(e) {
     if (!isDrawing || currentTool === 'text') return;
 
     const coords = getCanvasCoordinates(e);
-    currentStroke.points.push(coords);
 
-    drawStroke(currentStroke);
+    // Para formas geométricas, actualizar endpoint y mostrar preview
+    if (['arrow', 'line', 'circle', 'rectangle'].includes(currentTool)) {
+        currentStroke.endPoint = coords;
+
+        // Redibujar todo para mostrar preview
+        redrawAnnotations();
+        drawShape(currentStroke, true); // true = es preview
+    } else {
+        currentStroke.points.push(coords);
+        drawStroke(currentStroke);
+    }
 }
 
 function stopDrawing() {
@@ -780,7 +1098,18 @@ function stopDrawing() {
 
     isDrawing = false;
 
-    if (currentStroke && currentStroke.points.length > 0) {
+    // Para formas geométricas
+    if (currentStroke && ['arrow', 'line', 'circle', 'rectangle'].includes(currentStroke.tool)) {
+        if (shapeStartPoint) {
+            strokes.push(currentStroke);
+            shapeStartPoint = null;
+            currentStroke = null;
+            redrawAnnotations();
+            autoSaveAnnotations();
+        }
+    }
+    // Para trazos libres
+    else if (currentStroke && currentStroke.points && currentStroke.points.length > 0) {
         strokes.push(currentStroke);
         currentStroke = null;
         autoSaveAnnotations();
@@ -823,12 +1152,88 @@ function drawText(text, position, color, size) {
     ctx.fillText(text, position.x, position.y);
 }
 
+function drawShape(shape, isPreview = false) {
+    if (!shape || !shape.startPoint || !shape.endPoint) return;
+
+    ctx.strokeStyle = shape.color;
+    ctx.lineWidth = shape.size;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    if (isPreview) {
+        ctx.setLineDash([5, 5]); // Línea punteada para preview
+    } else {
+        ctx.setLineDash([]);
+    }
+
+    const start = shape.startPoint;
+    const end = shape.endPoint;
+
+    switch (shape.tool) {
+        case 'line':
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+            ctx.lineTo(end.x, end.y);
+            ctx.stroke();
+            break;
+
+        case 'arrow':
+            // Dibujar línea
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+            ctx.lineTo(end.x, end.y);
+            ctx.stroke();
+
+            // Dibujar punta de flecha
+            const angle = Math.atan2(end.y - start.y, end.x - start.x);
+            const headLength = 15 + (shape.size * 2);
+
+            ctx.beginPath();
+            ctx.moveTo(end.x, end.y);
+            ctx.lineTo(
+                end.x - headLength * Math.cos(angle - Math.PI / 6),
+                end.y - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.moveTo(end.x, end.y);
+            ctx.lineTo(
+                end.x - headLength * Math.cos(angle + Math.PI / 6),
+                end.y - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.stroke();
+            break;
+
+        case 'circle':
+            const radiusX = Math.abs(end.x - start.x) / 2;
+            const radiusY = Math.abs(end.y - start.y) / 2;
+            const centerX = (start.x + end.x) / 2;
+            const centerY = (start.y + end.y) / 2;
+
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+            ctx.stroke();
+            break;
+
+        case 'rectangle':
+            const width = end.x - start.x;
+            const height = end.y - start.y;
+
+            ctx.beginPath();
+            ctx.rect(start.x, start.y, width, height);
+            ctx.stroke();
+            break;
+    }
+
+    ctx.setLineDash([]); // Restaurar línea sólida
+}
+
 function redrawAnnotations() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     strokes.forEach(stroke => {
         if (stroke.type === 'text') {
             drawText(stroke.text, stroke.position, stroke.color, stroke.size);
+        } else if (['arrow', 'line', 'circle', 'rectangle'].includes(stroke.tool)) {
+            drawShape(stroke);
         } else {
             drawStroke(stroke);
         }
@@ -840,6 +1245,10 @@ document.getElementById('tool-pen').addEventListener('click', () => setTool('pen
 document.getElementById('tool-marker').addEventListener('click', () => setTool('marker'));
 document.getElementById('tool-text').addEventListener('click', () => setTool('text'));
 document.getElementById('tool-eraser').addEventListener('click', () => setTool('eraser'));
+document.getElementById('tool-arrow').addEventListener('click', () => setTool('arrow'));
+document.getElementById('tool-line').addEventListener('click', () => setTool('line'));
+document.getElementById('tool-circle').addEventListener('click', () => setTool('circle'));
+document.getElementById('tool-rectangle').addEventListener('click', () => setTool('rectangle'));
 
 function setTool(tool) {
     currentTool = tool;
@@ -1283,5 +1692,178 @@ document.getElementById('slide-container').addEventListener('dblclick', function
 // Guardar antes de salir
 window.addEventListener('beforeunload', () => {
     saveAnnotations();
+    saveNotes();
 });
+
+// ========== SISTEMA DE NOTAS ==========
+
+let notesTimeout = null;
+let currentNotes = '';
+let notesSaved = true;
+
+// Toggle del panel de notas
+function toggleNotes() {
+    const panel = document.getElementById('notes-panel');
+    const chevron = document.getElementById('notes-chevron');
+
+    panel.classList.toggle('expanded');
+
+    if (panel.classList.contains('expanded')) {
+        chevron.classList.remove('fa-chevron-up');
+        chevron.classList.add('fa-chevron-down');
+    } else {
+        chevron.classList.remove('fa-chevron-down');
+        chevron.classList.add('fa-chevron-up');
+    }
+}
+
+// Actualizar contador de caracteres
+function updateCharCount() {
+    const textarea = document.getElementById('notes-textarea');
+    const charCount = document.getElementById('notes-char-count');
+    const count = textarea.value.length;
+
+    charCount.textContent = count + ' caracteres';
+}
+
+// Guardar notas (con debouncing)
+function saveNotes() {
+    const textarea = document.getElementById('notes-textarea');
+    const statusDiv = document.getElementById('notes-status');
+
+    const notesData = {
+        codigo_sesion: codigo,
+        id_participante: participanteId,
+        slide_number: slideNumber,
+        notas: textarea.value,
+        timestamp: new Date().toISOString()
+    };
+
+    statusDiv.textContent = 'Guardando...';
+    statusDiv.style.color = '#f39c12';
+
+    fetch(serverUrl + 'api/guardar_notas.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(notesData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            statusDiv.textContent = 'Guardado ✓';
+            statusDiv.style.color = '#1cc88a';
+            notesSaved = true;
+
+            setTimeout(() => {
+                if (notesSaved) {
+                    statusDiv.textContent = '';
+                }
+            }, 2000);
+        } else {
+            statusDiv.textContent = 'Error al guardar';
+            statusDiv.style.color = '#e74a3b';
+        }
+    })
+    .catch(error => {
+        console.error('Error al guardar notas:', error);
+        statusDiv.textContent = 'Error al guardar';
+        statusDiv.style.color = '#e74a3b';
+    });
+}
+
+// Manejar cambios en el textarea con debouncing
+function handleNotesChange() {
+    notesSaved = false;
+    const statusDiv = document.getElementById('notes-status');
+    statusDiv.textContent = 'Sin guardar';
+    statusDiv.style.color = '#858796';
+
+    updateCharCount();
+
+    // Cancelar timeout anterior
+    if (notesTimeout) {
+        clearTimeout(notesTimeout);
+    }
+
+    // Guardar después de 1 segundo de inactividad
+    notesTimeout = setTimeout(() => {
+        saveNotes();
+    }, 1000);
+}
+
+// Cargar notas existentes
+function loadNotes() {
+    fetch(serverUrl + 'api/obtener_notas.php?codigo=' + codigo + '&participante=' + participanteId + '&slide=' + slideNumber)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.notas) {
+                const textarea = document.getElementById('notes-textarea');
+                textarea.value = data.notas;
+                currentNotes = data.notas;
+                updateCharCount();
+            }
+        })
+        .catch(error => {
+            console.error('Error al cargar notas:', error);
+        });
+}
+
+// Event listener para el textarea
+document.getElementById('notes-textarea').addEventListener('input', handleNotesChange);
+
+// Cargar notas al iniciar
+setTimeout(() => {
+    loadNotes();
+}, 500);
+
+// ========== MODO OSCURO ==========
+
+let darkModeEnabled = false;
+
+// Cargar preferencia de modo oscuro
+function loadDarkModePreference() {
+    const savedPreference = localStorage.getItem('darkMode');
+    if (savedPreference === 'true') {
+        enableDarkMode();
+    }
+}
+
+// Activar modo oscuro
+function enableDarkMode() {
+    document.body.classList.add('dark-mode');
+    darkModeEnabled = true;
+    localStorage.setItem('darkMode', 'true');
+
+    const icon = document.querySelector('#dark-mode-toggle i');
+    icon.classList.remove('fa-moon');
+    icon.classList.add('fa-sun');
+}
+
+// Desactivar modo oscuro
+function disableDarkMode() {
+    document.body.classList.remove('dark-mode');
+    darkModeEnabled = false;
+    localStorage.setItem('darkMode', 'false');
+
+    const icon = document.querySelector('#dark-mode-toggle i');
+    icon.classList.remove('fa-sun');
+    icon.classList.add('fa-moon');
+}
+
+// Toggle modo oscuro
+function toggleDarkMode() {
+    if (darkModeEnabled) {
+        disableDarkMode();
+    } else {
+        enableDarkMode();
+    }
+}
+
+// Event listener para el botón de modo oscuro
+document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
+
+// Cargar preferencia al iniciar
+loadDarkModePreference();
 </script>
