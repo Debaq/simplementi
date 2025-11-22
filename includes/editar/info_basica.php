@@ -146,25 +146,106 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="permitir_retroceder" name="permitir_retroceder" value="1" 
+                                <input class="form-check-input" type="checkbox" id="permitir_retroceder" name="permitir_retroceder" value="1"
                                        <?php echo $config['permitir_retroceder'] ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="permitir_retroceder">Permitir retroceder</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="mostrar_estadisticas" name="mostrar_estadisticas" value="1" 
+                                <input class="form-check-input" type="checkbox" id="mostrar_estadisticas" name="mostrar_estadisticas" value="1"
                                        <?php echo $config['mostrar_estadisticas'] ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="mostrar_estadisticas">Mostrar estadísticas</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="permitir_exportar" name="permitir_exportar" value="1" 
+                                <input class="form-check-input" type="checkbox" id="permitir_exportar" name="permitir_exportar" value="1"
                                        <?php echo $config['permitir_exportar'] ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="permitir_exportar">Permitir exportar</label>
                             </div>
                         </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <div class="alert alert-primary mb-3">
+                        <i class="fas fa-graduation-cap me-2"></i>
+                        <strong>Funcionalidades para Estudiantes:</strong> Configure qué herramientas estarán disponibles durante la presentación.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="permitir_anotaciones" name="permitir_anotaciones" value="1"
+                                       <?php echo isset($config['permitir_anotaciones']) && $config['permitir_anotaciones'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="permitir_anotaciones">
+                                    <i class="fas fa-pencil-alt me-1"></i> <strong>Anotaciones</strong> - Dibujar sobre slides
+                                </label>
+                            </div>
+                            <div class="form-text small mb-3">Lápiz, marcador, formas geométricas, texto (solo con PDF)</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="exportar_con_anotaciones" name="exportar_con_anotaciones" value="1"
+                                       <?php echo isset($config['exportar_con_anotaciones']) && $config['exportar_con_anotaciones'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="exportar_con_anotaciones">
+                                    <i class="fas fa-file-pdf me-1"></i> <strong>Exportar PDF</strong> con anotaciones
+                                </label>
+                            </div>
+                            <div class="form-text small mb-3">Los estudiantes pueden generar PDF en su dispositivo</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="permitir_notas" name="permitir_notas" value="1"
+                                       <?php echo isset($config['permitir_notas']) && $config['permitir_notas'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="permitir_notas">
+                                    <i class="fas fa-sticky-note me-1"></i> <strong>Notas textuales</strong> por slide
+                                </label>
+                            </div>
+                            <div class="form-text small mb-3">Panel de notas debajo de cada diapositiva</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="permitir_marcadores" name="permitir_marcadores" value="1"
+                                       <?php echo isset($config['permitir_marcadores']) && $config['permitir_marcadores'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="permitir_marcadores">
+                                    <i class="fas fa-bookmark me-1"></i> <strong>Marcadores</strong> de slides importantes
+                                </label>
+                            </div>
+                            <div class="form-text small mb-3">Marcar y categorizar slides clave (importante, revisar, duda)</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="permitir_navegacion_libre" name="permitir_navegacion_libre" value="1"
+                                       <?php echo isset($config['permitir_navegacion_libre']) && $config['permitir_navegacion_libre'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="permitir_navegacion_libre">
+                                    <i class="fas fa-route me-1"></i> <strong>Navegación libre</strong> por slides
+                                </label>
+                            </div>
+                            <div class="form-text small mb-3">Avanzar/retroceder sin depender del presentador (sin spoilers)</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="permitir_interacciones" name="permitir_interacciones" value="1"
+                                       <?php echo isset($config['permitir_interacciones']) && $config['permitir_interacciones'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="permitir_interacciones">
+                                    <i class="fas fa-comments me-1"></i> <strong>Interacciones</strong> en tiempo real
+                                </label>
+                            </div>
+                            <div class="form-text small mb-3">Levantar mano, preguntas, comprensión, reacciones</div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning small mt-2">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <strong>Nota:</strong> Las anotaciones, notas y marcadores se almacenan en el dispositivo del estudiante (no en el servidor). El modo oscuro siempre está disponible como preferencia personal.
                     </div>
                 </div>
             </div>

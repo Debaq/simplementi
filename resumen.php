@@ -304,14 +304,22 @@ if (isset($_GET['finalizar']) && $_GET['finalizar'] == 1) {
                 </div>
             </div>
             <div class="col-md-4 text-end">
-                <div class="btn-group">
+                <div class="btn-group me-2">
                     <button id="btn-exportar" class="btn btn-success">
                         <i class="fas fa-download me-2"></i> Exportar resultados
                     </button>
-                    <a href="presentador.php?codigo=<?php echo $codigo_sesion; ?>" class="btn btn-primary">
-                        <i class="fas fa-chalkboard me-2"></i> Volver a la presentación
-                    </a>
+                    <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                        <span class="visually-hidden">Más opciones</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" id="export-results-only"><i class="fas fa-table me-2"></i>Exportar resultados (Excel)</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="dropdown-header"><small class="text-muted"><i class="fas fa-info-circle me-1"></i>Los estudiantes pueden exportar su PDF con anotaciones desde su visor</small></li>
+                    </ul>
                 </div>
+                <a href="presentador.php?codigo=<?php echo $codigo_sesion; ?>" class="btn btn-primary">
+                    <i class="fas fa-chalkboard me-2"></i> Volver a la presentación
+                </a>
             </div>
         </div>
 
@@ -691,6 +699,15 @@ function generarGrafico(id, labels, data, respuestaCorrecta) {
             // Botones de exportar
             document.getElementById('btn-exportar').addEventListener('click', exportarResultados);
             document.getElementById('btn-exportar-flotante').addEventListener('click', exportarResultados);
+
+            // Botón de exportar solo resultados (desde dropdown)
+            const exportOnlyBtn = document.getElementById('export-results-only');
+            if (exportOnlyBtn) {
+                exportOnlyBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    exportarResultados();
+                });
+            }
         });
     </script>
 </body>

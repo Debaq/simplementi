@@ -13,6 +13,12 @@ $datos_actualizados = [
     'permitir_retroceder' => isset($_POST['permitir_retroceder']) && $_POST['permitir_retroceder'] === '1',
     'mostrar_estadisticas' => isset($_POST['mostrar_estadisticas']) && $_POST['mostrar_estadisticas'] === '1',
     'permitir_exportar' => isset($_POST['permitir_exportar']) && $_POST['permitir_exportar'] === '1',
+    'permitir_anotaciones' => isset($_POST['permitir_anotaciones']) && $_POST['permitir_anotaciones'] === '1',
+    'exportar_con_anotaciones' => isset($_POST['exportar_con_anotaciones']) && $_POST['exportar_con_anotaciones'] === '1',
+    'permitir_notas' => isset($_POST['permitir_notas']) && $_POST['permitir_notas'] === '1',
+    'permitir_marcadores' => isset($_POST['permitir_marcadores']) && $_POST['permitir_marcadores'] === '1',
+    'permitir_navegacion_libre' => isset($_POST['permitir_navegacion_libre']) && $_POST['permitir_navegacion_libre'] === '1',
+    'permitir_interacciones' => isset($_POST['permitir_interacciones']) && $_POST['permitir_interacciones'] === '1',
     'usar_pdf' => isset($_POST['usar_pdf']) && $_POST['usar_pdf'] === '1'
 ];
 
@@ -52,6 +58,12 @@ if (empty($errores)) {
     $presentacion_data['configuracion']['permitir_retroceder'] = $datos_actualizados['permitir_retroceder'];
     $presentacion_data['configuracion']['mostrar_estadisticas'] = $datos_actualizados['mostrar_estadisticas'];
     $presentacion_data['configuracion']['permitir_exportar'] = $datos_actualizados['permitir_exportar'];
+    $presentacion_data['configuracion']['permitir_anotaciones'] = $datos_actualizados['permitir_anotaciones'];
+    $presentacion_data['configuracion']['exportar_con_anotaciones'] = $datos_actualizados['exportar_con_anotaciones'];
+    $presentacion_data['configuracion']['permitir_notas'] = $datos_actualizados['permitir_notas'];
+    $presentacion_data['configuracion']['permitir_marcadores'] = $datos_actualizados['permitir_marcadores'];
+    $presentacion_data['configuracion']['permitir_navegacion_libre'] = $datos_actualizados['permitir_navegacion_libre'];
+    $presentacion_data['configuracion']['permitir_interacciones'] = $datos_actualizados['permitir_interacciones'];
 
     // Manejar datos del PDF (BETA)
     if ($datos_actualizados['usar_pdf']) {

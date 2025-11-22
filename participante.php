@@ -102,7 +102,15 @@ if ($tiene_secuencia_pdf) {
         $slide_number = $current_item['number'];
         $slide_data = $test_data['pdf_images'][$slide_number - 1];
 
-        include('includes/participante/pantalla_pdf_fullscreen.php');
+        // Verificar si se permiten anotaciones
+        $permitir_anotaciones = isset($test_data['configuracion']['permitir_anotaciones']) &&
+                                $test_data['configuracion']['permitir_anotaciones'];
+
+        if ($permitir_anotaciones) {
+            include('includes/participante/pantalla_pdf_anotaciones.php');
+        } else {
+            include('includes/participante/pantalla_pdf_fullscreen.php');
+        }
     } elseif ($current_item['type'] === 'question') {
         // Mostrar pregunta
         $question_id = $current_item['id'];
