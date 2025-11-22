@@ -761,6 +761,338 @@
         background: rgba(20, 20, 20, 0.98);
         border: 1px solid #333;
     }
+
+    /* Sistema de marcadores */
+    #bookmark-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: #ffc107;
+        font-size: 20px;
+        transition: all 0.3s;
+    }
+
+    #bookmark-btn:hover {
+        background: rgba(255, 193, 7, 0.2);
+        transform: scale(1.1);
+    }
+
+    #bookmark-btn.active {
+        background: rgba(255, 193, 7, 0.3);
+        color: #ffc107;
+        border-color: #ffc107;
+        animation: pulse 0.5s ease-out;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+
+    #bookmarks-panel-btn {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 193, 7, 0.9);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        z-index: 1001;
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+    }
+
+    #bookmarks-panel-btn:hover {
+        background: rgba(255, 193, 7, 1);
+        transform: scale(1.1);
+    }
+
+    #bookmarks-panel-btn .badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #e74a3b;
+        color: white;
+        border-radius: 50%;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    #bookmarks-panel {
+        position: fixed;
+        top: 0;
+        right: -400px;
+        width: 400px;
+        height: 100vh;
+        background: white;
+        box-shadow: -5px 0 20px rgba(0, 0, 0, 0.2);
+        z-index: 1002;
+        transition: right 0.3s ease-out;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #bookmarks-panel.open {
+        right: 0;
+    }
+
+    .bookmarks-header {
+        background: linear-gradient(to right, #ffc107, #ff9800);
+        color: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .bookmarks-header h5 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .bookmarks-header .btn-close-panel {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .bookmarks-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+    }
+
+    .bookmark-item {
+        background: #f8f9fc;
+        border-left: 4px solid #ffc107;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .bookmark-item:hover {
+        background: #fff;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transform: translateX(-5px);
+    }
+
+    .bookmark-item.category-important {
+        border-left-color: #e74a3b;
+    }
+
+    .bookmark-item.category-review {
+        border-left-color: #f6c23e;
+    }
+
+    .bookmark-item.category-doubt {
+        border-left-color: #36b9cc;
+    }
+
+    .bookmark-item.category-understood {
+        border-left-color: #1cc88a;
+    }
+
+    .bookmark-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .bookmark-slide-number {
+        font-weight: bold;
+        color: #4e73df;
+        font-size: 16px;
+    }
+
+    .bookmark-category {
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+    }
+
+    .bookmark-category.important {
+        background: #e74a3b;
+    }
+
+    .bookmark-category.review {
+        background: #f6c23e;
+        color: #333;
+    }
+
+    .bookmark-category.doubt {
+        background: #36b9cc;
+    }
+
+    .bookmark-category.understood {
+        background: #1cc88a;
+    }
+
+    .bookmark-note {
+        color: #666;
+        font-size: 14px;
+        margin-top: 8px;
+        font-style: italic;
+    }
+
+    .bookmark-delete {
+        background: none;
+        border: none;
+        color: #e74a3b;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 5px;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+
+    .bookmark-delete:hover {
+        opacity: 1;
+    }
+
+    .empty-bookmarks {
+        text-align: center;
+        color: #999;
+        padding: 40px 20px;
+    }
+
+    .empty-bookmarks i {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.3;
+    }
+
+    #bookmark-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 10001;
+        min-width: 400px;
+    }
+
+    #bookmark-modal.show {
+        display: block;
+    }
+
+    #bookmark-modal h4 {
+        margin-bottom: 20px;
+        color: #4e73df;
+    }
+
+    .category-selector {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .category-option {
+        flex: 1;
+        min-width: 80px;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .category-option:hover {
+        border-color: #4e73df;
+    }
+
+    .category-option.selected {
+        border-width: 3px;
+    }
+
+    .category-option.important.selected {
+        background: #fee;
+        border-color: #e74a3b;
+        color: #e74a3b;
+    }
+
+    .category-option.review.selected {
+        background: #fffbea;
+        border-color: #f6c23e;
+        color: #856404;
+    }
+
+    .category-option.doubt.selected {
+        background: #e7f7f9;
+        border-color: #36b9cc;
+        color: #0c5460;
+    }
+
+    .category-option.understood.selected {
+        background: #edf7f3;
+        border-color: #1cc88a;
+        color: #155724;
+    }
+
+    #bookmark-note-input {
+        width: 100%;
+        min-height: 80px;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 15px;
+        font-family: inherit;
+    }
+
+    #bookmark-note-input:focus {
+        outline: none;
+        border-color: #4e73df;
+    }
+
+    /* Dark mode para marcadores */
+    body.dark-mode #bookmarks-panel {
+        background: #1a1a1a;
+        color: #fff;
+    }
+
+    body.dark-mode .bookmark-item {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    body.dark-mode .bookmark-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode #bookmark-modal {
+        background: #2a2a2a;
+        color: #fff;
+    }
+
+    body.dark-mode #bookmark-note-input {
+        background: #1a1a1a;
+        border-color: #444;
+        color: #fff;
+    }
+
+    body.dark-mode .category-option {
+        background: #1a1a1a;
+        border-color: #444;
+        color: #fff;
+    }
 </style>
 
 <div id="slide-container">
@@ -835,12 +1167,62 @@
     <button id="nav-prev" title="Slide anterior">
         <i class="fas fa-chevron-left"></i>
     </button>
+    <button id="bookmark-btn" title="Marcar este slide">
+        <i class="far fa-star"></i>
+    </button>
     <button id="sync-toggle" class="synced" title="Sincronizado con presentador">
         <i class="fas fa-sync"></i> Sincronizado
     </button>
     <button id="nav-next" title="Siguiente slide">
         <i class="fas fa-chevron-right"></i>
     </button>
+</div>
+
+<!-- Botón flotante para abrir panel de marcadores -->
+<button id="bookmarks-panel-btn" title="Ver marcadores">
+    <i class="fas fa-bookmark"></i>
+    <span class="badge" id="bookmarks-count" style="display: none;">0</span>
+</button>
+
+<!-- Panel lateral de marcadores -->
+<div id="bookmarks-panel">
+    <div class="bookmarks-header">
+        <h5><i class="fas fa-bookmark me-2"></i>Mis Marcadores</h5>
+        <button class="btn-close-panel" onclick="toggleBookmarksPanel()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="bookmarks-body" id="bookmarks-list">
+        <div class="empty-bookmarks">
+            <i class="fas fa-bookmark"></i>
+            <p>No tienes marcadores aún</p>
+            <small>Marca slides importantes con la estrella ⭐</small>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para crear/editar marcador -->
+<div id="bookmark-modal">
+    <h4><i class="fas fa-star me-2"></i>Marcar Slide <?php echo $slide_number; ?></h4>
+    <div class="category-selector">
+        <div class="category-option important" data-category="important">
+            <div>🔴 Importante</div>
+        </div>
+        <div class="category-option review" data-category="review">
+            <div>📝 Revisar</div>
+        </div>
+        <div class="category-option doubt" data-category="doubt">
+            <div>❓ Duda</div>
+        </div>
+        <div class="category-option understood" data-category="understood">
+            <div>✅ Entendido</div>
+        </div>
+    </div>
+    <textarea id="bookmark-note-input" placeholder="Agrega una nota opcional (ej: 'Revisar este concepto para el examen')"></textarea>
+    <div class="modal-buttons">
+        <button class="modal-btn modal-btn-secondary" id="bookmark-cancel">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" id="bookmark-save">Guardar Marcador</button>
+    </div>
 </div>
 
 <!-- Banner de desincronización -->
@@ -1807,6 +2189,256 @@ setTimeout(() => {
     loadNotes();
 }, 500);
 
+// ========== SISTEMA DE MARCADORES ==========
+
+const BOOKMARKS_KEY = STORAGE_PREFIX + 'bookmarks';
+let selectedCategory = 'important'; // Categoría por defecto
+
+// Obtener marcadores
+function getBookmarks() {
+    return getLocalStorageData(BOOKMARKS_KEY) || {};
+}
+
+// Guardar marcadores
+function saveBookmarks(bookmarks) {
+    setLocalStorageData(BOOKMARKS_KEY, bookmarks);
+    updateBookmarksUI();
+}
+
+// Verificar si el slide actual está marcado
+function isSlideBookmarked() {
+    const bookmarks = getBookmarks();
+    return bookmarks.hasOwnProperty(slideNumber);
+}
+
+// Actualizar UI del botón de marcador
+function updateBookmarkButton() {
+    const btn = document.getElementById('bookmark-btn');
+    const icon = btn.querySelector('i');
+
+    if (isSlideBookmarked()) {
+        btn.classList.add('active');
+        icon.classList.remove('far');
+        icon.classList.add('fas');
+        btn.title = 'Quitar marcador';
+    } else {
+        btn.classList.remove('active');
+        icon.classList.remove('fas');
+        icon.classList.add('far');
+        btn.title = 'Marcar este slide';
+    }
+}
+
+// Toggle de marcador (abrir modal si no está marcado, quitar si está marcado)
+function toggleBookmark() {
+    if (isSlideBookmarked()) {
+        // Si ya está marcado, quitarlo
+        removeBookmark(slideNumber);
+    } else {
+        // Si no está marcado, abrir modal para agregar
+        openBookmarkModal();
+    }
+}
+
+// Abrir modal de marcador
+function openBookmarkModal() {
+    const modal = document.getElementById('bookmark-modal');
+    const noteInput = document.getElementById('bookmark-note-input');
+
+    // Si ya existe el marcador, cargar sus datos
+    const bookmarks = getBookmarks();
+    if (bookmarks[slideNumber]) {
+        selectedCategory = bookmarks[slideNumber].category;
+        noteInput.value = bookmarks[slideNumber].note || '';
+    } else {
+        selectedCategory = 'important';
+        noteInput.value = '';
+    }
+
+    // Actualizar selección de categoría
+    document.querySelectorAll('.category-option').forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.dataset.category === selectedCategory) {
+            opt.classList.add('selected');
+        }
+    });
+
+    modal.classList.add('show');
+}
+
+// Cerrar modal de marcador
+function closeBookmarkModal() {
+    document.getElementById('bookmark-modal').classList.remove('show');
+}
+
+// Guardar marcador
+function saveBookmark() {
+    const bookmarks = getBookmarks();
+    const noteInput = document.getElementById('bookmark-note-input');
+
+    bookmarks[slideNumber] = {
+        slide: slideNumber,
+        category: selectedCategory,
+        note: noteInput.value.trim(),
+        timestamp: new Date().toISOString()
+    };
+
+    saveBookmarks(bookmarks);
+    updateBookmarkButton();
+    closeBookmarkModal();
+
+    console.log('Marcador guardado para slide', slideNumber);
+}
+
+// Eliminar marcador
+function removeBookmark(slideNum) {
+    const bookmarks = getBookmarks();
+    delete bookmarks[slideNum];
+    saveBookmarks(bookmarks);
+    updateBookmarkButton();
+
+    console.log('Marcador eliminado para slide', slideNum);
+}
+
+// Toggle panel de marcadores
+function toggleBookmarksPanel() {
+    const panel = document.getElementById('bookmarks-panel');
+    panel.classList.toggle('open');
+}
+
+// Renderizar lista de marcadores
+function renderBookmarksList() {
+    const bookmarks = getBookmarks();
+    const list = document.getElementById('bookmarks-list');
+    const count = Object.keys(bookmarks).length;
+
+    // Actualizar contador
+    const badge = document.getElementById('bookmarks-count');
+    if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'block';
+    } else {
+        badge.style.display = 'none';
+    }
+
+    // Si no hay marcadores, mostrar mensaje vacío
+    if (count === 0) {
+        list.innerHTML = `
+            <div class="empty-bookmarks">
+                <i class="fas fa-bookmark"></i>
+                <p>No tienes marcadores aún</p>
+                <small>Marca slides importantes con la estrella ⭐</small>
+            </div>
+        `;
+        return;
+    }
+
+    // Convertir a array y ordenar por número de slide
+    const bookmarksArray = Object.values(bookmarks).sort((a, b) => a.slide - b.slide);
+
+    // Renderizar cada marcador
+    list.innerHTML = bookmarksArray.map(bookmark => {
+        const categoryLabels = {
+            important: 'Importante',
+            review: 'Revisar',
+            doubt: 'Duda',
+            understood: 'Entendido'
+        };
+
+        return `
+            <div class="bookmark-item category-${bookmark.category}" onclick="navigateToBookmark(${bookmark.slide})">
+                <div class="bookmark-header">
+                    <div class="bookmark-slide-number">
+                        <i class="fas fa-file-powerpoint me-2"></i>Slide ${bookmark.slide}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="bookmark-category ${bookmark.category}">
+                            ${categoryLabels[bookmark.category]}
+                        </span>
+                        <button class="bookmark-delete" onclick="event.stopPropagation(); removeBookmark(${bookmark.slide})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                ${bookmark.note ? `<div class="bookmark-note">"${bookmark.note}"</div>` : ''}
+                <small style="color: #999; font-size: 12px; margin-top: 5px; display: block;">
+                    <i class="far fa-clock me-1"></i>${formatBookmarkDate(bookmark.timestamp)}
+                </small>
+            </div>
+        `;
+    }).join('');
+}
+
+// Navegar a un slide marcado
+function navigateToBookmark(targetSlide) {
+    if (targetSlide === slideNumber) {
+        // Ya estamos en este slide
+        toggleBookmarksPanel();
+        return;
+    }
+
+    // Guardar anotaciones y notas actuales
+    saveAnnotations();
+    saveNotes();
+
+    // Si el slide objetivo está más adelante que el presentador, no permitir
+    const targetIndex = slideSequence.findIndex(item => item.type === 'slide' && item.number === targetSlide);
+
+    if (targetIndex > presenterSequenceIndex) {
+        alert('No puedes navegar a un slide que el presentador aún no ha mostrado.');
+        return;
+    }
+
+    // Desincronizar si está sincronizado
+    if (isSynced) {
+        isSynced = false;
+    }
+
+    // Navegar al slide
+    viewingSequenceIndex = targetIndex;
+    window.location.href = `participante.php?codigo=${codigo}`;
+}
+
+// Formatear fecha del marcador
+function formatBookmarkDate(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Hace un momento';
+    if (minutes < 60) return `Hace ${minutes} min`;
+    if (hours < 24) return `Hace ${hours} h`;
+    return `Hace ${days} día${days > 1 ? 's' : ''}`;
+}
+
+// Actualizar toda la UI de marcadores
+function updateBookmarksUI() {
+    updateBookmarkButton();
+    renderBookmarksList();
+}
+
+// Event listeners para marcadores
+document.getElementById('bookmark-btn').addEventListener('click', toggleBookmark);
+document.getElementById('bookmarks-panel-btn').addEventListener('click', toggleBookmarksPanel);
+
+document.getElementById('bookmark-save').addEventListener('click', saveBookmark);
+document.getElementById('bookmark-cancel').addEventListener('click', closeBookmarkModal);
+
+// Selector de categoría
+document.querySelectorAll('.category-option').forEach(option => {
+    option.addEventListener('click', () => {
+        document.querySelectorAll('.category-option').forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        selectedCategory = option.dataset.category;
+    });
+});
+
+// Inicializar UI de marcadores
+updateBookmarksUI();
+
 // ========== MODO OSCURO ==========
 
 let darkModeEnabled = false;
@@ -1970,6 +2602,75 @@ async function exportPDF() {
             pdf.setFontSize(10);
             pdf.setTextColor(100, 100, 100);
             pdf.text(`Slide ${slideNum} / ${allSlides.length}`, pageWidth - 30, pageHeight - 5);
+        }
+
+        // Paso 3.5: Agregar página de marcadores (si existen)
+        const bookmarks = getBookmarks();
+        const bookmarksCount = Object.keys(bookmarks).length;
+
+        if (bookmarksCount > 0) {
+            progressText.textContent = 'Agregando marcadores...';
+            progressBar.style.width = '75%';
+
+            pdf.addPage();
+
+            // Título
+            pdf.setFontSize(18);
+            pdf.setTextColor(255, 193, 7);
+            pdf.text('Mis Marcadores', pageWidth / 2, 20, { align: 'center' });
+
+            pdf.setFontSize(12);
+            pdf.setTextColor(100, 100, 100);
+            pdf.text(`${bookmarksCount} slide${bookmarksCount > 1 ? 's' : ''} marcado${bookmarksCount > 1 ? 's' : ''}`, pageWidth / 2, 30, { align: 'center' });
+
+            let y = 45;
+            const categoryLabels = {
+                important: '🔴 Importante',
+                review: '📝 Revisar',
+                doubt: '❓ Duda',
+                understood: '✅ Entendido'
+            };
+
+            const categoryColors = {
+                important: [231, 74, 59],
+                review: [246, 194, 62],
+                doubt: [54, 185, 204],
+                understood: [28, 200, 138]
+            };
+
+            // Ordenar marcadores por slide
+            const bookmarksArray = Object.values(bookmarks).sort((a, b) => a.slide - b.slide);
+
+            for (const bookmark of bookmarksArray) {
+                if (y > pageHeight - 30) {
+                    pdf.addPage();
+                    y = 20;
+                }
+
+                // Recuadro del marcador
+                pdf.setDrawColor(...categoryColors[bookmark.category]);
+                pdf.setLineWidth(0.5);
+                pdf.rect(15, y - 5, pageWidth - 30, 25);
+
+                // Número de slide
+                pdf.setFontSize(14);
+                pdf.setTextColor(...categoryColors[bookmark.category]);
+                pdf.text(`Slide ${bookmark.slide}`, 20, y + 2);
+
+                // Categoría
+                pdf.setFontSize(10);
+                pdf.text(categoryLabels[bookmark.category], 20, y + 9);
+
+                // Nota (si existe)
+                if (bookmark.note) {
+                    pdf.setFontSize(9);
+                    pdf.setTextColor(50, 50, 50);
+                    const noteText = pdf.splitTextToSize(bookmark.note, pageWidth - 50);
+                    pdf.text(noteText, 20, y + 16);
+                }
+
+                y += 30;
+            }
         }
 
         // Paso 4: Agregar página de resultados
