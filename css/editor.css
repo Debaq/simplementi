@@ -1,0 +1,52 @@
+/* ============================================
+   EDITOR - Estilos para editor de presentaciones
+   ============================================ */
+
+/* Question Cards */
+.question-card {
+    transition: all 0.3s ease;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.question-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    border-color: var(--primary-blue);
+}
+
+/* Question Type Cards */
+.question-type-card {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-radius: var(--radius-lg);
+}
+
+.question-type-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Nav Pills Override */
+.nav-pills .nav-link.active {
+    background-color: var(--primary-blue);
+}
+
+/* Utilities */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Editor Container */
+.editor-container {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Form Controls */
+.editor-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}

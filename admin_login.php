@@ -106,50 +106,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>SimpleMenti - Acceso Administrativo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .login-container {
-            max-width: 450px;
-            margin: 80px auto;
-        }
-        .card-header {
-            background: linear-gradient(to right, #4e73df, #224abe);
-        }
-        .bg-gradient-primary {
-            background: linear-gradient(to right, #4e73df, #224abe);
-        }
-        .logo {
-            max-width: 80px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
     <div class="container">
         <div class="login-container">
             <div class="text-center mb-4">
-                <img src="img/logo.png" alt="SimpleMenti Logo" class="logo">
-                <h2 class="text-primary">SimpleMenti</h2>
+                <h2 style="color: var(--primary-blue);">SimpleMenti</h2>
                 <p class="text-muted">Sistema interactivo para presentaciones</p>
             </div>
-            
-            <div class="card shadow">
-                <div class="card-header bg-gradient-primary text-white">
+
+            <div class="card auth-card">
+                <div class="auth-header text-white">
                     <h3 class="text-center mb-0">
                         <i class="fas fa-user-shield me-2"></i> Acceso Administrativo
                     </h3>
                 </div>
-                <div class="card-body p-4">
+                <div class="auth-body">
                     <?php if (!empty($error_msg)): ?>
                     <div class="alert alert-danger">
                         <?php echo $error_msg; ?>
                     </div>
                     <?php endif; ?>
-                    
+
                     <form method="post" action="">
-                        <div class="mb-3">
+                        <div class="mb-3 auth-input-group">
                             <label for="username" class="form-label">Usuario</label>
                             <div class="input-group">
                                 <span class="input-group-text">
@@ -158,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="text" class="form-control" id="username" name="username" required autofocus>
                             </div>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-4 auth-input-group">
                             <label for="password" class="form-label">Contraseña</label>
                             <div class="input-group">
                                 <span class="input-group-text">
@@ -171,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-primary-modern">
                                 <i class="fas fa-sign-in-alt me-2"></i> Iniciar sesión
                             </button>
                             <a href="index.php" class="btn btn-secondary">
@@ -180,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </form>
                 </div>
-                <div class="card-footer bg-light text-center py-3">
+                <div class="auth-footer text-center">
                     <small class="text-muted">
                         Usuario predeterminado: admin | Contraseña: admin123
                     </small>
@@ -188,8 +172,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-    
-    <footer class="bg-dark text-white text-center py-3 mt-5">
+
+    <footer class="page-footer text-center">
         <p class="mb-0">SimpleMenti &copy; <?php echo date('Y'); ?> - tmeduca.org</p>
     </footer>
     

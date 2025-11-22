@@ -1,0 +1,85 @@
+/* ============================================
+   PARTICIPANTE VIEW - Estilos para vista de participantes
+   ============================================ */
+
+/* Question Container */
+.question-container {
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* Pregunta Imagen */
+.pregunta-imagen {
+    max-height: 300px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+/* Option Cards */
+.opcion-card {
+    transition: var(--transition-fast);
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+}
+
+.opcion-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.opcion-card.selected {
+    border-color: var(--primary-blue);
+    background-color: #f8f9ff;
+}
+
+/* Countdown Timer */
+.countdown-timer {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Text Input */
+.text-input-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.character-counter {
+    position: absolute;
+    right: 10px;
+    bottom: -25px;
+    font-size: 0.8rem;
+    color: var(--gray-600);
+}
+
+/* Loader */
+.loader {
+    border: 6px solid var(--gray-100);
+    border-top: 6px solid var(--primary-blue);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Waiting & Completion Containers */
+.waiting-container,
+.completion-container {
+    max-width: 500px;
+    margin: 100px auto;
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+    .question-container {
+        margin: 10px auto;
+    }
+}

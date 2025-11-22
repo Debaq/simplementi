@@ -1,0 +1,121 @@
+/* ============================================
+   PRESENTADOR - Estilos para pantalla inicio
+   ============================================ */
+
+.startup-screen {
+    margin-bottom: 20px;
+}
+
+/* QR Section */
+.qr-section {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.15);
+}
+
+.qr-wrapper {
+    background: white;
+    padding: 15px;
+    border-radius: var(--radius-lg);
+    display: inline-block;
+    box-shadow: var(--shadow-md);
+}
+
+.qr-container-enhanced {
+    width: 280px;
+    height: 280px;
+    margin: 0 auto;
+}
+
+/* Session Code Badge con efecto glassmorphism */
+.session-code-badge {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 12px 25px;
+    border-radius: var(--radius-lg);
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 5px;
+    display: inline-block;
+    margin: 15px 0 10px;
+    font-family: 'Courier New', monospace;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.instruction-text {
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+/* Participants Counter */
+.participants-counter {
+    background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%);
+    color: white;
+    padding: 20px;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.participants-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+/* Info Cards */
+.info-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 15px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 15px;
+    border: 1px solid var(--gray-200);
+}
+
+.url-copy-section {
+    background: var(--bg-light);
+    border-radius: var(--radius-lg);
+    padding: 15px;
+    border: 1px solid var(--gray-200);
+}
+
+/* Presentation Title */
+.presentation-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--gray-900);
+    margin-bottom: 20px;
+}
+
+/* Start Button */
+.btn-start-presentation {
+    background: var(--success-green);
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+}
+
+.btn-start-presentation:hover {
+    background: var(--success-green-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-green);
+}
+
+/* Copy Button */
+.copy-btn-enhanced {
+    background: var(--primary-blue);
+    border: none;
+    transition: var(--transition-fast);
+}
+
+.copy-btn-enhanced:hover {
+    background: var(--primary-blue-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-blue);
+}

@@ -104,92 +104,130 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
     <title>SimpleMenti - tmeduca.org</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-        }
-        .bg-gradient-primary {
-            background: linear-gradient(to right, #4e73df, #224abe);
-        }
-    </style>
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
-<body class="bg-light">
-    <div class="container py-5">
-        <div class="row justify-content-center mb-5">
+<body>
+    <div class="container py-4">
+        <!-- Hero Section -->
+        <div class="row justify-content-center hero-section">
             <div class="col-md-8 text-center">
-                <h1 class="display-4 fw-bold text-primary">SimpleMenti</h1>
-                <p class="lead">Sistema interactivo para presentaciones y encuestas en tiempo real</p>
+                <div class="logo-container">
+                    <h1 class="logo-text">
+                        <i class="fas fa-comments"></i> SimpleMenti
+                    </h1>
+                </div>
+                <p class="tagline">Sistema interactivo para presentaciones y encuestas en tiempo real</p>
             </div>
         </div>
-        
-        <div class="row justify-content-center mb-5">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header bg-gradient-primary text-white">
-                        <h3 class="text-center mb-0">¿Qué deseas hacer?</h3>
+
+        <!-- Main Action Card -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-7 col-md-9">
+                <div class="card card-modern">
+                    <div class="card-header-gradient text-center">
+                        <h5 class="mb-0 text-white">
+                            <i class="fas fa-bars me-2"></i>
+                            ¿Qué deseas hacer?
+                        </h5>
                     </div>
-                    <div class="card-body p-4">
-                        <div class="d-grid gap-4">
-                            <a href="admin_login.php" class="btn btn-primary btn-lg">
-                                <i class="fas fa-chalkboard-teacher me-2"></i> Crear presentación
-                            </a>
-                            
-                            <div class="text-center my-2">- o -</div>
-                            
-                            <div class="card card-hover">
-                                <div class="card-body">
-                                    <h5 class="card-title">Unirse como participante</h5>
-                                    <form action="" method="get" class="mt-3">
-                                        <div class="input-group mb-3">
-                                            <input type="text" name="codigo" class="form-control form-control-lg" 
-                                                placeholder="Ingrese código de sesión" autocomplete="off">
-                                            <button class="btn btn-success btn-lg" type="submit">
-                                                <i class="fas fa-sign-in-alt me-2"></i> Unirse
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
+                    <div class="card-body p-3">
+                        <!-- Crear Presentación -->
+                        <div class="text-center mb-3">
+                            <div class="icon-box mx-auto">
+                                <i class="fas fa-chalkboard-teacher"></i>
                             </div>
+                            <a href="admin_login.php" class="btn-primary-modern text-decoration-none">
+                                <i class="fas fa-plus-circle me-2"></i> Crear Presentación
+                            </a>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="divider-modern">
+                            <span>o</span>
+                        </div>
+
+                        <!-- Unirse como Participante -->
+                        <div class="join-section">
+                            <div class="text-center mb-2">
+                                <div class="icon-box mx-auto">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h6 class="fw-bold mb-2">Unirse como Participante</h6>
+                                <p class="text-muted small mb-2">Ingresa el código de sesión</p>
+                            </div>
+                            <form action="" method="get">
+                                <div class="mb-2">
+                                    <input
+                                        type="text"
+                                        name="codigo"
+                                        class="form-control code-input"
+                                        placeholder="ABC123"
+                                        autocomplete="off"
+                                        maxlength="6"
+                                        required>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn-success-modern" type="submit">
+                                        <i class="fas fa-sign-in-alt me-2"></i> Unirse
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
+        <!-- Presentaciones Disponibles -->
         <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow">
-                    <div class="card-header bg-success text-white">
-                        <h4 class="mb-0"><i class="fas fa-list me-2"></i> Presentaciones disponibles</h4>
+            <div class="col-lg-11">
+                <div class="card presentations-card">
+                    <div class="card-header-custom">
+                        <h5 class="mb-0 text-white text-center">
+                            <i class="fas fa-list-ul me-2"></i> Presentaciones Disponibles
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
+                    <div class="card-body p-3">
+                        <div class="row g-3">
                             <?php
                             // Cargar presentaciones desde el índice
                             $index_json = file_get_contents($index_file);
                             $index_data = json_decode($index_json, true);
-                            
+
                             foreach ($index_data['presentaciones'] as $presentacion) {
                             ?>
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100 card-hover">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><?php echo htmlspecialchars($presentacion['titulo']); ?></h5>
-                                        <p class="card-text"><?php echo htmlspecialchars($presentacion['descripcion']); ?></p>
-                                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="col-lg-4 col-md-6">
+                                <div class="card presentation-item">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title fw-bold mb-2">
+                                            <i class="fas fa-file-presentation text-dark me-2"></i>
+                                            <?php echo htmlspecialchars($presentacion['titulo']); ?>
+                                        </h6>
+                                        <p class="card-text text-muted small mb-2">
+                                            <?php echo htmlspecialchars($presentacion['descripcion']); ?>
+                                        </p>
+
+                                        <div class="mb-2">
+                                            <span class="badge-modern">
+                                                <i class="fas fa-question-circle me-1"></i>
+                                                <?php echo $presentacion['num_preguntas']; ?> preguntas
+                                            </span>
+                                        </div>
+
+                                        <div class="mb-2">
                                             <small class="text-muted">
-                                                <i class="fas fa-question-circle"></i> <?php echo $presentacion['num_preguntas']; ?> preguntas
-                                            </small>
-                                            <small class="text-muted">
-                                                <i class="fas fa-user"></i> <?php echo htmlspecialchars($presentacion['autor']); ?>
+                                                <i class="fas fa-user-circle me-1"></i>
+                                                <?php echo htmlspecialchars($presentacion['autor']); ?>
                                             </small>
                                         </div>
                                     </div>
-                                    <div class="card-footer bg-white">
-                                        <a href="?test=<?php echo urlencode($presentacion['id']); ?>" class="btn btn-sm btn-primary w-100">
-                                            <i class="fas fa-play me-1"></i> Iniciar
+                                    <div class="card-footer bg-transparent border-0 p-2">
+                                        <a href="?test=<?php echo urlencode($presentacion['id']); ?>"
+                                           class="btn btn-primary-modern w-100 text-decoration-none">
+                                            <i class="fas fa-play me-2"></i> Iniciar
                                         </a>
                                     </div>
                                 </div>
@@ -201,11 +239,15 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
             </div>
         </div>
     </div>
-    
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <p class="mb-0">SimpleMenti &copy; <?php echo date('Y'); ?> - tmeduca.org</p>
+
+    <!-- Footer -->
+    <footer class="footer-custom text-center">
+        <p class="footer-text mb-0">
+            <i class="fas fa-heart me-2"></i>
+            SimpleMenti &copy; <?php echo date('Y'); ?> - tmeduca.org
+        </p>
     </footer>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
