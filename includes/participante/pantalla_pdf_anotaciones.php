@@ -3,6 +3,14 @@
  * Pantalla fullscreen con anotaciones para estudiantes
  * Permite dibujar y escribir sobre las diapositivas
  */
+
+// Obtener configuraciones
+$config = isset($test_data['configuracion']) ? $test_data['configuracion'] : [];
+$permitir_notas = isset($config['permitir_notas']) && $config['permitir_notas'];
+$permitir_marcadores = isset($config['permitir_marcadores']) && $config['permitir_marcadores'];
+$permitir_navegacion_libre = isset($config['permitir_navegacion_libre']) && $config['permitir_navegacion_libre'];
+$permitir_interacciones = isset($config['permitir_interacciones']) && $config['permitir_interacciones'];
+$permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['exportar_con_anotaciones'];
 ?>
 
 <style>
