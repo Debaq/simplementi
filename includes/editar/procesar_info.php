@@ -13,6 +13,8 @@ $datos_actualizados = [
     'permitir_retroceder' => isset($_POST['permitir_retroceder']) && $_POST['permitir_retroceder'] === '1',
     'mostrar_estadisticas' => isset($_POST['mostrar_estadisticas']) && $_POST['mostrar_estadisticas'] === '1',
     'permitir_exportar' => isset($_POST['permitir_exportar']) && $_POST['permitir_exportar'] === '1',
+    'permitir_anotaciones' => isset($_POST['permitir_anotaciones']) && $_POST['permitir_anotaciones'] === '1',
+    'exportar_con_anotaciones' => isset($_POST['exportar_con_anotaciones']) && $_POST['exportar_con_anotaciones'] === '1',
     'usar_pdf' => isset($_POST['usar_pdf']) && $_POST['usar_pdf'] === '1'
 ];
 
@@ -52,6 +54,8 @@ if (empty($errores)) {
     $presentacion_data['configuracion']['permitir_retroceder'] = $datos_actualizados['permitir_retroceder'];
     $presentacion_data['configuracion']['mostrar_estadisticas'] = $datos_actualizados['mostrar_estadisticas'];
     $presentacion_data['configuracion']['permitir_exportar'] = $datos_actualizados['permitir_exportar'];
+    $presentacion_data['configuracion']['permitir_anotaciones'] = $datos_actualizados['permitir_anotaciones'];
+    $presentacion_data['configuracion']['exportar_con_anotaciones'] = $datos_actualizados['exportar_con_anotaciones'];
 
     // Manejar datos del PDF (BETA)
     if ($datos_actualizados['usar_pdf']) {

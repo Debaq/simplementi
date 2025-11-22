@@ -30,7 +30,9 @@ $datos_presentacion = [
     'tiempo_por_pregunta' => 0,
     'permitir_retroceder' => true,
     'mostrar_estadisticas' => true,
-    'permitir_exportar' => true
+    'permitir_exportar' => true,
+    'permitir_anotaciones' => false,
+    'exportar_con_anotaciones' => false
 ];
 
 // Procesar el formulario si se envía
@@ -47,7 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'tiempo_por_pregunta' => isset($_POST['tiempo_por_pregunta']) ? intval($_POST['tiempo_por_pregunta']) : 0,
         'permitir_retroceder' => isset($_POST['permitir_retroceder']) && $_POST['permitir_retroceder'] === '1',
         'mostrar_estadisticas' => isset($_POST['mostrar_estadisticas']) && $_POST['mostrar_estadisticas'] === '1',
-        'permitir_exportar' => isset($_POST['permitir_exportar']) && $_POST['permitir_exportar'] === '1'
+        'permitir_exportar' => isset($_POST['permitir_exportar']) && $_POST['permitir_exportar'] === '1',
+        'permitir_anotaciones' => isset($_POST['permitir_anotaciones']) && $_POST['permitir_anotaciones'] === '1',
+        'exportar_con_anotaciones' => isset($_POST['exportar_con_anotaciones']) && $_POST['exportar_con_anotaciones'] === '1'
     ];
     
     // Validar campos básicos
@@ -104,7 +108,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'tiempo_por_pregunta' => $datos_presentacion['tiempo_por_pregunta'],
                 'permitir_retroceder' => $datos_presentacion['permitir_retroceder'],
                 'mostrar_estadisticas' => $datos_presentacion['mostrar_estadisticas'],
-                'permitir_exportar' => $datos_presentacion['permitir_exportar']
+                'permitir_exportar' => $datos_presentacion['permitir_exportar'],
+                'permitir_anotaciones' => $datos_presentacion['permitir_anotaciones'],
+                'exportar_con_anotaciones' => $datos_presentacion['exportar_con_anotaciones']
             ],
             'preguntas' => []
         ];
@@ -332,24 +338,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="permitir_retroceder" name="permitir_retroceder" value="1" 
+                                        <input class="form-check-input" type="checkbox" id="permitir_retroceder" name="permitir_retroceder" value="1"
                                                <?php echo $datos_presentacion['permitir_retroceder'] ? 'checked' : ''; ?>>
                                         <label class="form-check-label" for="permitir_retroceder">Permitir retroceder</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="mostrar_estadisticas" name="mostrar_estadisticas" value="1" 
+                                        <input class="form-check-input" type="checkbox" id="mostrar_estadisticas" name="mostrar_estadisticas" value="1"
                                                <?php echo $datos_presentacion['mostrar_estadisticas'] ? 'checked' : ''; ?>>
                                         <label class="form-check-label" for="mostrar_estadisticas">Mostrar estadísticas</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="permitir_exportar" name="permitir_exportar" value="1" 
+                                        <input class="form-check-input" type="checkbox" id="permitir_exportar" name="permitir_exportar" value="1"
                                                <?php echo $datos_presentacion['permitir_exportar'] ? 'checked' : ''; ?>>
                                         <label class="form-check-label" for="permitir_exportar">Permitir exportar</label>
                                     </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-3">
+
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-paint-brush me-2"></i>
+                                <strong>Anotaciones en diapositivas:</strong> Permite que los estudiantes dibujen y escriban sobre las diapositivas durante la presentación.
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="permitir_anotaciones" name="permitir_anotaciones" value="1"
+                                               <?php echo $datos_presentacion['permitir_anotaciones'] ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="permitir_anotaciones">
+                                            <i class="fas fa-pencil-alt me-1"></i> Permitir anotaciones a estudiantes
+                                        </label>
+                                    </div>
+                                    <div class="form-text small">Los estudiantes podrán dibujar y escribir sobre las diapositivas (solo si hay presentación PDF)</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="exportar_con_anotaciones" name="exportar_con_anotaciones" value="1"
+                                               <?php echo $datos_presentacion['exportar_con_anotaciones'] ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="exportar_con_anotaciones">
+                                            <i class="fas fa-file-pdf me-1"></i> Incluir anotaciones en PDF exportado
+                                        </label>
+                                    </div>
+                                    <div class="form-text small">El PDF exportado incluirá las diapositivas con las anotaciones de cada estudiante</div>
                                 </div>
                             </div>
                         </div>

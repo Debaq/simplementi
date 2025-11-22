@@ -146,24 +146,54 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="permitir_retroceder" name="permitir_retroceder" value="1" 
+                                <input class="form-check-input" type="checkbox" id="permitir_retroceder" name="permitir_retroceder" value="1"
                                        <?php echo $config['permitir_retroceder'] ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="permitir_retroceder">Permitir retroceder</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="mostrar_estadisticas" name="mostrar_estadisticas" value="1" 
+                                <input class="form-check-input" type="checkbox" id="mostrar_estadisticas" name="mostrar_estadisticas" value="1"
                                        <?php echo $config['mostrar_estadisticas'] ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="mostrar_estadisticas">Mostrar estadísticas</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="permitir_exportar" name="permitir_exportar" value="1" 
+                                <input class="form-check-input" type="checkbox" id="permitir_exportar" name="permitir_exportar" value="1"
                                        <?php echo $config['permitir_exportar'] ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="permitir_exportar">Permitir exportar</label>
                             </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <div class="alert alert-info mb-3">
+                        <i class="fas fa-paint-brush me-2"></i>
+                        <strong>Anotaciones en diapositivas:</strong> Permite que los estudiantes dibujen y escriban sobre las diapositivas durante la presentación.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="permitir_anotaciones" name="permitir_anotaciones" value="1"
+                                       <?php echo isset($config['permitir_anotaciones']) && $config['permitir_anotaciones'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="permitir_anotaciones">
+                                    <i class="fas fa-pencil-alt me-1"></i> Permitir anotaciones a estudiantes
+                                </label>
+                            </div>
+                            <div class="form-text small">Los estudiantes podrán dibujar y escribir sobre las diapositivas (solo si hay presentación PDF)</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="exportar_con_anotaciones" name="exportar_con_anotaciones" value="1"
+                                       <?php echo isset($config['exportar_con_anotaciones']) && $config['exportar_con_anotaciones'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="exportar_con_anotaciones">
+                                    <i class="fas fa-file-pdf me-1"></i> Incluir anotaciones en PDF exportado
+                                </label>
+                            </div>
+                            <div class="form-text small">El PDF exportado incluirá las diapositivas con las anotaciones de cada estudiante</div>
                         </div>
                     </div>
                 </div>
