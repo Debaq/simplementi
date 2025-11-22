@@ -164,7 +164,25 @@ try {
     exit;
 }
 
-// Redireccionar al participante de vuelta a la página con un parámetro de éxito
-header("Location: ../participante.php?codigo=$codigo_sesion&respuesta_enviada=1");
+// Verificar si es una petición AJAX (modo asíncrono)
+$is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+// También detectar si el Content-Type es application/json o si se envió vía fetch
+$is_fetch = (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) ||
+            (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
+
+if ($is_ajax || $is_fetch) {
+    // Responder con JSON para modo asíncrono
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => true,
+        'message' => 'Respuesta guardada correctamente',
+        'id_pregunta' => $id_pregunta
+    ]);
+} else {
+    // Redireccionar al participante de vuelta a la página con un parámetro de éxito (modo síncrono)
+    header("Location: ../participante.php?codigo=$codigo_sesion&respuesta_enviada=1");
+}
 exit;
 ?>

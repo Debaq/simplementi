@@ -58,6 +58,18 @@ $respuesta_enviada = isset($_GET['respuesta_enviada']) ? $_GET['respuesta_enviad
 // Incluir el archivo de verificación
 include('includes/participante/verificacion.php');
 
+// Verificar si está habilitado el modo asíncrono
+$modo_asincrono = isset($test_data['configuracion']['modo_asincrono']) &&
+                  $test_data['configuracion']['modo_asincrono'] === true &&
+                  !empty($test_data['pdf_enabled']) &&
+                  !empty($test_data['configuracion']['habilitar_audio']);
+
+// Si está en modo asíncrono, usar el flujo asíncrono
+if ($modo_asincrono) {
+    include('includes/participante/modo_asincrono.php');
+    exit;
+}
+
 // Verificar si estamos en la pantalla de espera inicial
 if ($pregunta_actual_index === 0) {
     // Mostrar pantalla de espera
