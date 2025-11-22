@@ -33,13 +33,23 @@ if (!$presentacionId) {
 // Generar código de emparejamiento
 $pairCode = generarCodigoEmparejamiento();
 
-// Crear datos del QR
+// Obtener ruta base del servidor
+$serverUrl = getServerUrl();
+$basePath = dirname(dirname($_SERVER['SCRIPT_NAME'])); // Obtener path base
+if ($basePath === '/' || $basePath === '\\') {
+    $basePath = '';
+}
+
+// Crear URL completa para el QR (apunta a control-movil.php con el código)
+$qrUrl = $serverUrl . $basePath . '/control-movil.php?code=' . urlencode($pairCode);
+
+// Crear datos del QR (solo para referencia interna)
 $qrData = [
     'type' => 'projection_pair',
     'code' => $pairCode,
     'session_id' => $sessionId,
     'timestamp' => date('c'),
-    'server_url' => getServerUrl()
+    'server_url' => $serverUrl
 ];
 
 // Crear archivo de vinculación
@@ -49,6 +59,7 @@ $linkData = [
     'expires_at' => date('c', time() + 30), // Expira en 30 segundos
     'status' => 'waiting',
     'qr_data' => $qrData,
+    'qr_url' => $qrUrl,
     'session' => [
         'session_id' => $sessionId,
         'presentation_id' => $presentacionId
@@ -59,13 +70,14 @@ $linkData = [
 $linkFile = __DIR__ . '/../data/projection_links/' . $pairCode . '.json';
 file_put_contents($linkFile, json_encode($linkData, JSON_PRETTY_PRINT));
 
-// Generar imagen QR
-$qrImage = generarQRBase64(json_encode($qrData));
+// Generar imagen QR con la URL completa (no JSON)
+$qrImage = generarQRBase64($qrUrl);
 
 // Retornar respuesta
 returnSuccess([
     'pair_code' => $pairCode,
     'qr_data' => $qrData,
+    'qr_url' => $qrUrl,
     'qr_image' => $qrImage,
     'expires_in' => 30,
     'session_id' => $sessionId,

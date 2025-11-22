@@ -225,10 +225,17 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
                                         </div>
                                     </div>
                                     <div class="card-footer bg-transparent border-0 p-2">
-                                        <a href="?test=<?php echo urlencode($presentacion['id']); ?>"
-                                           class="btn btn-primary-modern w-100 text-decoration-none">
-                                            <i class="fas fa-play me-2"></i> Iniciar
-                                        </a>
+                                        <div class="d-grid gap-2">
+                                            <a href="?test=<?php echo urlencode($presentacion['id']); ?>"
+                                               class="btn btn-primary-modern text-decoration-none">
+                                                <i class="fas fa-play me-2"></i> Iniciar Presentación
+                                            </a>
+                                            <button class="btn btn-outline-primary btn-sm btn-control-movil"
+                                                    data-presentation-id="<?php echo htmlspecialchars($presentacion['id']); ?>"
+                                                    data-presentation-title="<?php echo htmlspecialchars($presentacion['titulo']); ?>">
+                                                <i class="fas fa-mobile-alt me-2"></i> Control Móvil
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -248,7 +255,81 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
         </p>
     </footer>
 
+    <!-- Modal Control Móvil -->
+    <div class="modal fade" id="modalControlMovil" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-mobile-alt me-2"></i>
+                        Control Móvil
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>¿Cómo funciona el Control Móvil?</strong>
+                    </div>
+
+                    <h6 class="fw-bold mb-3">Pasos para controlar desde tu móvil:</h6>
+
+                    <ol class="text-start mb-4">
+                        <li class="mb-3">
+                            <strong>Inicia la presentación</strong><br>
+                            <small class="text-muted">Haz clic en "Iniciar Presentación" arriba</small>
+                        </li>
+                        <li class="mb-3">
+                            <strong>Genera el código QR</strong><br>
+                            <small class="text-muted">En la barra superior de la presentación, haz clic en el menú (☰) → "Conectar Dispositivo Móvil"</small>
+                        </li>
+                        <li class="mb-3">
+                            <strong>Escanea con tu móvil</strong><br>
+                            <small class="text-muted">Usa la cámara de tu teléfono para escanear el QR</small>
+                        </li>
+                        <li class="mb-3">
+                            <strong>¡Listo!</strong><br>
+                            <small class="text-muted">Controla slides, ve participantes, usa el puntero láser virtual</small>
+                        </li>
+                    </ol>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Importante:</strong> Los códigos QR expiran en 30 segundos por seguridad
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-lg" data-bs-dismiss="modal" onclick="iniciarPresentacion()">
+                            <i class="fas fa-play me-2"></i>
+                            Iniciar Presentación Ahora
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Control Móvil desde Dashboard
+        let currentPresentationId = null;
+        const modal = new bootstrap.Modal(document.getElementById('modalControlMovil'));
+
+        // Abrir modal de instrucciones al hacer clic en "Control Móvil"
+        document.querySelectorAll('.btn-control-movil').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentPresentationId = this.dataset.presentationId;
+                modal.show();
+            });
+        });
+
+        // Función para iniciar presentación desde el modal
+        function iniciarPresentacion() {
+            if (currentPresentationId) {
+                window.location.href = '?test=' + encodeURIComponent(currentPresentationId);
+            }
+        }
+    </script>
 </body>
 </html>
 <?php
