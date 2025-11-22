@@ -312,18 +312,9 @@ if (isset($_GET['finalizar']) && $_GET['finalizar'] == 1) {
                         <span class="visually-hidden">Más opciones</span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" id="export-results-only"><i class="fas fa-table me-2"></i>Solo resultados (Excel)</a></li>
-                        <?php if (!empty($test_data['pdf_enabled']) && isset($test_data['configuracion']['exportar_con_anotaciones']) && $test_data['configuracion']['exportar_con_anotaciones']): ?>
+                        <li><a class="dropdown-item" href="#" id="export-results-only"><i class="fas fa-table me-2"></i>Exportar resultados (Excel)</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><h6 class="dropdown-header">Exportar por estudiante</h6></li>
-                        <?php foreach ($session_data['participantes'] as $participante): ?>
-                        <li>
-                            <a class="dropdown-item" href="api/exportar_pdf_con_anotaciones.php?codigo=<?php echo urlencode($codigo_sesion); ?>&participante=<?php echo urlencode($participante['id']); ?>">
-                                <i class="fas fa-file-pdf me-2"></i><?php echo htmlspecialchars($participante['nombre'] ?? 'Participante ' . $participante['id']); ?>
-                            </a>
-                        </li>
-                        <?php endforeach; ?>
-                        <?php endif; ?>
+                        <li class="dropdown-header"><small class="text-muted"><i class="fas fa-info-circle me-1"></i>Los estudiantes pueden exportar su PDF con anotaciones desde su visor</small></li>
                     </ul>
                 </div>
                 <a href="presentador.php?codigo=<?php echo $codigo_sesion; ?>" class="btn btn-primary">

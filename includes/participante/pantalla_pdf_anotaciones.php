@@ -1335,48 +1335,48 @@ function autoSaveAnnotations() {
     saveTimeout = setTimeout(saveAnnotations, 5000);
 }
 
-// Guardar anotaciones
-function saveAnnotations() {
-    const annotationData = {
-        codigo_sesion: codigo,
-        id_participante: participanteId,
-        slide_number: slideNumber,
-        anotaciones: strokes
-    };
+// ========== SISTEMA DE ALMACENAMIENTO LOCAL (Solo Cliente) ==========
 
-    fetch(serverUrl + 'api/guardar_anotaciones.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(annotationData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log('Anotaciones guardadas correctamente');
-        } else {
-            console.error('Error al guardar anotaciones:', data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error al guardar anotaciones:', error);
-    });
+// Claves para localStorage - Las anotaciones/notas son SOLO del cliente
+const STORAGE_PREFIX = `simplementi_${codigo}_${participanteId}_`;
+const ANNOTATIONS_KEY = STORAGE_PREFIX + 'annotations';
+const NOTES_KEY = STORAGE_PREFIX + 'notes';
+
+// Funciones auxiliares para localStorage
+function getLocalStorageData(key) {
+    try {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : null;
+    } catch (e) {
+        console.error('Error al leer localStorage:', e);
+        return null;
+    }
 }
 
-// Cargar anotaciones existentes
+function setLocalStorageData(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+        console.error('Error al escribir en localStorage:', e);
+    }
+}
+
+// Guardar anotaciones SOLO en localStorage (no servidor)
+function saveAnnotations() {
+    const localData = getLocalStorageData(ANNOTATIONS_KEY) || {};
+    localData[slideNumber] = strokes;
+    setLocalStorageData(ANNOTATIONS_KEY, localData);
+    console.log('Anotaciones guardadas localmente');
+}
+
+// Cargar anotaciones SOLO desde localStorage
 function loadAnnotations() {
-    fetch(serverUrl + 'api/obtener_anotaciones.php?codigo=' + codigo + '&id_participante=' + participanteId + '&slide_number=' + slideNumber)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.anotaciones) {
-                strokes = data.anotaciones;
-                redrawAnnotations();
-            }
-        })
-        .catch(error => {
-            console.error('Error al cargar anotaciones:', error);
-        });
+    const localData = getLocalStorageData(ANNOTATIONS_KEY);
+    if (localData && localData[slideNumber]) {
+        strokes = localData[slideNumber];
+        redrawAnnotations();
+        console.log('Anotaciones cargadas desde localStorage');
+    }
 }
 
 // Verificar cambios en la secuencia (modo inteligente con sincronización)
@@ -1667,8 +1667,8 @@ window.addEventListener('load', function() {
 // Redimensionar canvas al cambiar tamaño de ventana
 window.addEventListener('resize', resizeCanvas);
 
-// Verificar cambios cada 1.5 segundos
-setInterval(checkSequenceUpdate, 1500);
+// Verificar cambios cada 3 segundos (reducido para disminuir carga del servidor)
+setInterval(checkSequenceUpdate, 3000);
 
 // Soporte para fullscreen
 document.getElementById('slide-container').addEventListener('dblclick', function() {
@@ -1726,51 +1726,29 @@ function updateCharCount() {
     charCount.textContent = count + ' caracteres';
 }
 
-// Guardar notas (con debouncing)
+// Guardar notas SOLO en localStorage (no servidor)
 function saveNotes() {
     const textarea = document.getElementById('notes-textarea');
     const statusDiv = document.getElementById('notes-status');
 
-    const notesData = {
-        codigo_sesion: codigo,
-        id_participante: participanteId,
-        slide_number: slideNumber,
-        notas: textarea.value,
+    const localData = getLocalStorageData(NOTES_KEY) || {};
+    localData[slideNumber] = {
+        contenido: textarea.value,
         timestamp: new Date().toISOString()
     };
+    setLocalStorageData(NOTES_KEY, localData);
 
-    statusDiv.textContent = 'Guardando...';
-    statusDiv.style.color = '#f39c12';
+    statusDiv.textContent = 'Guardado ✓';
+    statusDiv.style.color = '#1cc88a';
+    notesSaved = true;
 
-    fetch(serverUrl + 'api/guardar_notas.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(notesData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            statusDiv.textContent = 'Guardado ✓';
-            statusDiv.style.color = '#1cc88a';
-            notesSaved = true;
-
-            setTimeout(() => {
-                if (notesSaved) {
-                    statusDiv.textContent = '';
-                }
-            }, 2000);
-        } else {
-            statusDiv.textContent = 'Error al guardar';
-            statusDiv.style.color = '#e74a3b';
+    setTimeout(() => {
+        if (notesSaved) {
+            statusDiv.textContent = '';
         }
-    })
-    .catch(error => {
-        console.error('Error al guardar notas:', error);
-        statusDiv.textContent = 'Error al guardar';
-        statusDiv.style.color = '#e74a3b';
-    });
+    }, 2000);
+
+    console.log('Notas guardadas localmente');
 }
 
 // Manejar cambios en el textarea con debouncing
@@ -1787,27 +1765,22 @@ function handleNotesChange() {
         clearTimeout(notesTimeout);
     }
 
-    // Guardar después de 1 segundo de inactividad
+    // Guardar después de 500ms de inactividad (más rápido ahora que es local)
     notesTimeout = setTimeout(() => {
         saveNotes();
-    }, 1000);
+    }, 500);
 }
 
-// Cargar notas existentes
+// Cargar notas SOLO desde localStorage
 function loadNotes() {
-    fetch(serverUrl + 'api/obtener_notas.php?codigo=' + codigo + '&participante=' + participanteId + '&slide=' + slideNumber)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.notas) {
-                const textarea = document.getElementById('notes-textarea');
-                textarea.value = data.notas;
-                currentNotes = data.notas;
-                updateCharCount();
-            }
-        })
-        .catch(error => {
-            console.error('Error al cargar notas:', error);
-        });
+    const localData = getLocalStorageData(NOTES_KEY);
+    if (localData && localData[slideNumber]) {
+        const textarea = document.getElementById('notes-textarea');
+        textarea.value = localData[slideNumber].contenido;
+        currentNotes = localData[slideNumber].contenido;
+        updateCharCount();
+        console.log('Notas cargadas desde localStorage');
+    }
 }
 
 // Event listener para el textarea
