@@ -394,7 +394,134 @@
             return 'Hace ' + Math.floor(diff / 86400) + 'd';
         }
 
-        // Inicializar
+        // ============================================================
+        // PUNTERO VIRTUAL
+        // ============================================================
+
+        const pointerToggle = document.getElementById('pointer-toggle');
+        const pointerTouchpad = document.getElementById('pointer-touchpad');
+
+        let pointerEnabled = false;
+        let lastPointerSend = 0;
+        const POINTER_THROTTLE = 50; // ms (20 fps)
+
+        // Toggle del puntero
+        pointerToggle.addEventListener('change', async (e) => {
+            pointerEnabled = e.target.checked;
+
+            // Mostrar/ocultar touchpad
+            pointerTouchpad.style.display = pointerEnabled ? 'block' : 'none';
+
+            // Enviar estado al servidor
+            try {
+                const response = await fetch(serverUrl + 'api/control-movil/toggle_puntero.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        pair_code: pairCode,
+                        enabled: pointerEnabled
+                    })
+                });
+
+                const data = await response.json();
+                if (!data.success) {
+                    console.error('Error al toggle puntero:', data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        // Touchpad para mover el puntero
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        pointerTouchpad.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            updatePointerPosition(touch.clientX, touch.clientY);
+        });
+
+        pointerTouchpad.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (e.touches.length > 0) {
+                const touch = e.touches[0];
+                updatePointerPosition(touch.clientX, touch.clientY);
+            }
+        });
+
+        // También soportar mouse (para testing en desktop)
+        let isMouseDown = false;
+
+        pointerTouchpad.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            updatePointerPosition(e.clientX, e.clientY);
+        });
+
+        pointerTouchpad.addEventListener('mousemove', (e) => {
+            if (isMouseDown) {
+                updatePointerPosition(e.clientX, e.clientY);
+            }
+        });
+
+        pointerTouchpad.addEventListener('mouseup', () => {
+            isMouseDown = false;
+        });
+
+        pointerTouchpad.addEventListener('mouseleave', () => {
+            isMouseDown = false;
+        });
+
+        // Actualizar posición del puntero
+        function updatePointerPosition(clientX, clientY) {
+            if (!pointerEnabled) return;
+
+            // Calcular posición relativa al touchpad
+            const rect = pointerTouchpad.getBoundingClientRect();
+            const x = (clientX - rect.left) / rect.width;
+            const y = (clientY - rect.top) / rect.height;
+
+            // Validar rango
+            if (x < 0 || x > 1 || y < 0 || y > 1) return;
+
+            // Throttling: solo enviar cada POINTER_THROTTLE ms
+            const now = Date.now();
+            if (now - lastPointerSend < POINTER_THROTTLE) return;
+            lastPointerSend = now;
+
+            // Enviar al servidor
+            sendPointerUpdate(x, y);
+        }
+
+        // Enviar actualización de puntero al servidor
+        async function sendPointerUpdate(x, y) {
+            try {
+                await fetch(serverUrl + 'api/control-movil/actualizar_puntero.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        pair_code: pairCode,
+                        x: x,
+                        y: y,
+                        enabled: true
+                    })
+                });
+                // No esperamos respuesta para mantener baja latencia
+            } catch (error) {
+                console.error('Error al actualizar puntero:', error);
+            }
+        }
+
+        // ============================================================
+        // INICIALIZACIÓN
+        // ============================================================
+
         console.log('Control móvil inicializado', {pairCode, sessionId, presentationId});
         obtenerEstado();
 
