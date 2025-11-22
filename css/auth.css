@@ -1,0 +1,59 @@
+/* ============================================
+   AUTH - Estilos para páginas de autenticación
+   ============================================ */
+
+/* Login Container */
+.login-container {
+    max-width: 450px;
+    margin: 80px auto;
+}
+
+.auth-logo {
+    max-width: 80px;
+    margin-bottom: 20px;
+}
+
+/* Auth Card */
+.auth-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    padding: var(--spacing-lg);
+}
+
+.auth-body {
+    padding: var(--spacing-xl);
+}
+
+/* Input Groups */
+.auth-input-group .input-group-text {
+    background: var(--gray-50);
+    border-color: var(--gray-300);
+    color: var(--gray-600);
+}
+
+.auth-input-group .form-control:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+/* Auth Footer */
+.auth-footer {
+    background: var(--gray-50);
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--gray-200);
+}
+
+/* Page Footer */
+.page-footer {
+    background: var(--gray-900);
+    color: white;
+    padding: var(--spacing-lg) 0;
+    margin-top: 40px;
+}

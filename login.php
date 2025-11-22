@@ -60,40 +60,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>SimpleMenti - Acceso a Presentación</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-        }
-        .card-header {
-            background: linear-gradient(to right, #4e73df, #224abe);
-        }
-    </style>
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
     <div class="container">
         <div class="login-container">
-            <div class="card shadow">
-                <div class="card-header text-white">
+            <div class="card auth-card">
+                <div class="auth-header text-white">
                     <h3 class="text-center mb-0">
                         <i class="fas fa-lock me-2"></i> Acceso Protegido
                     </h3>
                 </div>
-                <div class="card-body p-4">
+                <div class="auth-body">
                     <h5 class="mb-3 text-center"><?php echo htmlspecialchars($test_data['titulo']); ?></h5>
                     <p class="text-muted text-center mb-4">Esta presentación requiere contraseña</p>
-                    
+
                     <?php if (!empty($error_msg)): ?>
                     <div class="alert alert-danger">
                         <?php echo $error_msg; ?>
                     </div>
                     <?php endif; ?>
-                    
+
                     <form method="post" action="">
-                        <div class="mb-3">
+                        <div class="mb-3 auth-input-group">
                             <label for="password" class="form-label">Contraseña</label>
                             <div class="input-group">
                                 <span class="input-group-text">
@@ -103,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary-modern">
                                 <i class="fas fa-sign-in-alt me-2"></i> Acceder
                             </button>
                             <a href="index.php" class="btn btn-secondary">
