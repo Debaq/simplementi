@@ -112,6 +112,9 @@ if (empty($codigo_sesion)) {
         include('includes/presentador/panel_control_interacciones.php');
     }
 
+    // Incluir modal de control móvil
+    include('includes/presentador/modal_control_movil.php');
+
     // Incluir scripts
     include('includes/presentador/scripts.php');
     

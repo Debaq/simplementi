@@ -515,5 +515,169 @@ if (preguntaActual > 0) {
     actualizarContadorParticipantes();
     setInterval(actualizarContadorParticipantes, 2000);
 }
+
+    // ============================================================
+    // CONTROL MÓVIL
+    // ============================================================
+
+    const btnConectarMovil = document.getElementById('btn-conectar-movil');
+    const modalControlMovil = new bootstrap.Modal(document.getElementById('modalControlMovil'));
+    const btnGenerarQR = document.getElementById('btn-generar-qr');
+    const btnRegenerarQR = document.getElementById('btn-regenerar-qr');
+
+    let countdownInterval = null;
+    let currentPairCode = null;
+
+    // Abrir modal al hacer clic en el botón
+    if (btnConectarMovil) {
+        btnConectarMovil.addEventListener('click', (e) => {
+            e.preventDefault();
+            mostrarAdvertencia();
+            modalControlMovil.show();
+        });
+    }
+
+    // Generar QR cuando se acepta la advertencia
+    if (btnGenerarQR) {
+        btnGenerarQR.addEventListener('click', () => {
+            generarCodigoEmparejamiento();
+        });
+    }
+
+    // Regenerar QR
+    if (btnRegenerarQR) {
+        btnRegenerarQR.addEventListener('click', () => {
+            generarCodigoEmparejamiento();
+        });
+    }
+
+    function mostrarAdvertencia() {
+        document.getElementById('modal-advertencia').style.display = 'block';
+        document.getElementById('modal-qr').style.display = 'none';
+        limpiarCountdown();
+    }
+
+    function mostrarQR() {
+        document.getElementById('modal-advertencia').style.display = 'none';
+        document.getElementById('modal-qr').style.display = 'block';
+    }
+
+    function generarCodigoEmparejamiento() {
+        // Mostrar loading
+        btnGenerarQR.disabled = true;
+        btnGenerarQR.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generando...';
+
+        fetch(serverUrl + 'api/generar_codigo_emparejamiento.php?session=' + codigoSesion)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentPairCode = data.pair_code;
+
+                    // Mostrar QR
+                    document.getElementById('qr-image').src = data.qr_image;
+                    document.getElementById('pair-code').textContent = data.pair_code;
+
+                    // Cambiar a pantalla de QR
+                    mostrarQR();
+
+                    // Iniciar countdown
+                    iniciarCountdown(data.expires_in);
+
+                    // Restaurar botón
+                    btnGenerarQR.disabled = false;
+                    btnGenerarQR.innerHTML = '<i class="fas fa-check me-2"></i> Entiendo, Generar QR';
+                } else {
+                    alert('Error al generar código: ' + data.message);
+                    btnGenerarQR.disabled = false;
+                    btnGenerarQR.innerHTML = '<i class="fas fa-check me-2"></i> Entiendo, Generar QR';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error de conexión al generar código');
+                btnGenerarQR.disabled = false;
+                btnGenerarQR.innerHTML = '<i class="fas fa-check me-2"></i> Entiendo, Generar QR';
+            });
+    }
+
+    function iniciarCountdown(seconds) {
+        limpiarCountdown();
+
+        let remaining = seconds;
+        const progressBar = document.getElementById('countdown-progress');
+        const countdownText = document.getElementById('countdown-text');
+
+        function updateCountdown() {
+            if (remaining <= 0) {
+                limpiarCountdown();
+                // Mostrar que expiró
+                progressBar.classList.remove('bg-warning');
+                progressBar.classList.add('bg-danger');
+                countdownText.textContent = 'Código expirado';
+
+                setTimeout(() => {
+                    mostrarAdvertencia();
+                }, 2000);
+                return;
+            }
+
+            const percentage = (remaining / seconds) * 100;
+            progressBar.style.width = percentage + '%';
+            progressBar.setAttribute('aria-valuenow', percentage);
+            countdownText.textContent = `Expira en: ${remaining}s`;
+
+            // Cambiar color si quedan menos de 10 segundos
+            if (remaining <= 10) {
+                progressBar.classList.remove('bg-warning');
+                progressBar.classList.add('bg-danger');
+            }
+
+            remaining--;
+        }
+
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    function limpiarCountdown() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+
+        // Resetear barra de progreso
+        const progressBar = document.getElementById('countdown-progress');
+        const countdownText = document.getElementById('countdown-text');
+
+        if (progressBar) {
+            progressBar.classList.remove('bg-danger');
+            progressBar.classList.add('bg-warning');
+            progressBar.style.width = '100%';
+            progressBar.setAttribute('aria-valuenow', 100);
+        }
+
+        if (countdownText) {
+            countdownText.textContent = 'Expira en: 30s';
+        }
+    }
+
+    // Limpiar countdown al cerrar modal
+    document.getElementById('modalControlMovil').addEventListener('hidden.bs.modal', () => {
+        limpiarCountdown();
+        mostrarAdvertencia();
+    });
+
+    // Permitir copiar código al hacer clic
+    document.getElementById('pair-code').addEventListener('click', function() {
+        const text = this.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const original = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i> Copiado';
+            setTimeout(() => {
+                this.textContent = text;
+            }, 1500);
+        });
+    });
+
     });
 </script>

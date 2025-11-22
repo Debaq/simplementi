@@ -19,6 +19,8 @@
                     <li><a class="dropdown-item" href="resumen.php?codigo=<?php echo $codigo_sesion; ?>"><i class="fas fa-chart-bar me-2"></i> Ver resumen</a></li>
                     <?php endif; ?>
                     <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" id="btn-conectar-movil"><i class="fas fa-mobile-alt me-2"></i> Conectar Dispositivo Móvil</a></li>
+                    <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item text-danger" href="#" id="btn-finalizar"><i class="fas fa-power-off me-2"></i> Finalizar sesión</a></li>
                 </ul>
             </div>
