@@ -5,23 +5,63 @@
     <div class="card-body">
         <form method="post" action="">
             <div class="row mb-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label for="id" class="form-label">ID de la presentación</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                        <input type="text" class="form-control" id="id" name="id" 
+                        <input type="text" class="form-control" id="id" name="id"
                                value="<?php echo htmlspecialchars($id_presentacion); ?>" readonly>
                     </div>
                     <div class="form-text">El ID no se puede cambiar.</div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label for="titulo" class="form-label">Título <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-heading"></i></span>
-                        <input type="text" class="form-control" id="titulo" name="titulo" 
+                        <input type="text" class="form-control" id="titulo" name="titulo"
                                value="<?php echo htmlspecialchars($presentacion_data['titulo']); ?>" required>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <label for="carpeta" class="form-label">Carpeta / Sección</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                        <select class="form-select" id="carpeta-edit" name="carpeta">
+                            <option value="">Sin carpeta</option>
+                            <?php
+                            // Obtener carpetas existentes
+                            $carpetas_existentes = [];
+                            if (file_exists('data/index.json')) {
+                                $index_json = file_get_contents('data/index.json');
+                                $index_data = json_decode($index_json, true);
+                                if ($index_data && isset($index_data['carpetas'])) {
+                                    $carpetas_existentes = $index_data['carpetas'];
+                                }
+                            }
+
+                            $carpeta_actual = isset($presentacion_data['carpeta']) ? $presentacion_data['carpeta'] : '';
+
+                            foreach ($carpetas_existentes as $carpeta):
+                            ?>
+                                <option value="<?php echo htmlspecialchars($carpeta); ?>"
+                                        <?php echo $carpeta_actual === $carpeta ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($carpeta); ?>
+                                </option>
+                            <?php endforeach; ?>
+                            <option value="__nueva__">+ Nueva carpeta...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3" id="nueva-carpeta-edit-container" style="display: none;">
+                <label for="nueva_carpeta_edit" class="form-label">Nombre de la nueva carpeta</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-folder-plus"></i></span>
+                    <input type="text" class="form-control" id="nueva_carpeta_edit" name="nueva_carpeta"
+                           placeholder="Ej: Matemáticas, Ciencias, Secundaria, etc.">
+                </div>
+                <div class="form-text">Organice sus presentaciones por temas o categorías</div>
             </div>
             
             <div class="mb-3">
@@ -97,6 +137,50 @@
                                 <li>Las páginas se convierten a imágenes optimizadas para móviles</li>
                                 <li>Los participantes verán las imágenes del PDF + las preguntas</li>
                             </ul>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <!-- Opciones de audio y modo asíncrono -->
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-microphone me-2"></i>
+                            <strong>Modo asíncrono con audio:</strong> Graba tu voz en cada diapositiva para que los estudiantes puedan ver la presentación sin tu presencia.
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="habilitar_audio" name="habilitar_audio" value="1"
+                                   <?php echo !empty($config['habilitar_audio']) ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="habilitar_audio">
+                                <strong>Habilitar grabaciones de audio por diapositiva</strong>
+                            </label>
+                        </div>
+
+                        <div id="audio-options-section" style="<?php echo !empty($config['habilitar_audio']) ? '' : 'display: none;'; ?>">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="modo_asincrono" name="modo_asincrono" value="1"
+                                       <?php echo !empty($config['modo_asincrono']) ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="modo_asincrono">
+                                    <strong>Permitir modo asíncrono</strong> - Los estudiantes pueden ver la presentación sin el presentador
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="un_solo_intento" name="un_solo_intento" value="1"
+                                       <?php echo !empty($config['un_solo_intento']) ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="un_solo_intento">
+                                    <strong>Permitir solo un intento por pregunta</strong> - Los estudiantes no podrán cambiar sus respuestas
+                                </label>
+                            </div>
+
+                            <?php if (!empty($presentacion_data['pdf_file'])): ?>
+                            <div class="alert alert-success mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>¿Cómo grabar audio?</strong> Ve a la pestaña de "Grabaciones de audio" para grabar tu voz en cada diapositiva.
+                                <?php if (!empty($presentacion_data['audios_grabados'])): ?>
+                                <br><span class="badge bg-success mt-2"><?php echo count($presentacion_data['audios_grabados']); ?> diapositivas con audio</span>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -259,3 +343,159 @@
         </form>
     </div>
 </div>
+
+<!-- Sección de exportación y compartir -->
+<div class="card shadow mt-4">
+    <div class="card-header py-3 bg-success text-white">
+        <h6 class="m-0 font-weight-bold">
+            <i class="fas fa-share-alt me-2"></i>Exportar y compartir
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <h6><i class="fas fa-download me-2"></i>Exportar preguntas</h6>
+                <p class="text-muted small">Descargue las preguntas en formato GIFT para importarlas en otras plataformas educativas (Moodle, Canvas, etc.)</p>
+                <button type="button" class="btn btn-outline-success" id="btn-exportar-gift">
+                    <i class="fas fa-file-download me-2"></i>Descargar GIFT
+                </button>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <h6><i class="fas fa-link me-2"></i>Link de acceso</h6>
+                <p class="text-muted small">Genere links y códigos embed para compartir esta presentación</p>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-compartir">
+                    <i class="fas fa-share-nodes me-2"></i>Generar links
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para compartir -->
+<div class="modal fade" id="modal-compartir" tabindex="-1" aria-labelledby="modal-compartir-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modal-compartir-label">
+                    <i class="fas fa-share-nodes me-2"></i>Compartir presentación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Nota:</strong> Para obtener los links de una sesión específica, primero debe iniciar una sesión desde la página principal.
+                    Estos enlaces son para compartir la presentación directamente.
+                </div>
+
+                <div class="mb-4">
+                    <h6><i class="fas fa-link me-2"></i>Link directo a la presentación</h6>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="link-presentacion" readonly
+                               value="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/') . '/../index.php?test=' . urlencode($id_presentacion); ?>">
+                        <button class="btn btn-outline-primary" type="button" id="copy-link-presentacion">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <small class="text-muted">Este link llevará a los usuarios a la página de inicio donde pueden unirse a una sesión activa.</small>
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <h6><i class="fas fa-qrcode me-2"></i>Código QR</h6>
+                    <p class="text-muted small">Genere un código QR para que los participantes escaneen y accedan fácilmente</p>
+                    <div class="text-center" id="qr-code-container">
+                        <img id="qr-code-img" src="" alt="Código QR" class="img-fluid" style="max-width: 300px; display: none;">
+                        <br>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="btn-generar-qr">
+                            <i class="fas fa-qrcode me-1"></i>Generar código QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Botón para exportar preguntas en formato GIFT
+    const btnExportarGift = document.getElementById('btn-exportar-gift');
+    if (btnExportarGift) {
+        btnExportarGift.addEventListener('click', function() {
+            const presentacionId = '<?php echo $id_presentacion; ?>';
+            window.location.href = `api/exportar_gift.php?id=${presentacionId}`;
+        });
+    }
+
+    // Copiar link de presentación
+    const btnCopyLink = document.getElementById('copy-link-presentacion');
+    const linkInput = document.getElementById('link-presentacion');
+
+    if (btnCopyLink && linkInput) {
+        btnCopyLink.addEventListener('click', function() {
+            linkInput.select();
+            document.execCommand('copy');
+
+            const icon = this.querySelector('i');
+            const originalHTML = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i> Copiado';
+            this.classList.remove('btn-outline-primary');
+            this.classList.add('btn-success');
+
+            setTimeout(() => {
+                this.innerHTML = originalHTML;
+                this.classList.remove('btn-success');
+                this.classList.add('btn-outline-primary');
+            }, 2000);
+        });
+    }
+
+    // Generar código QR
+    const btnGenerarQR = document.getElementById('btn-generar-qr');
+    const qrCodeImg = document.getElementById('qr-code-img');
+
+    if (btnGenerarQR && qrCodeImg) {
+        btnGenerarQR.addEventListener('click', function() {
+            const link = linkInput.value;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
+            qrCodeImg.src = qrUrl;
+            qrCodeImg.style.display = 'block';
+            btnGenerarQR.style.display = 'none';
+        });
+    }
+
+    // Toggle sección de opciones de audio
+    const habilitarAudioCheckbox = document.getElementById('habilitar_audio');
+    const audioOptionsSection = document.getElementById('audio-options-section');
+
+    if (habilitarAudioCheckbox && audioOptionsSection) {
+        habilitarAudioCheckbox.addEventListener('change', function() {
+            audioOptionsSection.style.display = this.checked ? '' : 'none';
+        });
+    }
+
+    // Mostrar/ocultar campo de nueva carpeta en edición
+    const carpetaEditSelect = document.getElementById('carpeta-edit');
+    const nuevaCarpetaEditContainer = document.getElementById('nueva-carpeta-edit-container');
+    const nuevaCarpetaEditInput = document.getElementById('nueva_carpeta_edit');
+
+    if (carpetaEditSelect && nuevaCarpetaEditContainer) {
+        carpetaEditSelect.addEventListener('change', function() {
+            if (this.value === '__nueva__') {
+                nuevaCarpetaEditContainer.style.display = 'block';
+                nuevaCarpetaEditInput.setAttribute('required', 'required');
+            } else {
+                nuevaCarpetaEditContainer.style.display = 'none';
+                nuevaCarpetaEditInput.removeAttribute('required');
+                nuevaCarpetaEditInput.value = '';
+            }
+        });
+    }
+});
+</script>

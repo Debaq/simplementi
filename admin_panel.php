@@ -354,17 +354,41 @@ if ($seccion === 'presentaciones') {
                 </a>
             </div>
 
+            <?php
+            // Agrupar presentaciones por carpeta
+            $presentaciones_por_carpeta = [];
+            foreach ($presentaciones as $presentacion) {
+                $carpeta = isset($presentacion['carpeta']) && !empty($presentacion['carpeta'])
+                         ? $presentacion['carpeta']
+                         : 'Sin carpeta';
+
+                if (!isset($presentaciones_por_carpeta[$carpeta])) {
+                    $presentaciones_por_carpeta[$carpeta] = [];
+                }
+                $presentaciones_por_carpeta[$carpeta][] = $presentacion;
+            }
+
+            // Ordenar carpetas (Sin carpeta al final)
+            uksort($presentaciones_por_carpeta, function($a, $b) {
+                if ($a === 'Sin carpeta') return 1;
+                if ($b === 'Sin carpeta') return -1;
+                return strcmp($a, $b);
+            });
+            ?>
+
+            <?php foreach ($presentaciones_por_carpeta as $carpeta => $presentaciones_carpeta): ?>
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">Presentaciones disponibles</h6>
-                    <span class="badge bg-primary"><?php echo count($presentaciones); ?> presentaciones</span>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-folder me-2"></i><?php echo htmlspecialchars($carpeta); ?>
+                    </h6>
+                    <span class="badge bg-primary"><?php echo count($presentaciones_carpeta); ?> presentación(es)</span>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Título</th>
                                     <th>Descripción</th>
                                     <th>Autor</th>
@@ -374,16 +398,15 @@ if ($seccion === 'presentaciones') {
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (empty($presentaciones)): ?>
+                                <?php foreach ($presentaciones_carpeta as $presentacion): ?>
                                 <tr>
-                                    <td colspan="7" class="text-center">No hay presentaciones disponibles.</td>
-                                </tr>
-                                <?php else: ?>
-                                <?php foreach ($presentaciones as $presentacion): ?>
-                                <tr>
-                                    <td><code><?php echo htmlspecialchars($presentacion['id']); ?></code></td>
-                                    <td><?php echo htmlspecialchars($presentacion['titulo']); ?></td>
-                                    <td class="text-truncate"><?php echo htmlspecialchars($presentacion['descripcion']); ?></td>
+                                    <td>
+                                        <strong><?php echo htmlspecialchars($presentacion['titulo']); ?></strong>
+                                        <br><small class="text-muted"><code><?php echo htmlspecialchars($presentacion['id']); ?></code></small>
+                                    </td>
+                                    <td class="text-truncate" style="max-width: 300px;">
+                                        <?php echo htmlspecialchars($presentacion['descripcion']); ?>
+                                    </td>
                                     <td><?php echo htmlspecialchars($presentacion['autor']); ?></td>
                                     <td><?php echo date('d/m/Y', strtotime($presentacion['fecha_creacion'])); ?></td>
                                     <td>
@@ -395,15 +418,16 @@ if ($seccion === 'presentaciones') {
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="editar_presentacion.php?id=<?php echo urlencode($presentacion['id']); ?>" class="btn btn-primary" title="Editar">
+                                            <a href="editar_presentacion.php?id=<?php echo urlencode($presentacion['id']); ?>"
+                                               class="btn btn-primary" title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="?seccion=presentaciones&accion=eliminar_presentacion&id=<?php echo urlencode($presentacion['id']); ?>" 
+                                            <a href="?seccion=presentaciones&accion=eliminar_presentacion&id=<?php echo urlencode($presentacion['id']); ?>"
                                                class="btn btn-danger" title="Eliminar"
                                                onclick="return confirm('¿Está seguro de eliminar esta presentación? Esta acción no se puede deshacer.')">
                                                 <i class="fas fa-trash"></i>
                                             </a>
-                                            <a href="index.php?test=<?php echo urlencode($presentacion['id']); ?>" 
+                                            <a href="index.php?test=<?php echo urlencode($presentacion['id']); ?>"
                                                class="btn btn-success" title="Ver presentación" target="_blank">
                                                 <i class="fas fa-eye"></i>
                                             </a>
@@ -411,12 +435,22 @@ if ($seccion === 'presentaciones') {
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
-                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+            <?php endforeach; ?>
+
+            <?php if (empty($presentaciones)): ?>
+            <div class="card shadow mb-4">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No hay presentaciones disponibles</h5>
+                    <p class="text-muted">Cree su primera presentación haciendo clic en "Nueva Presentación"</p>
+                </div>
+            </div>
+            <?php endif; ?>
             <?php elseif ($seccion === 'usuarios'): ?>
             <!-- Usuarios -->
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
