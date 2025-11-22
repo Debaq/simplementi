@@ -172,9 +172,234 @@
         const pairCode = '<?php echo htmlspecialchars($pair_code); ?>';
         const sessionId = '<?php echo htmlspecialchars($session_id); ?>';
         const presentationId = '<?php echo htmlspecialchars($presentation_id); ?>';
+        const serverUrl = window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 
-        // TODO: Implementar lógica de control (Fase 4)
+        let currentState = null;
+
+        // Elementos DOM
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const btnDisconnect = document.getElementById('btn-disconnect');
+        const slideIndicator = document.getElementById('slide-indicator');
+        const participantsCount = document.getElementById('participants-count');
+        const participantsList = document.getElementById('participants-list');
+        const handsList = document.getElementById('hands-list');
+        const questionsList = document.getElementById('questions-list');
+        const interactionsCount = document.getElementById('interactions-count');
+
+        // Navegación
+        btnPrev.addEventListener('click', () => retroceder());
+        btnNext.addEventListener('click', () => avanzar());
+
+        // Desconectar
+        btnDisconnect.addEventListener('click', () => {
+            if (confirm('¿Deseas desconectar el control móvil?')) {
+                window.location.href = 'control-movil.php';
+            }
+        });
+
+        // Función para avanzar
+        async function avanzar() {
+            btnNext.disabled = true;
+            btnNext.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Avanzando...';
+
+            try {
+                const response = await fetch(serverUrl + 'api/control-movil/avanzar.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ pair_code: pairCode })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Actualizar UI
+                    actualizarSlideIndicator(data.current_item);
+                    await obtenerEstado(); // Refresh completo
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error al avanzar:', error);
+                alert('Error de conexión');
+            } finally {
+                btnNext.disabled = false;
+                btnNext.innerHTML = 'Siguiente <i class="fas fa-chevron-right ms-2"></i>';
+            }
+        }
+
+        // Función para retroceder
+        async function retroceder() {
+            btnPrev.disabled = true;
+            btnPrev.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Retrocediendo...';
+
+            try {
+                const response = await fetch(serverUrl + 'api/control-movil/retroceder.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ pair_code: pairCode })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Actualizar UI
+                    actualizarSlideIndicator(data.current_item);
+                    await obtenerEstado(); // Refresh completo
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error al retroceder:', error);
+                alert('Error de conexión');
+            } finally {
+                btnPrev.disabled = false;
+                btnPrev.innerHTML = '<i class="fas fa-chevron-left me-2"></i> Anterior';
+            }
+        }
+
+        // Función para obtener estado
+        async function obtenerEstado() {
+            try {
+                const response = await fetch(serverUrl + 'api/control-movil/estado.php?pair_code=' + pairCode);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentState = data;
+                    actualizarUI(data);
+                } else {
+                    console.error('Error al obtener estado:', data.message);
+                }
+            } catch (error) {
+                console.error('Error al obtener estado:', error);
+            }
+        }
+
+        // Actualizar UI con el estado
+        function actualizarUI(data) {
+            // Actualizar slide indicator
+            actualizarSlideIndicator(data.session.current_item);
+
+            // Actualizar participantes
+            participantsCount.textContent = data.session.participants_count;
+            renderParticipantes(data.participants);
+
+            // Actualizar interacciones
+            const totalInteractions = data.interactions.hands_count + data.interactions.questions_count;
+            interactionsCount.textContent = totalInteractions;
+            renderManos(data.interactions.hands_raised);
+            renderPreguntas(data.interactions.questions);
+
+            // Deshabilitar botones según posición
+            btnPrev.disabled = (data.session.current_item.index === 0);
+            btnNext.disabled = (data.session.current_item.index >= data.session.current_item.total - 1);
+        }
+
+        // Actualizar indicador de slide
+        function actualizarSlideIndicator(item) {
+            const text = item.title || `${item.type} ${item.index + 1}/${item.total}`;
+            slideIndicator.textContent = text;
+        }
+
+        // Renderizar lista de participantes
+        function renderParticipantes(participants) {
+            if (participants.length === 0) {
+                participantsList.innerHTML = '<p class="text-muted text-center small">No hay participantes conectados</p>';
+                return;
+            }
+
+            let html = '<div class="list-group">';
+            participants.forEach(p => {
+                html += `
+                    <div class="list-group-item participant-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-user text-primary me-2"></i>
+                                <strong>${escapeHtml(p.nombre)}</strong>
+                            </div>
+                            <span class="badge bg-secondary">${p.respuestas_count} resp.</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            participantsList.innerHTML = html;
+        }
+
+        // Renderizar manos levantadas
+        function renderManos(hands) {
+            if (hands.length === 0) {
+                handsList.innerHTML = '<p class="text-muted text-center small">No hay manos levantadas</p>';
+                return;
+            }
+
+            let html = '';
+            hands.forEach(hand => {
+                const timeAgo = calcularTiempoAtras(hand.timestamp);
+                html += `
+                    <div class="interaction-item">
+                        <i class="fas fa-hand-paper text-warning me-2"></i>
+                        <strong>${escapeHtml(hand.participant_name)}</strong>
+                        <br>
+                        <small class="text-muted">${timeAgo}</small>
+                    </div>
+                `;
+            });
+            handsList.innerHTML = html;
+        }
+
+        // Renderizar preguntas
+        function renderPreguntas(questions) {
+            if (questions.length === 0) {
+                questionsList.innerHTML = '<p class="text-muted text-center small">No hay preguntas</p>';
+                return;
+            }
+
+            let html = '';
+            questions.forEach(q => {
+                const timeAgo = calcularTiempoAtras(q.timestamp);
+                const participantName = q.anonymous ? 'Anónimo' : escapeHtml(q.participant_name);
+                html += `
+                    <div class="interaction-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>${participantName}</strong>
+                            <small class="text-muted">${timeAgo}</small>
+                        </div>
+                        <p class="mb-0 mt-1">${escapeHtml(q.question)}</p>
+                    </div>
+                `;
+            });
+            questionsList.innerHTML = html;
+        }
+
+        // Utilidades
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function calcularTiempoAtras(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diff = Math.floor((now - time) / 1000); // segundos
+
+            if (diff < 60) return 'Hace ' + diff + 's';
+            if (diff < 3600) return 'Hace ' + Math.floor(diff / 60) + 'm';
+            if (diff < 86400) return 'Hace ' + Math.floor(diff / 3600) + 'h';
+            return 'Hace ' + Math.floor(diff / 86400) + 'd';
+        }
+
+        // Inicializar
         console.log('Control móvil inicializado', {pairCode, sessionId, presentationId});
+        obtenerEstado();
+
+        // Actualizar cada 3 segundos
+        setInterval(obtenerEstado, 3000);
     </script>
 </body>
 </html>
