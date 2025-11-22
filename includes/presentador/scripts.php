@@ -15,8 +15,8 @@
         if (document.getElementById('qr-code-main')) {
             new QRCode(document.getElementById('qr-code-main'), {
                 text: serverUrl + 'participante.php?codigo=' + codigoSesion,
-                width: 250,
-                height: 250,
+                width: 280,
+                height: 280,
                 colorDark: '#000000',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.H
