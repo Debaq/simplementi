@@ -825,6 +825,9 @@
     <button class="tool-btn" id="tool-save" title="Guardar anotaciones">
         <i class="fas fa-save"></i>
     </button>
+    <button class="tool-btn" id="tool-export-pdf" title="Exportar PDF con anotaciones y notas" style="background: #1cc88a; color: white;">
+        <i class="fas fa-file-pdf"></i>
+    </button>
 </div>
 
 <!-- Controles de navegación -->
@@ -914,6 +917,19 @@
     <div class="modal-buttons">
         <button class="modal-btn modal-btn-secondary" id="question-cancel">Cancelar</button>
         <button class="modal-btn modal-btn-primary" id="question-send">Enviar pregunta</button>
+    </div>
+</div>
+
+<!-- Modal de progreso de exportación PDF -->
+<div id="pdf-export-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 40px; border-radius: 15px; text-align: center; max-width: 500px;">
+        <div class="loading-spinner" style="margin: 0 auto 20px;"></div>
+        <h4 style="color: #4e73df; margin-bottom: 15px;">Generando PDF</h4>
+        <p id="pdf-progress-text" style="color: #666; margin-bottom: 10px;">Preparando exportación...</p>
+        <div style="background: #f0f0f0; border-radius: 10px; height: 30px; overflow: hidden;">
+            <div id="pdf-progress-bar" style="background: linear-gradient(to right, #4e73df, #1cc88a); height: 100%; width: 0%; transition: width 0.3s;"></div>
+        </div>
+        <small id="pdf-progress-detail" style="color: #999; display: block; margin-top: 10px;">Esto puede tomar unos momentos...</small>
     </div>
 </div>
 
@@ -1839,4 +1855,327 @@ document.getElementById('dark-mode-toggle').addEventListener('click', toggleDark
 
 // Cargar preferencia al iniciar
 loadDarkModePreference();
+
+// ========== EXPORTACIÓN DE PDF EN EL CLIENTE ==========
+
+async function exportPDF() {
+    const { jsPDF } = window.jspdf;
+
+    // Mostrar modal de progreso
+    const modal = document.getElementById('pdf-export-modal');
+    modal.style.display = 'flex';
+
+    const progressText = document.getElementById('pdf-progress-text');
+    const progressBar = document.getElementById('pdf-progress-bar');
+    const progressDetail = document.getElementById('pdf-progress-detail');
+
+    try {
+        // Paso 1: Obtener resultados de evaluación del servidor
+        progressText.textContent = 'Obteniendo resultados de evaluación...';
+        progressBar.style.width = '10%';
+
+        const resultsResponse = await fetch(serverUrl + `api/obtener_resultados_participante.php?codigo=${codigo}&participante=${participanteId}`);
+        const resultsData = await resultsResponse.json();
+
+        if (!resultsData.success) {
+            throw new Error('No se pudieron obtener los resultados');
+        }
+
+        // Paso 2: Obtener todas las slides y anotaciones/notas locales
+        progressText.textContent = 'Cargando anotaciones y notas...';
+        progressBar.style.width = '20%';
+
+        const allSlides = <?php echo json_encode($test_data['pdf_images']); ?>;
+        const annotations = getLocalStorageData(ANNOTATIONS_KEY) || {};
+        const notes = getLocalStorageData(NOTES_KEY) || {};
+
+        // Crear PDF
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        // Paso 3: Procesar cada slide
+        for (let i = 0; i < allSlides.length; i++) {
+            const slideNum = i + 1;
+            const slide = allSlides[i];
+
+            progressText.textContent = `Procesando slide ${slideNum} de ${allSlides.length}...`;
+            const progress = 20 + ((i / allSlides.length) * 50);
+            progressBar.style.width = progress + '%';
+            progressDetail.textContent = `Renderizando anotaciones del slide ${slideNum}...`;
+
+            if (i > 0) pdf.addPage();
+
+            // Crear canvas temporal para renderizar slide con anotaciones
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+
+            // Cargar imagen del slide
+            const img = await loadImage(slide.path);
+            tempCanvas.width = img.width;
+            tempCanvas.height = img.height;
+
+            // Dibujar imagen
+            tempCtx.drawImage(img, 0, 0);
+
+            // Dibujar anotaciones si existen
+            if (annotations[slideNum]) {
+                const slideAnnotations = annotations[slideNum];
+                for (const stroke of slideAnnotations) {
+                    if (stroke.type === 'text') {
+                        // Dibujar texto
+                        tempCtx.fillStyle = stroke.color;
+                        tempCtx.font = `${stroke.size * 3}px Arial`;
+                        tempCtx.fillText(stroke.text, stroke.position.x, stroke.position.y);
+                    } else if (stroke.tool === 'arrow' || stroke.tool === 'line' || stroke.tool === 'circle' || stroke.tool === 'rectangle') {
+                        // Dibujar forma geométrica
+                        drawShapeOnCanvas(tempCtx, stroke);
+                    } else {
+                        // Dibujar trazo
+                        if (stroke.points && stroke.points.length > 1) {
+                            tempCtx.strokeStyle = stroke.color;
+                            tempCtx.lineWidth = stroke.size;
+                            tempCtx.globalAlpha = stroke.tool === 'marker' ? 0.5 : 1;
+
+                            tempCtx.beginPath();
+                            tempCtx.moveTo(stroke.points[0].x, stroke.points[0].y);
+                            for (let j = 1; j < stroke.points.length; j++) {
+                                tempCtx.lineTo(stroke.points[j].x, stroke.points[j].y);
+                            }
+                            tempCtx.stroke();
+                            tempCtx.globalAlpha = 1;
+                        }
+                    }
+                }
+            }
+
+            // Convertir canvas a imagen y agregar al PDF
+            const imgData = tempCanvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, pageWidth - 20, pageHeight - 40);
+
+            // Agregar notas si existen
+            if (notes[slideNum] && notes[slideNum].contenido) {
+                pdf.setFontSize(9);
+                pdf.setTextColor(78, 115, 223);
+                pdf.text('Notas:', 10, pageHeight - 20);
+
+                pdf.setFontSize(8);
+                pdf.setTextColor(50, 50, 50);
+                const notesText = notes[slideNum].contenido;
+                const splitText = pdf.splitTextToSize(notesText, pageWidth - 20);
+                pdf.text(splitText, 10, pageHeight - 15);
+            }
+
+            // Número de slide
+            pdf.setFontSize(10);
+            pdf.setTextColor(100, 100, 100);
+            pdf.text(`Slide ${slideNum} / ${allSlides.length}`, pageWidth - 30, pageHeight - 5);
+        }
+
+        // Paso 4: Agregar página de resultados
+        progressText.textContent = 'Agregando resultados de evaluación...';
+        progressBar.style.width = '80%';
+
+        pdf.addPage();
+
+        // Título
+        pdf.setFontSize(18);
+        pdf.setTextColor(78, 115, 223);
+        pdf.text('Resultados de Evaluación', pageWidth / 2, 20, { align: 'center' });
+
+        pdf.setFontSize(14);
+        pdf.setTextColor(50, 50, 50);
+        pdf.text(resultsData.presentacion.titulo, pageWidth / 2, 30, { align: 'center' });
+
+        pdf.setFontSize(12);
+        pdf.text(`Participante: ${resultsData.participante.nombre}`, pageWidth / 2, 40, { align: 'center' });
+
+        // Estadísticas
+        let y = 55;
+        pdf.setFontSize(11);
+        pdf.setTextColor(78, 115, 223);
+        pdf.text('Estadísticas:', 15, y);
+
+        y += 10;
+        pdf.setFontSize(10);
+        pdf.setTextColor(50, 50, 50);
+        pdf.text(`Puntaje total: ${resultsData.estadisticas.puntaje} puntos`, 20, y);
+
+        y += 7;
+        pdf.text(`Porcentaje de acierto: ${resultsData.estadisticas.porcentaje_acierto}%`, 20, y);
+
+        y += 7;
+        pdf.setTextColor(28, 200, 138);
+        pdf.text(`Respuestas correctas: ${resultsData.estadisticas.total_correctas}`, 20, y);
+
+        y += 7;
+        pdf.setTextColor(231, 74, 59);
+        pdf.text(`Respuestas incorrectas: ${resultsData.estadisticas.total_incorrectas}`, 20, y);
+
+        y += 7;
+        pdf.setTextColor(50, 50, 50);
+        pdf.text(`Tiempo promedio: ${resultsData.estadisticas.tiempo_promedio} segundos`, 20, y);
+
+        // Detalle de preguntas (solo las primeras para no saturar)
+        y += 15;
+        pdf.setFontSize(11);
+        pdf.setTextColor(78, 115, 223);
+        pdf.text('Detalle de Respuestas:', 15, y);
+
+        y += 10;
+        pdf.setFontSize(9);
+
+        const maxQuestions = Math.min(resultsData.preguntas.length, 15); // Máximo 15 preguntas en resumen
+        for (let i = 0; i < maxQuestions; i++) {
+            const q = resultsData.preguntas[i];
+
+            if (y > pageHeight - 20) {
+                pdf.addPage();
+                y = 20;
+            }
+
+            pdf.setTextColor(78, 115, 223);
+            pdf.text(`${i + 1}. ${q.pregunta.pregunta.substring(0, 80)}${q.pregunta.pregunta.length > 80 ? '...' : ''}`, 20, y);
+
+            y += 6;
+            if (q.respondida) {
+                if (q.es_correcta) {
+                    pdf.setTextColor(28, 200, 138);
+                    pdf.text('✓ Correcta', 25, y);
+                } else {
+                    pdf.setTextColor(231, 74, 59);
+                    pdf.text(`✗ Incorrecta - Respuesta correcta: ${q.pregunta.respuesta_correcta}`, 25, y);
+                }
+            } else {
+                pdf.setTextColor(150, 150, 150);
+                pdf.text('No respondida', 25, y);
+            }
+
+            y += 8;
+        }
+
+        if (resultsData.preguntas.length > maxQuestions) {
+            pdf.setFontSize(8);
+            pdf.setTextColor(100, 100, 100);
+            pdf.text(`... y ${resultsData.preguntas.length - maxQuestions} preguntas más`, 20, y);
+        }
+
+        // Pie de página
+        progressText.textContent = 'Finalizando PDF...';
+        progressBar.style.width = '95%';
+
+        const totalPages = pdf.internal.pages.length - 1;
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(8);
+            pdf.setTextColor(150, 150, 150);
+            pdf.text(`Generado con SimpleMenti - ${new Date().toLocaleDateString()}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
+        }
+
+        // Paso 5: Guardar PDF
+        progressText.textContent = '¡Listo! Descargando PDF...';
+        progressBar.style.width = '100%';
+
+        const filename = `presentacion_${resultsData.participante.nombre}_${new Date().toISOString().split('T')[0]}.pdf`;
+        pdf.save(filename);
+
+        // Cerrar modal después de un momento
+        setTimeout(() => {
+            modal.style.display = 'none';
+            progressBar.style.width = '0%';
+        }, 1500);
+
+    } catch (error) {
+        console.error('Error al generar PDF:', error);
+        progressText.textContent = 'Error al generar el PDF';
+        progressDetail.textContent = error.message;
+        progressBar.style.width = '100%';
+        progressBar.style.background = '#e74a3b';
+
+        setTimeout(() => {
+            modal.style.display = 'none';
+            progressBar.style.width = '0%';
+            progressBar.style.background = 'linear-gradient(to right, #4e73df, #1cc88a)';
+        }, 3000);
+    }
+}
+
+// Función auxiliar para cargar imágenes
+function loadImage(url) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+    });
+}
+
+// Función auxiliar para dibujar formas en canvas
+function drawShapeOnCanvas(ctx, shape) {
+    if (!shape.startPoint || !shape.endPoint) return;
+
+    ctx.strokeStyle = shape.color;
+    ctx.lineWidth = shape.size;
+
+    const start = shape.startPoint;
+    const end = shape.endPoint;
+
+    switch (shape.tool) {
+        case 'arrow':
+            // Línea
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+            ctx.lineTo(end.x, end.y);
+            ctx.stroke();
+
+            // Punta de flecha
+            const angle = Math.atan2(end.y - start.y, end.x - start.x);
+            const headLength = 15 + (shape.size * 2);
+
+            ctx.beginPath();
+            ctx.moveTo(end.x, end.y);
+            ctx.lineTo(
+                end.x - headLength * Math.cos(angle - Math.PI / 6),
+                end.y - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.moveTo(end.x, end.y);
+            ctx.lineTo(
+                end.x - headLength * Math.cos(angle + Math.PI / 6),
+                end.y - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.stroke();
+            break;
+
+        case 'line':
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+            ctx.lineTo(end.x, end.y);
+            ctx.stroke();
+            break;
+
+        case 'circle':
+            const centerX = (start.x + end.x) / 2;
+            const centerY = (start.y + end.y) / 2;
+            const radiusX = Math.abs(end.x - start.x) / 2;
+            const radiusY = Math.abs(end.y - start.y) / 2;
+
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+            ctx.stroke();
+            break;
+
+        case 'rectangle':
+            const width = end.x - start.x;
+            const height = end.y - start.y;
+
+            ctx.beginPath();
+            ctx.rect(start.x, start.y, width, height);
+            ctx.stroke();
+            break;
+    }
+}
+
+// Event listener para el botón de exportar PDF
+document.getElementById('tool-export-pdf').addEventListener('click', exportPDF);
 </script>
