@@ -49,6 +49,18 @@ $tipo_mensaje = '';
 $accion = isset($_GET['accion']) ? $_GET['accion'] : '';
 $pregunta_id = isset($_GET['pregunta_id']) ? (int)$_GET['pregunta_id'] : 0;
 
+// Verificar mensajes de sesión
+if (isset($_SESSION['mensaje'])) {
+    $mensaje = $_SESSION['mensaje'];
+    $tipo_mensaje = 'success';
+    unset($_SESSION['mensaje']);
+}
+if (isset($_SESSION['error'])) {
+    $mensaje = $_SESSION['error'];
+    $tipo_mensaje = 'danger';
+    unset($_SESSION['error']);
+}
+
 // Procesar acciones
 if (!empty($accion)) {
     switch ($accion) {

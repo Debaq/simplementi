@@ -1,0 +1,85 @@
+// Archivo de ejemplo de formato GIFT para SimpleMenti
+// Las líneas que comienzan con // son comentarios
+
+// PREGUNTAS DE VERDADERO/FALSO
+// El # agrega feedback para quien responda correctamente
+// La explicación general es opcional y se puede agregar manualmente después
+// OPCIONAL: Puede usar ::nombre:: para identificar preguntas (no se muestra al participante)
+::Geografía - Forma de la Tierra:: ¿La tierra es plana? {FALSE # ¡Correcto! La tierra es un esferoide oblato, achatada en los polos.}
+
+¿El agua hierve a 100°C al nivel del mar? {TRUE # ¡Exacto! A nivel del mar (1 atmósfera), el agua hierve a 100°C o 212°F.}
+
+¿Python es un lenguaje de programación compilado? {F # Bien! Python es interpretado, aunque puede compilarse a bytecode para optimización.}
+
+// PREGUNTAS DE OPCIÓN MÚLTIPLE
+// El símbolo = marca la respuesta correcta
+// El símbolo ~ marca las opciones incorrectas
+// El símbolo # agrega feedback a cada opción
+::Geografía - Capital de Francia:: ¿Cuál es la capital de Francia? {
+=París # ¡Correcto! París es la capital de Francia desde el siglo XII.
+~Londres # No, Londres es la capital del Reino Unido.
+~Madrid # Incorrecto, Madrid es la capital de España.
+~Berlín # No, Berlín es la capital de Alemania.
+}
+
+::Historia - Descubrimiento de América:: ¿En qué año se descubrió América? {
+~1490 # Todavía no, fue un poco después.
+~1491 # Casi, pero fue al año siguiente.
+=1492 # ¡Exacto! Cristóbal Colón llegó a América el 12 de octubre de 1492.
+~1493 # No, fue un año antes.
+}
+
+¿Qué lenguaje se usa principalmente para el desarrollo web del lado del cliente? {
+~Python # Python se usa en el backend, no en el cliente.
+~Java # Java puede usarse en backend, pero no es el principal para frontend.
+=JavaScript # ¡Correcto! JavaScript es el lenguaje estándar para el frontend web.
+~C++ # C++ no se usa comúnmente en desarrollo web frontend.
+~Ruby # Ruby se usa típicamente en el backend con Rails.
+}
+
+¿Cuál es el planeta más grande del sistema solar? {
+~Tierra # La Tierra es mucho más pequeña.
+~Marte # Marte es incluso más pequeño que la Tierra.
+=Júpiter # ¡Exacto! Júpiter es el planeta más grande con un diámetro de 142,984 km.
+~Saturno # Saturno es grande, pero Júpiter es más grande.
+}
+
+// PREGUNTAS DE RESPUESTA LIBRE
+// Para preguntas abiertas, la "explicación" funciona como reflexión/feedback general
+// que se mostrará a todos los participantes después de responder
+¿Qué opinas sobre el cambio climático? {# El cambio climático es uno de los mayores desafíos globales. Cada perspectiva enriquece el diálogo.}
+
+Describe en una palabra cómo te sientes hoy {# Gracias por compartir. Tus emociones son válidas y forman parte de tu experiencia de aprendizaje.}
+
+¿Cuál es tu lenguaje de programación favorito y por qué? {# Cada lenguaje tiene fortalezas únicas. La elección depende del contexto y las necesidades específicas del proyecto.}
+
+Comparte una idea para mejorar esta presentación {# Excelente! La retroalimentación constructiva nos ayuda a mejorar continuamente. Valoramos tu aporte.}
+
+// MÁS EJEMPLOS DE VERDADERO/FALSO CON FEEDBACK
+¿Git es un sistema de control de versiones? {TRUE # Correcto! Git es el sistema de control de versiones distribuido más popular.}
+
+¿HTML es un lenguaje de programación? {FALSE # ¡Bien! HTML es un lenguaje de marcado, no de programación.}
+
+¿La capital de Japón es Tokio? {T # ¡Sí! Tokio es la capital y ciudad más poblada de Japón.}
+
+// MÁS EJEMPLOS DE OPCIÓN MÚLTIPLE CON FEEDBACK
+¿Cuál de estos NO es un framework de JavaScript? {
+~React # React sí es un framework/librería de JavaScript.
+~Vue # Vue.js sí es un framework de JavaScript.
+~Angular # Angular sí es un framework de JavaScript.
+=Django # ¡Correcto! Django es un framework de Python, no de JavaScript.
+}
+
+¿Qué significa HTTP? {
+=HyperText Transfer Protocol # ¡Exacto! Es el protocolo de transferencia de hipertexto.
+~HyperText Transmission Protocol # No, es Transfer, no Transmission.
+~High Transfer Text Protocol # Incorrecto, es HyperText, no High.
+~Home Tool Transfer Protocol # No, esa no es la definición correcta.
+}
+
+¿Cuántos continentes hay en la Tierra? {
+~5 # Hay más de 5 continentes.
+~6 # Casi, pero hay uno más.
+=7 # ¡Correcto! Los 7 continentes son: Asia, África, América del Norte, América del Sur, Antártida, Europa y Oceanía.
+~8 # No, son menos de 8.
+}

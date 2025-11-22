@@ -41,6 +41,37 @@
                 </div>
             </div>
         </div>
+
+        <!-- Importar preguntas desde formato GIFT -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-file-upload me-2"></i> Importar preguntas desde formato GIFT</h6>
+                    </div>
+                    <div class="card-body">
+                        <form action="importar_gift.php" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="id" value="<?php echo $id_presentacion; ?>">
+                            <div class="row align-items-end">
+                                <div class="col-md-8">
+                                    <label for="archivo_gift" class="form-label">Seleccionar archivo GIFT (.txt o .gift)</label>
+                                    <input type="file" class="form-control" id="archivo_gift" name="archivo_gift" accept=".txt,.gift" required>
+                                    <small class="form-text text-muted">
+                                        El formato GIFT permite importar preguntas de opción múltiple, verdadero/falso y respuesta libre.
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalAyudaGift">Ver formato</a>
+                                    </small>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-upload me-2"></i> Importar preguntas
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Mensaje de instrucción inicial -->
         <div id="tipo-instruccion">
@@ -54,5 +85,65 @@
         <?php include('includes/editar/modal_verdadero_falso.php'); ?>
         <?php include('includes/editar/modal_nube_palabras.php'); ?>
         <?php include('includes/editar/modal_palabra_libre.php'); ?>
+    </div>
+</div>
+
+<!-- Modal de ayuda para formato GIFT -->
+<div class="modal fade" id="modalAyudaGift" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Formato GIFT - Guía rápida</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>El formato GIFT permite importar preguntas de forma rápida. Cada pregunta debe estar separada por una línea en blanco.</p>
+
+                <div class="alert alert-info">
+                    <strong>Diferencia importante:</strong>
+                    <ul class="mb-0 small">
+                        <li><strong>Feedback (#)</strong>: Retroalimentación específica por cada opción. Cada participante ve solo el feedback de su respuesta.</li>
+                        <li><strong>Explicación</strong>: Contexto general de la pregunta (se agrega manualmente después de importar). Todos la ven.</li>
+                    </ul>
+                </div>
+
+                <h6 class="mt-3">Verdadero/Falso</h6>
+                <pre class="bg-light p-2 rounded"><code>¿La tierra es plana? {FALSE # ¡Correcto! La tierra es un esferoide oblato.}
+
+¿El agua hierve a 100°C? {TRUE # Exacto, a nivel del mar.}</code></pre>
+                <p class="text-muted small">El # agrega feedback para quien responda correctamente.</p>
+
+                <h6 class="mt-3">Opción múltiple</h6>
+                <pre class="bg-light p-2 rounded"><code>¿Cuál es la capital de Francia? {
+=París # ¡Correcto! Capital desde el siglo XII.
+~Londres # No, Londres es del Reino Unido.
+~Madrid # Incorrecto, Madrid es de España.
+~Roma # No, Roma es de Italia.
+}</code></pre>
+                <p class="text-muted small">Cada participante verá solo el feedback de la opción que eligió.</p>
+
+                <h6 class="mt-3">Respuesta libre</h6>
+                <pre class="bg-light p-2 rounded"><code>¿Qué opinas sobre el cambio climático? {# Gracias por tu reflexión valiosa.}
+
+Describe cómo te sientes hoy {}</code></pre>
+                <p class="text-muted small">En preguntas abiertas, el feedback funciona como reflexión general.</p>
+
+                <h6 class="mt-3">Consejos</h6>
+                <ul class="small">
+                    <li>Cada pregunta debe terminar con llaves { }</li>
+                    <li>Separe las preguntas con una línea en blanco</li>
+                    <li>Las líneas que comienzan con // son comentarios</li>
+                    <li><strong>Nombre de pregunta (::nombre::)</strong>: Opcional, para identificar preguntas (no se muestra al participante)</li>
+                    <li><strong>Feedback (#)</strong>: Específico por opción, cada participante ve el suyo</li>
+                    <li><strong>Explicación</strong>: General de la pregunta, todos la ven (agregar manualmente)</li>
+                    <li>Para V/F: el feedback va con la respuesta correcta</li>
+                    <li>Para opciones múltiples: agrega feedback a TODAS las opciones (correctas e incorrectas)</li>
+                    <li>Puede usar caracteres especiales escapándolos: \=, \~, \#, \{, \}</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
     </div>
 </div>

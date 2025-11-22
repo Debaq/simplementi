@@ -86,35 +86,53 @@ switch ($tipo_pregunta) {
     case 'opcion_multiple':
         // Recoger opciones
         $opciones = isset($_POST['opciones']) ? $_POST['opciones'] : [];
-        
+
         // Verificar que haya opciones
         if (empty($opciones)) {
             header("Location: editar_presentacion.php?id=$id_presentacion&error=1&mensaje=Debe proporcionar opciones para la pregunta#agregar");
             exit;
         }
-        
+
         // Eliminar opciones vacías
         $opciones = array_filter($opciones, function($opcion) {
             return trim($opcion) !== '';
         });
-        
+
         // Verificar que queden opciones después de filtrar
         if (empty($opciones)) {
             header("Location: editar_presentacion.php?id=$id_presentacion&error=1&mensaje=Debe proporcionar al menos una opción válida#agregar");
             exit;
         }
-        
+
         // Recoger respuesta correcta
         $respuesta_correcta_index = isset($_POST['respuesta_correcta_index']) ? (int)$_POST['respuesta_correcta_index'] : -1;
-        
+
         // Agregar a la pregunta
         $nueva_pregunta['opciones'] = array_values($opciones); // Reindexar array
-        
+
         // Si se seleccionó una respuesta correcta válida
         if ($respuesta_correcta_index >= 0 && $respuesta_correcta_index < count($opciones)) {
             $nueva_pregunta['respuesta_correcta'] = $opciones[$respuesta_correcta_index];
         }
-        
+
+        // Recoger feedbacks (opcional, uno por opción)
+        if (isset($_POST['feedbacks']) && is_array($_POST['feedbacks'])) {
+            $feedbacks_array = $_POST['feedbacks'];
+            $feedbacks_map = [];
+
+            // Asociar cada feedback con su opción correspondiente
+            foreach ($nueva_pregunta['opciones'] as $index => $opcion) {
+                if (isset($feedbacks_array[$index]) && !empty(trim($feedbacks_array[$index]))) {
+                    $feedbacks_map[$opcion] = trim($feedbacks_array[$index]);
+                }
+            }
+
+            // Solo agregar feedbacks si hay al menos uno
+            if (!empty($feedbacks_map)) {
+                $nueva_pregunta['feedbacks'] = $feedbacks_map;
+            }
+        }
+
         break;
         
     case 'verdadero_falso':

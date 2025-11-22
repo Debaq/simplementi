@@ -94,48 +94,72 @@
         // Funcionalidad para agregar opciones en preguntas de opción múltiple
         const btnAgregarOpcion = document.getElementById('agregar-opcion');
         const opcionesContainer = document.getElementById('opciones-container');
-        
+
         if (btnAgregarOpcion && opcionesContainer) {
             btnAgregarOpcion.addEventListener('click', function() {
-                const cantidadOpciones = opcionesContainer.querySelectorAll('.input-group').length;
+                const cantidadOpciones = opcionesContainer.querySelectorAll('.opcion-item').length;
                 const nuevaLetra = String.fromCharCode(65 + cantidadOpciones); // A, B, C, ...
-                
-                // Crear nueva opción
-                const nuevoGrupo = document.createElement('div');
-                nuevoGrupo.className = 'input-group mb-2';
-                nuevoGrupo.innerHTML = `
-                    <span class="input-group-text">${nuevaLetra}</span>
-                    <input type="text" class="form-control" name="opciones[]" required>
-                    <div class="input-group-text">
-                        <input class="form-check-input mt-0" type="radio" name="respuesta_correcta_index" value="${cantidadOpciones}">
+
+                // Crear nueva opción con feedback
+                const nuevoItem = document.createElement('div');
+                nuevoItem.className = 'opcion-item mb-3 p-3 border rounded';
+                nuevoItem.innerHTML = `
+                    <div class="row align-items-center mb-2">
+                        <div class="col-auto">
+                            <span class="badge bg-primary">${nuevaLetra}</span>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="opciones[]" placeholder="Texto de la opción" required>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="respuesta_correcta_index" value="${cantidadOpciones}" id="correcta_${cantidadOpciones}">
+                                <label class="form-check-label" for="correcta_${cantidadOpciones}">Correcta</label>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-outline-danger btn-sm eliminar-opcion">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-outline-danger eliminar-opcion">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <div class="row">
+                        <div class="col-auto" style="width: 50px;"></div>
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm" name="feedbacks[]" placeholder="Feedback para esta opción (opcional)">
+                            <small class="text-muted">Este mensaje se mostrará a quien elija esta opción</small>
+                        </div>
+                    </div>
                 `;
-                
-                opcionesContainer.appendChild(nuevoGrupo);
-                
+
+                opcionesContainer.appendChild(nuevoItem);
+
                 // Añadir evento para eliminar la opción
-                const btnEliminar = nuevoGrupo.querySelector('.eliminar-opcion');
+                const btnEliminar = nuevoItem.querySelector('.eliminar-opcion');
                 btnEliminar.addEventListener('click', function() {
-                    nuevoGrupo.remove();
+                    nuevoItem.remove();
                     // Reordenar las letras y valores de índice
                     actualizarIndicesOpciones();
                 });
             });
         }
-        
+
         // Función para actualizar las letras e índices cuando se elimina una opción
         function actualizarIndicesOpciones() {
-            const grupos = opcionesContainer.querySelectorAll('.input-group');
-            grupos.forEach((grupo, index) => {
+            const items = opcionesContainer.querySelectorAll('.opcion-item');
+            items.forEach((item, index) => {
                 // Actualizar letra
                 const letra = String.fromCharCode(65 + index);
-                grupo.querySelector('.input-group-text').textContent = letra;
+                item.querySelector('.badge').textContent = letra;
 
                 // Actualizar valor del radio button
-                grupo.querySelector('input[type="radio"]').value = index;
+                const radio = item.querySelector('input[type="radio"]');
+                radio.value = index;
+                radio.id = `correcta_${index}`;
+
+                // Actualizar label
+                const label = item.querySelector('.form-check-label');
+                label.setAttribute('for', `correcta_${index}`);
             });
         }
 
