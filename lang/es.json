@@ -1,0 +1,112 @@
+{
+    "app": {
+        "name": "SimpleMenti",
+        "tagline": "Sistema interactivo para presentaciones y encuestas en tiempo real",
+        "copyright": "SimpleMenti © {year} - tmeduca.org"
+    },
+    "common": {
+        "or": "o",
+        "create": "Crear",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "close": "Cerrar",
+        "back": "Volver",
+        "next": "Siguiente",
+        "previous": "Anterior",
+        "finish": "Finalizar",
+        "search": "Buscar",
+        "filter": "Filtrar",
+        "export": "Exportar",
+        "import": "Importar",
+        "loading": "Cargando...",
+        "error": "Error",
+        "success": "Éxito",
+        "warning": "Advertencia",
+        "info": "Información",
+        "yes": "Sí",
+        "no": "No",
+        "confirm": "Confirmar",
+        "language": "Idioma"
+    },
+    "home": {
+        "title": "¿Qué deseas hacer?",
+        "create_presentation": "Crear Presentación",
+        "join_as_participant": "Unirse como Participante",
+        "enter_session_code": "Ingresa el código de sesión",
+        "join": "Unirse",
+        "available_presentations": "Presentaciones Disponibles",
+        "start": "Iniciar"
+    },
+    "presentation": {
+        "title": "Título",
+        "description": "Descripción",
+        "author": "Autor",
+        "creation_date": "Fecha de creación",
+        "num_questions": "{count} preguntas",
+        "protected": "Protegida",
+        "categories": "Categorías",
+        "configuration": "Configuración",
+        "questions": "Preguntas"
+    },
+    "session": {
+        "code": "Código de sesión",
+        "active": "Activa",
+        "finished": "Finalizada",
+        "participants": "Participantes",
+        "current_question": "Pregunta actual",
+        "statistics": "Estadísticas"
+    },
+    "question": {
+        "type": "Tipo de pregunta",
+        "question": "Pregunta",
+        "options": "Opciones",
+        "correct_answer": "Respuesta correcta",
+        "explanation": "Explicación",
+        "types": {
+            "multiple_choice": "Opción múltiple",
+            "word_cloud": "Nube de palabras",
+            "open": "Respuesta abierta",
+            "true_false": "Verdadero/Falso",
+            "rating": "Calificación"
+        }
+    },
+    "participant": {
+        "name": "Nombre del participante",
+        "join_session": "Unirse a la sesión",
+        "waiting": "Esperando...",
+        "answer": "Responder",
+        "your_answer": "Tu respuesta",
+        "submit_answer": "Enviar respuesta"
+    },
+    "admin": {
+        "login": "Iniciar sesión",
+        "logout": "Cerrar sesión",
+        "panel": "Panel de administración",
+        "username": "Usuario",
+        "password": "Contraseña",
+        "create_user": "Crear usuario",
+        "edit_user": "Editar usuario",
+        "manage_presentations": "Gestionar presentaciones"
+    },
+    "messages": {
+        "welcome": "Bienvenido a SimpleMenti",
+        "presentation_not_found": "Presentación no encontrada",
+        "session_not_found": "Sesión no encontrada",
+        "invalid_code": "Código inválido",
+        "error_loading": "Error al cargar",
+        "saved_successfully": "Guardado exitosamente",
+        "deleted_successfully": "Eliminado exitosamente",
+        "confirm_delete": "¿Estás seguro de que deseas eliminar esto?",
+        "no_participants": "No hay participantes aún",
+        "session_ended": "La sesión ha finalizado"
+    },
+    "validation": {
+        "required_field": "Este campo es obligatorio",
+        "invalid_email": "Email inválido",
+        "min_length": "Mínimo {min} caracteres",
+        "max_length": "Máximo {max} caracteres",
+        "password_mismatch": "Las contraseñas no coinciden"
+    }
+}
