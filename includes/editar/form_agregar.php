@@ -133,6 +133,7 @@ Describe cómo te sientes hoy {}</code></pre>
                     <li>Cada pregunta debe terminar con llaves { }</li>
                     <li>Separe las preguntas con una línea en blanco</li>
                     <li>Las líneas que comienzan con // son comentarios</li>
+                    <li><strong>Nombre de pregunta (::nombre::)</strong>: Opcional, para identificar preguntas (no se muestra al participante)</li>
                     <li><strong>Feedback (#)</strong>: Específico por opción, cada participante ve el suyo</li>
                     <li><strong>Explicación</strong>: General de la pregunta, todos la ven (agregar manualmente)</li>
                     <li>Para V/F: el feedback va con la respuesta correcta</li>

@@ -4,7 +4,8 @@
 // PREGUNTAS DE VERDADERO/FALSO
 // El # agrega feedback para quien responda correctamente
 // La explicación general es opcional y se puede agregar manualmente después
-¿La tierra es plana? {FALSE # ¡Correcto! La tierra es un esferoide oblato, achatada en los polos.}
+// OPCIONAL: Puede usar ::nombre:: para identificar preguntas (no se muestra al participante)
+::Geografía - Forma de la Tierra:: ¿La tierra es plana? {FALSE # ¡Correcto! La tierra es un esferoide oblato, achatada en los polos.}
 
 ¿El agua hierve a 100°C al nivel del mar? {TRUE # ¡Exacto! A nivel del mar (1 atmósfera), el agua hierve a 100°C o 212°F.}
 
@@ -14,14 +15,14 @@
 // El símbolo = marca la respuesta correcta
 // El símbolo ~ marca las opciones incorrectas
 // El símbolo # agrega feedback a cada opción
-¿Cuál es la capital de Francia? {
+::Geografía - Capital de Francia:: ¿Cuál es la capital de Francia? {
 =París # ¡Correcto! París es la capital de Francia desde el siglo XII.
 ~Londres # No, Londres es la capital del Reino Unido.
 ~Madrid # Incorrecto, Madrid es la capital de España.
 ~Berlín # No, Berlín es la capital de Alemania.
 }
 
-¿En qué año se descubrió América? {
+::Historia - Descubrimiento de América:: ¿En qué año se descubrió América? {
 ~1490 # Todavía no, fue un poco después.
 ~1491 # Casi, pero fue al año siguiente.
 =1492 # ¡Exacto! Cristóbal Colón llegó a América el 12 de octubre de 1492.

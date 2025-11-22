@@ -46,6 +46,10 @@ class GiftParser {
         $texto_pregunta = trim($matches[1]);
         $contenido_respuestas = trim($matches[2]);
 
+        // Eliminar el nombre de la pregunta si existe (formato ::nombre::)
+        // El nombre puede estar al inicio de la pregunta
+        $texto_pregunta = preg_replace('/^::.*?::\s*/', '', $texto_pregunta);
+
         // Detectar tipo de pregunta y parsear
 
         // TRUE/FALSE
