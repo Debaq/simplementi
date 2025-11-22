@@ -1165,27 +1165,36 @@ $permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['expo
     <button class="tool-btn" id="tool-save" title="Guardar anotaciones">
         <i class="fas fa-save"></i>
     </button>
+    <?php if ($permitir_exportar): ?>
     <button class="tool-btn" id="tool-export-pdf" title="Exportar PDF con anotaciones y notas" style="background: #1cc88a; color: white;">
         <i class="fas fa-file-pdf"></i>
     </button>
+    <?php endif; ?>
 </div>
 
 <!-- Controles de navegación -->
 <div id="navigation-controls">
+    <?php if ($permitir_navegacion_libre): ?>
     <button id="nav-prev" title="Slide anterior">
         <i class="fas fa-chevron-left"></i>
     </button>
+    <?php endif; ?>
+    <?php if ($permitir_marcadores): ?>
     <button id="bookmark-btn" title="Marcar este slide">
         <i class="far fa-star"></i>
     </button>
+    <?php endif; ?>
     <button id="sync-toggle" class="synced" title="Sincronizado con presentador">
         <i class="fas fa-sync"></i> Sincronizado
     </button>
+    <?php if ($permitir_navegacion_libre): ?>
     <button id="nav-next" title="Siguiente slide">
         <i class="fas fa-chevron-right"></i>
     </button>
+    <?php endif; ?>
 </div>
 
+<?php if ($permitir_marcadores): ?>
 <!-- Botón flotante para abrir panel de marcadores -->
 <button id="bookmarks-panel-btn" title="Ver marcadores">
     <i class="fas fa-bookmark"></i>
@@ -1208,7 +1217,9 @@ $permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['expo
         </div>
     </div>
 </div>
+<?php endif; ?>
 
+<?php if ($permitir_marcadores): ?>
 <!-- Modal para crear/editar marcador -->
 <div id="bookmark-modal">
     <h4><i class="fas fa-star me-2"></i>Marcar Slide <?php echo $slide_number; ?></h4>
@@ -1232,6 +1243,7 @@ $permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['expo
         <button class="modal-btn modal-btn-primary" id="bookmark-save">Guardar Marcador</button>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- Banner de desincronización -->
 <div id="desync-banner">
@@ -1239,6 +1251,7 @@ $permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['expo
     <small>Estás en el slide <span id="current-viewing"></span>, el profesor está en <span id="presenter-at"></span></small>
 </div>
 
+<?php if ($permitir_interacciones): ?>
 <!-- Panel de interacción -->
 <div id="interaction-panel">
     <button class="interaction-btn" id="raise-hand-btn" title="Levantar mano">
@@ -1264,6 +1277,7 @@ $permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['expo
     <span class="reaction-option" data-reaction="👏">👏</span>
     <span class="reaction-option" data-reaction="🎉">🎉</span>
 </div>
+<?php endif; ?>
 
 <div id="slide-info">
     <i class="fas fa-file-pdf me-2"></i>
@@ -1294,6 +1308,7 @@ $permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['expo
     </div>
 </div>
 
+<?php if ($permitir_interacciones): ?>
 <!-- Modal de pregunta -->
 <div id="question-modal">
     <h4 style="margin-bottom: 15px;"><i class="fas fa-question-circle me-2"></i>Hacer una pregunta</h4>
@@ -1309,6 +1324,7 @@ $permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['expo
         <button class="modal-btn modal-btn-primary" id="question-send">Enviar pregunta</button>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- Modal de progreso de exportación PDF -->
 <div id="pdf-export-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; justify-content: center; align-items: center;">
@@ -1323,6 +1339,7 @@ $permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['expo
     </div>
 </div>
 
+<?php if ($permitir_notas): ?>
 <!-- Panel de notas -->
 <div id="notes-panel">
     <div id="notes-header" onclick="toggleNotes()">
@@ -1341,6 +1358,7 @@ $permitir_exportar = isset($config['exportar_con_anotaciones']) && $config['expo
         <div id="notes-status">Sin guardar</div>
     </div>
 </div>
+<?php endif; ?>
 
 <script>
 const codigo = '<?php echo $codigo_sesion; ?>';
