@@ -2,7 +2,68 @@
 
 ## 📱 Visión General
 
-Sistema de presentación dual que permite al docente controlar una proyección desde su dispositivo móvil mediante un ID de presentación especial, optimizado para reducir carga del servidor mediante procesamiento del lado del cliente.
+SimpleMenti opera en **4 modos distintos**:
+
+1. **Modo Dashboard**: Creación y gestión de presentaciones
+2. **Modo Presentador**: Muestra presentaciones/evaluaciones en vivo (presentador.php)
+3. **Modo Control Remoto**: Control desde dispositivo móvil (control-movil.php) - NUEVO
+4. **Modo Estudiante**: Respuesta a evaluaciones (participante.php)
+
+Este documento describe la implementación del **Modo Control Remoto**, permitiendo al docente controlar la presentación desde su smartphone/tablet con seguridad y optimización cliente-servidor.
+
+---
+
+## 🔄 Flujo de Uso Completo
+
+### Entrada del Docente (index.php)
+
+```
+1. Docente abre index.php
+2. Ingresa código de 6 dígitos (ej: ABC123)
+3. Sistema detecta que es código de SESIÓN → presentador.php
+```
+
+### Modo Presentador (Estado Normal)
+
+```
+presentador.php muestra:
+├─ Código/QR para ESTUDIANTES (SIEMPRE VISIBLE)
+│  └─ Grande, prominente, en la parte superior
+│
+├─ Contenido de la presentación
+│  └─ Pregunta actual, resultados, estadísticas
+│
+└─ Botón "Conectar Dispositivo Móvil" (DISCRETO)
+   └─ Pequeño, en la parte inferior
+```
+
+### Activación de Control Móvil (Opcional)
+
+```
+1. Docente hace clic en "Conectar Dispositivo Móvil"
+   └─► Modal de advertencia:
+       "⚠️ Este QR dará control TOTAL. No proyectes ni compartas."
+       [Cancelar] [Generar QR]
+
+2. Si acepta → Muestra QR/código temporal (30 segundos)
+   └─► QR solo para control (NO es el QR de estudiantes)
+
+3. Docente escanea desde SU móvil (sin proyectar)
+   └─► Móvil:
+       ├─ ¿Tiene sesión? → Vinculación directa
+       └─ No tiene sesión? → Pide credenciales → Vinculación
+
+4. Móvil entra en modo control-movil.php
+5. PC puede cambiar a modo proyección fullscreen (opcional)
+```
+
+### Seguridad por Diseño
+
+- ✅ QR/código de control NO visible por defecto
+- ✅ Advertencia explícita antes de generar
+- ✅ QR expira en 30 segundos
+- ✅ Separación clara: QR estudiantes ≠ QR control
+- ✅ Autenticación requerida en móvil
 
 ---
 
@@ -80,176 +141,120 @@ Sistema de presentación dual que permite al docente controlar una proyección d
       │                         │                         │
 ```
 
-### Flujo de Activación (Estilo WhatsApp Web)
+### Flujo de Activación Simplificado
 
-**Filosofía**: El docente se loguea UNA sola vez en su móvil, luego vincula la proyección escaneando QR (o ingresando código).
+**Filosofía**: QR/código de control NO visible por defecto. Solo se genera cuando el docente lo solicita explícitamente, con advertencia de seguridad.
 
-#### Opción A: Escaneo QR (Recomendado) 📱 → 🖥️
-
-```
-1. PC/Proyector en aula (NO requiere login del docente)
-   └─► Accede a: proyeccion.php
-       └─► Muestra pantalla de emparejamiento:
-           ├─ QR Code (se regenera cada 30 segundos)
-           ├─ Código alternativo: "A7K9-M2X1" (formato corto)
-           └─ "Escanea con SimpleMenti en tu móvil"
-
-2. Docente en su móvil/tablet (YA logueado)
-   └─► Abre: control-movil.php (su sesión activa)
-       └─► Click botón "📹 Conectar Proyección"
-           └─► Activa escáner de QR (HTML5 getUserMedia)
-               └─► Escanea QR de la pantalla
-                   └─► POST /api/vincular_proyeccion.php
-                       ├─ Valida sesión del móvil (autenticada)
-                       ├─ Valida QR no expirado (<30s)
-                       ├─ Crea vinculación en data/projection_links/{pair_code}.json
-                       ├─ Envía señal SSE a proyección: "pair_success"
-                       └─ Proyección se activa automáticamente
-
-3. ✅ Vinculación completada
-   ├─ Proyección muestra presentación en fullscreen
-   ├─ Móvil muestra controles activos
-   └─ Sincronización en tiempo real activa
-```
-
-#### Opción B: Código Manual (Fallback sin cámara) ⌨️
+#### Desde presentador.php
 
 ```
-1. PC/Proyector
-   └─► proyeccion.php muestra:
-       "Ingrese código de su sesión: [____-____]"
+1. Docente en presentador.php (modo normal)
+   ├─ Ve QR/código de ESTUDIANTES (visible)
+   └─ Ve botón "Conectar Dispositivo Móvil" (discreto)
 
-2. Docente en móvil (logueado)
-   └─► En control-movil.php ve su código de sesión:
-       ┌─────────────────────────────┐
-       │ Tu código de proyección:    │
-       │                             │
-       │      A7K9-M2X1              │
-       │                             │
-       │ Ingrésalo en la pantalla    │
-       └─────────────────────────────┘
-   └─► Docente ingresa código en el PC
-       └─► Proyección valida código
-           └─► Se vinculan automáticamente
+2. Hace clic en "Conectar Dispositivo Móvil"
+   └─► Modal de advertencia:
+       ┌────────────────────────────────────────┐
+       │  ⚠️ ADVERTENCIA DE SEGURIDAD           │
+       │                                        │
+       │  Este QR te dará control TOTAL de la   │
+       │  presentación desde tu móvil.          │
+       │                                        │
+       │  🚫 NO proyectes esta pantalla         │
+       │  🚫 NO compartas este código           │
+       │  🚫 Escanea solo desde TU dispositivo  │
+       │                                        │
+       │  El QR expira en 30 segundos.          │
+       │                                        │
+       │  [❌ Cancelar]  [✅ Generar QR]        │
+       └────────────────────────────────────────┘
 
-3. ✅ Vinculación completada
+3. Si acepta → POST /api/generar_codigo_emparejamiento.php
+   └─► Genera QR/código temporal (30s)
+       └─► Modal muestra QR (NO proyectado)
+
+4. Docente escanea desde SU móvil
+   └─► Móvil abre control-movil.php con QR data
+       ├─ Valida QR no expirado
+       ├─ ¿Tiene sesión autenticada?
+       │  ├─ SÍ → Vinculación directa
+       │  └─ NO → Pide credenciales → Vinculación
+       │
+       └─► POST /api/vincular_proyeccion.php
+           ├─ Valida autenticación
+           ├─ Crea vinculación
+           └─ Móvil entra en modo control
+
+5. ✅ Control móvil activo
+   ├─ Móvil: Interfaz de control completa
+   └─ PC: Continúa en presentador.php (o cambia a proyección fullscreen)
 ```
 
-#### Ventajas de este Enfoque
+#### Seguridad Implementada
 
-✅ **UX Superior**:
-- Docente solo se loguea una vez (en su dispositivo personal)
-- No necesita credenciales en PC público del aula
-- Proceso familiar (como WhatsApp Web, Telegram)
+✅ **Ocultación por defecto**:
+- QR de control NO visible hasta que se solicite
+- Requiere acción explícita del docente
 
-✅ **Seguridad Mejorada**:
-- No expone credenciales en PC compartido
-- QR expira en 30 segundos (evita replay attacks)
-- Sesión siempre controlada desde el móvil del docente
+✅ **Advertencia clara**:
+- Modal de advertencia antes de generar
+- Instrucciones de seguridad visibles
 
-✅ **Simplicidad**:
-- Menos pasos para el usuario
-- PC del aula no requiere configuración
-- Funciona incluso sin teclado (solo QR)
+✅ **Expiración rápida**:
+- QR válido solo 30 segundos
+- Evita uso posterior no autorizado
 
-✅ **Flexibilidad**:
-- Opción QR para rapidez
-- Opción código manual como fallback
-- Docente puede desvincular remotamente desde móvil
+✅ **Autenticación**:
+- Móvil debe estar autenticado
+- Vinculación requiere sesión válida
 
 ---
 
-## 👤 Login del Docente en Móvil
+## 👤 Autenticación en Móvil
 
-**Pregunta clave**: ¿Cómo se autentica el docente en su dispositivo móvil?
+Cuando el móvil escanea el QR de control, hay dos escenarios:
 
-### Opción 1: Login con Código de Sesión (Recomendado)
-
-El docente ya tiene una sesión activa en el sistema. Simplemente la vincula con su móvil:
+### Escenario 1: Móvil ya autenticado ✅
 
 ```
-1. Docente tiene sesión activa "ABC123" en su presentación
-
-2. Desde su móvil, accede a: control-movil.php
-   └─► Pantalla de login:
-       ┌─────────────────────────────┐
-       │  SimpleMenti - Control      │
-       │                             │
-       │  Código de sesión:          │
-       │  [ABC123]                   │
-       │                             │
-       │  [Conectar]                 │
-       └─────────────────────────────┘
-
-3. Ingresa código "ABC123" → Valida sesión activa → Login exitoso
-
-4. Ahora puede vincular proyecciones (escanear QR)
+Móvil escanea QR
+└─► control-movil.php detecta sesión activa (cookie PHPSESSID)
+    └─► Vinculación inmediata
+        └─► Entra en modo control
 ```
 
-**Ventajas**:
-- Sin credenciales (email/password) necesarias
-- Código temporal y corto (6 caracteres)
-- Múltiples dispositivos pueden controlar misma sesión (tablet + móvil)
+**No requiere credenciales adicionales.**
 
-### Opción 2: Login con Credenciales (Alternativa)
-
-Si el docente no tiene sesión activa, puede loguear con email/password:
+### Escenario 2: Móvil sin autenticación 🔐
 
 ```
-1. Accede a: control-movil.php
-
-2. Si no está autenticado, muestra login tradicional:
-   - Email
-   - Password
-   - [Iniciar Sesión]
-
-3. Tras login, muestra sus presentaciones activas
-
-4. Selecciona presentación → Obtiene código de sesión → Puede vincular proyección
+Móvil escanea QR
+└─► control-movil.php NO detecta sesión
+    └─► Muestra pantalla de login:
+        ┌─────────────────────────────┐
+        │  Autenticación requerida    │
+        │                             │
+        │  Email/Usuario:             │
+        │  [___________________]      │
+        │                             │
+        │  Contraseña:                │
+        │  [___________________]      │
+        │                             │
+        │  [Iniciar Sesión]           │
+        └─────────────────────────────┘
+    └─► Tras login exitoso:
+        └─► Vinculación automática
+            └─► Entra en modo control
 ```
 
-### Opción 3: QR Dual (Innovador)
+**Credenciales**: Las mismas que usa para acceder al dashboard/presentador.
 
-Combinar ambos enfoques:
+### Persistencia de Sesión
 
-```
-1. Docente en presentador.php (PC personal) genera QR especial
-
-2. QR contiene:
-   {
-     "type": "mobile_login",
-     "session_id": "ABC123",
-     "auth_token": "temp_xyz789",
-     "expires": 60
-   }
-
-3. Escanea desde móvil → Login automático + vinculación de sesión
-
-4. Ya puede vincular proyecciones
-```
-
-**Flujo completo recomendado**:
-
-```
-PC Personal (casa/oficina)          Móvil                    PC Aula
-─────────────────────────          ─────                    ───────
-
-presentador.php
-├─ Genera QR "Login Móvil"
-                                    Escanea QR
-                                    ├─ Auto-login
-                                    └─ control-movil.php
-                                        (sesión ABC123)
-
-                                                             proyeccion.php
-                                                             └─ Muestra QR
-                                                                "Emparejamiento"
-
-                                    Escanea QR proyección
-                                    └─ Vincula ABC123 ↔ proyección
-
-✅ Proyección activa, control desde móvil
-```
+Una vez autenticado en el móvil:
+- ✅ Sesión persiste (cookie con duración configurable)
+- ✅ Puede vincular múltiples proyecciones sin re-autenticar
+- ✅ Puede cerrar sesión manualmente desde el móvil
 
 ---
 
