@@ -5,6 +5,8 @@
 $datos_actualizados = [
     'titulo' => isset($_POST['titulo']) ? trim($_POST['titulo']) : '',
     'descripcion' => isset($_POST['descripcion']) ? trim($_POST['descripcion']) : '',
+    'carpeta' => isset($_POST['carpeta']) ? trim($_POST['carpeta']) : '',
+    'nueva_carpeta' => isset($_POST['nueva_carpeta']) ? trim($_POST['nueva_carpeta']) : '',
     'categorias' => isset($_POST['categorias']) ? trim($_POST['categorias']) : '',
     'protegido' => isset($_POST['protegido']) && $_POST['protegido'] === '1',
     'password' => isset($_POST['password']) ? $_POST['password'] : '',
@@ -24,6 +26,14 @@ $datos_actualizados = [
     'modo_asincrono' => isset($_POST['modo_asincrono']) && $_POST['modo_asincrono'] === '1',
     'un_solo_intento' => isset($_POST['un_solo_intento']) && $_POST['un_solo_intento'] === '1'
 ];
+
+// Determinar la carpeta final (nueva o existente)
+$carpeta_final = '';
+if (!empty($datos_actualizados['nueva_carpeta'])) {
+    $carpeta_final = $datos_actualizados['nueva_carpeta'];
+} elseif (!empty($datos_actualizados['carpeta']) && $datos_actualizados['carpeta'] !== '__nueva__') {
+    $carpeta_final = $datos_actualizados['carpeta'];
+}
 
 // Validar campos básicos
 $errores = [];
@@ -46,6 +56,7 @@ if (empty($errores)) {
     // Actualizar datos de la presentación
     $presentacion_data['titulo'] = $datos_actualizados['titulo'];
     $presentacion_data['descripcion'] = $datos_actualizados['descripcion'];
+    $presentacion_data['carpeta'] = $carpeta_final;
     $presentacion_data['protegido'] = $datos_actualizados['protegido'];
     
     // Actualizar o eliminar contraseña según corresponda
@@ -128,17 +139,28 @@ if (empty($errores)) {
         if (file_exists('data/index.json')) {
             $index_json = file_get_contents('data/index.json');
             $index_data = json_decode($index_json, true);
-            
+
+            // Inicializar carpetas si no existen
+            if (!isset($index_data['carpetas'])) {
+                $index_data['carpetas'] = [];
+            }
+
+            // Agregar la nueva carpeta si no existe y no está vacía
+            if (!empty($carpeta_final) && !in_array($carpeta_final, $index_data['carpetas'])) {
+                $index_data['carpetas'][] = $carpeta_final;
+            }
+
             foreach ($index_data['presentaciones'] as &$presentacion) {
                 if ($presentacion['id'] === $id_presentacion) {
                     $presentacion['titulo'] = $datos_actualizados['titulo'];
                     $presentacion['descripcion'] = $datos_actualizados['descripcion'];
+                    $presentacion['carpeta'] = $carpeta_final;
                     $presentacion['protegido'] = $datos_actualizados['protegido'];
                     $presentacion['categorias'] = $categorias_array;
                     break;
                 }
             }
-            
+
             file_put_contents('data/index.json', json_encode($index_data, JSON_PRETTY_PRINT));
         }
         

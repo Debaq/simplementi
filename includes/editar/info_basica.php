@@ -5,23 +5,63 @@
     <div class="card-body">
         <form method="post" action="">
             <div class="row mb-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label for="id" class="form-label">ID de la presentación</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                        <input type="text" class="form-control" id="id" name="id" 
+                        <input type="text" class="form-control" id="id" name="id"
                                value="<?php echo htmlspecialchars($id_presentacion); ?>" readonly>
                     </div>
                     <div class="form-text">El ID no se puede cambiar.</div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label for="titulo" class="form-label">Título <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-heading"></i></span>
-                        <input type="text" class="form-control" id="titulo" name="titulo" 
+                        <input type="text" class="form-control" id="titulo" name="titulo"
                                value="<?php echo htmlspecialchars($presentacion_data['titulo']); ?>" required>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <label for="carpeta" class="form-label">Carpeta / Sección</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                        <select class="form-select" id="carpeta-edit" name="carpeta">
+                            <option value="">Sin carpeta</option>
+                            <?php
+                            // Obtener carpetas existentes
+                            $carpetas_existentes = [];
+                            if (file_exists('data/index.json')) {
+                                $index_json = file_get_contents('data/index.json');
+                                $index_data = json_decode($index_json, true);
+                                if ($index_data && isset($index_data['carpetas'])) {
+                                    $carpetas_existentes = $index_data['carpetas'];
+                                }
+                            }
+
+                            $carpeta_actual = isset($presentacion_data['carpeta']) ? $presentacion_data['carpeta'] : '';
+
+                            foreach ($carpetas_existentes as $carpeta):
+                            ?>
+                                <option value="<?php echo htmlspecialchars($carpeta); ?>"
+                                        <?php echo $carpeta_actual === $carpeta ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($carpeta); ?>
+                                </option>
+                            <?php endforeach; ?>
+                            <option value="__nueva__">+ Nueva carpeta...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3" id="nueva-carpeta-edit-container" style="display: none;">
+                <label for="nueva_carpeta_edit" class="form-label">Nombre de la nueva carpeta</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-folder-plus"></i></span>
+                    <input type="text" class="form-control" id="nueva_carpeta_edit" name="nueva_carpeta"
+                           placeholder="Ej: Matemáticas, Ciencias, Secundaria, etc.">
+                </div>
+                <div class="form-text">Organice sus presentaciones por temas o categorías</div>
             </div>
             
             <div class="mb-3">
@@ -437,6 +477,24 @@ document.addEventListener('DOMContentLoaded', function() {
     if (habilitarAudioCheckbox && audioOptionsSection) {
         habilitarAudioCheckbox.addEventListener('change', function() {
             audioOptionsSection.style.display = this.checked ? '' : 'none';
+        });
+    }
+
+    // Mostrar/ocultar campo de nueva carpeta en edición
+    const carpetaEditSelect = document.getElementById('carpeta-edit');
+    const nuevaCarpetaEditContainer = document.getElementById('nueva-carpeta-edit-container');
+    const nuevaCarpetaEditInput = document.getElementById('nueva_carpeta_edit');
+
+    if (carpetaEditSelect && nuevaCarpetaEditContainer) {
+        carpetaEditSelect.addEventListener('change', function() {
+            if (this.value === '__nueva__') {
+                nuevaCarpetaEditContainer.style.display = 'block';
+                nuevaCarpetaEditInput.setAttribute('required', 'required');
+            } else {
+                nuevaCarpetaEditContainer.style.display = 'none';
+                nuevaCarpetaEditInput.removeAttribute('required');
+                nuevaCarpetaEditInput.value = '';
+            }
         });
     }
 });

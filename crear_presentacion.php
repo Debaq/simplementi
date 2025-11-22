@@ -20,9 +20,9 @@ include('includes/admin/funciones.php');
 $mensaje = '';
 $tipo_mensaje = '';
 $datos_presentacion = [
-    'id' => '',
     'titulo' => '',
     'descripcion' => '',
+    'carpeta' => '',
     'categorias' => '',
     'protegido' => false,
     'password' => '',
@@ -39,13 +39,39 @@ $datos_presentacion = [
     'permitir_interacciones' => false
 ];
 
+// Obtener carpetas existentes del índice
+$carpetas_existentes = [];
+if (file_exists('data/index.json')) {
+    $index_json = file_get_contents('data/index.json');
+    $index_data = json_decode($index_json, true);
+    if ($index_data && isset($index_data['carpetas'])) {
+        $carpetas_existentes = $index_data['carpetas'];
+    }
+}
+
+// Función para generar ID único a partir del título
+function generarIdUnico($titulo) {
+    // Convertir a slug
+    $slug = strtolower($titulo);
+    $slug = preg_replace('/[^a-z0-9]+/', '_', $slug);
+    $slug = trim($slug, '_');
+    $slug = substr($slug, 0, 20); // Limitar a 20 caracteres
+
+    // Agregar timestamp corto para unicidad
+    $timestamp = substr(strval(time()), -6); // Últimos 6 dígitos del timestamp
+    $random = substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 4);
+
+    return $slug . '_' . $timestamp . $random;
+}
+
 // Procesar el formulario si se envía
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Recoger datos del formulario
     $datos_presentacion = [
-        'id' => isset($_POST['id']) ? trim($_POST['id']) : '',
         'titulo' => isset($_POST['titulo']) ? trim($_POST['titulo']) : '',
         'descripcion' => isset($_POST['descripcion']) ? trim($_POST['descripcion']) : '',
+        'carpeta' => isset($_POST['carpeta']) ? trim($_POST['carpeta']) : '',
+        'nueva_carpeta' => isset($_POST['nueva_carpeta']) ? trim($_POST['nueva_carpeta']) : '',
         'categorias' => isset($_POST['categorias']) ? trim($_POST['categorias']) : '',
         'protegido' => isset($_POST['protegido']) && $_POST['protegido'] === '1',
         'password' => isset($_POST['password']) ? $_POST['password'] : '',
@@ -61,23 +87,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'permitir_navegacion_libre' => isset($_POST['permitir_navegacion_libre']) && $_POST['permitir_navegacion_libre'] === '1',
         'permitir_interacciones' => isset($_POST['permitir_interacciones']) && $_POST['permitir_interacciones'] === '1'
     ];
-    
+
+    // Determinar la carpeta final (nueva o existente)
+    $carpeta_final = '';
+    if (!empty($datos_presentacion['nueva_carpeta'])) {
+        $carpeta_final = $datos_presentacion['nueva_carpeta'];
+    } elseif (!empty($datos_presentacion['carpeta']) && $datos_presentacion['carpeta'] !== '__nueva__') {
+        $carpeta_final = $datos_presentacion['carpeta'];
+    }
+
     // Validar campos básicos
     $errores = [];
-    
-    if (empty($datos_presentacion['id'])) {
-        $errores[] = 'El ID de la presentación es obligatorio';
-    } elseif (!preg_match('/^[a-zA-Z0-9_]{3,30}$/', $datos_presentacion['id'])) {
-        $errores[] = 'El ID debe contener entre 3 y 30 caracteres alfanuméricos o guiones bajos';
-    }
-    
+
     if (empty($datos_presentacion['titulo'])) {
         $errores[] = 'El título es obligatorio';
     }
-    
+
     if ($datos_presentacion['protegido'] && empty($datos_presentacion['password'])) {
         $errores[] = 'Si la presentación está protegida, debe especificar una contraseña';
     }
+
+    // Generar ID automáticamente
+    $id_generado = generarIdUnico($datos_presentacion['titulo']);
     
     if (empty($errores)) {
         // Crear el array de categorías a partir del texto
@@ -85,29 +116,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($datos_presentacion['categorias'])) {
             $categorias_array = array_map('trim', explode(',', $datos_presentacion['categorias']));
         }
-        
-        // Crear la estructura de la presentación
+
+        // Crear la estructura de la presentación para el índice
         $presentacion = [
-            'id' => $datos_presentacion['id'],
+            'id' => $id_generado,
             'titulo' => $datos_presentacion['titulo'],
             'descripcion' => $datos_presentacion['descripcion'],
+            'carpeta' => $carpeta_final,
             'autor' => $_SESSION['admin_nombre'],
             'fecha_creacion' => date('Y-m-d\TH:i:s'),
             'protegido' => $datos_presentacion['protegido'],
             'num_preguntas' => 0,
             'categorias' => $categorias_array
         ];
-        
+
         // Agregar contraseña solo si está protegida
         if ($datos_presentacion['protegido']) {
             $presentacion['password'] = $datos_presentacion['password'];
         }
-        
+
         // Crear la estructura completa con configuración
         $estructura_presentacion = [
-            'id' => $datos_presentacion['id'],
+            'id' => $id_generado,
             'titulo' => $datos_presentacion['titulo'],
             'descripcion' => $datos_presentacion['descripcion'],
+            'carpeta' => $carpeta_final,
             'autor' => $_SESSION['admin_nombre'],
             'fecha_creacion' => date('Y-m-d\TH:i:s'),
             'protegido' => $datos_presentacion['protegido'],
@@ -137,46 +170,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mkdir('data/presentaciones', 0755, true);
         }
         
-        // Verificar si ya existe una presentación con el mismo ID
-        if (file_exists("data/presentaciones/{$datos_presentacion['id']}.json")) {
-            $errores[] = 'Ya existe una presentación con ese ID';
+        // Guardar el archivo de la presentación
+        $archivo_presentacion = "data/presentaciones/{$id_generado}.json";
+        $resultado_guardado = file_put_contents($archivo_presentacion, json_encode($estructura_presentacion, JSON_PRETTY_PRINT));
+
+        if ($resultado_guardado === false) {
+            $errores[] = 'Error al guardar el archivo de la presentación';
         } else {
-            // Guardar el archivo de la presentación
-            $archivo_presentacion = "data/presentaciones/{$datos_presentacion['id']}.json";
-            $resultado_guardado = file_put_contents($archivo_presentacion, json_encode($estructura_presentacion, JSON_PRETTY_PRINT));
-            
-            if ($resultado_guardado === false) {
-                $errores[] = 'Error al guardar el archivo de la presentación';
+            // Actualizar índice de presentaciones
+            if (!file_exists('data/index.json')) {
+                $index_data = [
+                    'presentaciones' => [],
+                    'carpetas' => []
+                ];
             } else {
-                // Actualizar índice de presentaciones
-                if (!file_exists('data/index.json')) {
-                    $index_data = [
-                        'presentaciones' => []
-                    ];
-                } else {
-                    $index_json = file_get_contents('data/index.json');
-                    $index_data = json_decode($index_json, true);
+                $index_json = file_get_contents('data/index.json');
+                $index_data = json_decode($index_json, true);
+
+                // Inicializar carpetas si no existen
+                if (!isset($index_data['carpetas'])) {
+                    $index_data['carpetas'] = [];
                 }
-                
-                // Agregar la nueva presentación al índice
-                $index_data['presentaciones'][] = $presentacion;
-                
-                // Guardar el índice actualizado
-                $resultado_indice = file_put_contents('data/index.json', json_encode($index_data, JSON_PRETTY_PRINT));
-                
-                if ($resultado_indice === false) {
-                    $errores[] = 'Error al actualizar el índice de presentaciones';
-                } else {
-                    // Registrar la acción
-                    registrarAccion($_SESSION['admin_user'], 'crear_presentacion');
-                    
-                    $mensaje = 'Presentación creada correctamente. Ahora puede agregar preguntas.';
-                    $tipo_mensaje = 'success';
-                    
-                    // Redirigir a la página de edición
-                    header("Location: editar_presentacion.php?id={$datos_presentacion['id']}&nuevo=1");
-                    exit;
-                }
+            }
+
+            // Agregar la nueva carpeta si no existe
+            if (!empty($carpeta_final) && !in_array($carpeta_final, $index_data['carpetas'])) {
+                $index_data['carpetas'][] = $carpeta_final;
+            }
+
+            // Agregar la nueva presentación al índice
+            $index_data['presentaciones'][] = $presentacion;
+
+            // Guardar el índice actualizado
+            $resultado_indice = file_put_contents('data/index.json', json_encode($index_data, JSON_PRETTY_PRINT));
+
+            if ($resultado_indice === false) {
+                $errores[] = 'Error al actualizar el índice de presentaciones';
+            } else {
+                // Registrar la acción
+                registrarAccion($_SESSION['admin_user'], 'crear_presentacion');
+
+                $mensaje = 'Presentación creada correctamente. Ahora puede agregar preguntas.';
+                $tipo_mensaje = 'success';
+
+                // Redirigir a la página de edición
+                header("Location: editar_presentacion.php?id={$id_generado}&nuevo=1");
+                exit;
             }
         }
     }
@@ -272,23 +311,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <form method="post" action="">
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="id" class="form-label">ID de la presentación <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                <input type="text" class="form-control" id="id" name="id" 
-                                       value="<?php echo htmlspecialchars($datos_presentacion['id']); ?>" required
-                                       pattern="[a-zA-Z0-9_]{3,30}">
-                            </div>
-                            <div class="form-text">Identificador único, use solo letras, números y guiones bajos.</div>
-                        </div>
-                        <div class="col-md-6">
                             <label for="titulo" class="form-label">Título <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-heading"></i></span>
-                                <input type="text" class="form-control" id="titulo" name="titulo" 
+                                <input type="text" class="form-control" id="titulo" name="titulo"
                                        value="<?php echo htmlspecialchars($datos_presentacion['titulo']); ?>" required>
                             </div>
+                            <div class="form-text">El ID se generará automáticamente</div>
                         </div>
+                        <div class="col-md-6">
+                            <label for="carpeta" class="form-label">Carpeta / Sección</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                                <select class="form-select" id="carpeta" name="carpeta">
+                                    <option value="">Sin carpeta</option>
+                                    <?php foreach ($carpetas_existentes as $carpeta): ?>
+                                        <option value="<?php echo htmlspecialchars($carpeta); ?>"
+                                                <?php echo $datos_presentacion['carpeta'] === $carpeta ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($carpeta); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                    <option value="__nueva__">+ Nueva carpeta...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3" id="nueva-carpeta-container" style="display: none;">
+                        <label for="nueva_carpeta" class="form-label">Nombre de la nueva carpeta</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-folder-plus"></i></span>
+                            <input type="text" class="form-control" id="nueva_carpeta" name="nueva_carpeta"
+                                   placeholder="Ej: Matemáticas, Ciencias, Secundaria, etc.">
+                        </div>
+                        <div class="form-text">Organice sus presentaciones por temas o categorías</div>
                     </div>
                     
                     <div class="mb-3">
@@ -499,19 +555,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 });
             }
             
-            // Generar ID a partir del título
-            const tituloInput = document.getElementById('titulo');
-            const idInput = document.getElementById('id');
-            
-            if (tituloInput && idInput && idInput.value === '') {
-                tituloInput.addEventListener('blur', function() {
-                    if (idInput.value === '') {
-                        let idPropuesto = this.value.toLowerCase()
-                            .replace(/\s+/g, '_')        // Espacios a guiones bajos
-                            .replace(/[^a-z0-9_]/g, '')  // Eliminar caracteres no permitidos
-                            .substring(0, 30);           // Limitar longitud
-                        
-                        idInput.value = idPropuesto;
+            // Mostrar/ocultar campo de nueva carpeta
+            const carpetaSelect = document.getElementById('carpeta');
+            const nuevaCarpetaContainer = document.getElementById('nueva-carpeta-container');
+            const nuevaCarpetaInput = document.getElementById('nueva_carpeta');
+
+            if (carpetaSelect && nuevaCarpetaContainer) {
+                carpetaSelect.addEventListener('change', function() {
+                    if (this.value === '__nueva__') {
+                        nuevaCarpetaContainer.style.display = 'block';
+                        nuevaCarpetaInput.setAttribute('required', 'required');
+                    } else {
+                        nuevaCarpetaContainer.style.display = 'none';
+                        nuevaCarpetaInput.removeAttribute('required');
+                        nuevaCarpetaInput.value = '';
                     }
                 });
             }
