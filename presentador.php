@@ -108,8 +108,10 @@ if (empty($codigo_sesion)) {
     // Incluir elementos flotantes
     if (!$show_intro) {
         include('includes/presentador/elementos_flotantes.php');
+        // Incluir panel de control de interacciones
+        include('includes/presentador/panel_control_interacciones.php');
     }
-    
+
     // Incluir scripts
     include('includes/presentador/scripts.php');
     

@@ -190,6 +190,238 @@
         z-index: 1000;
     }
 
+    /* Controles de navegación */
+    #navigation-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        padding: 10px 20px;
+        border-radius: 50px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        backdrop-filter: blur(10px);
+        z-index: 999;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #navigation-controls button {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    #navigation-controls button:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    #navigation-controls button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    #sync-toggle {
+        background: #4e73df;
+        border-color: #4e73df;
+        padding: 8px 20px;
+        width: auto;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+
+    #sync-toggle.synced {
+        background: #1cc88a;
+        border-color: #1cc88a;
+    }
+
+    /* Banner de desincronización */
+    #desync-banner {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(231, 76, 60, 0.95);
+        color: #fff;
+        padding: 15px 30px;
+        border-radius: 12px;
+        display: none;
+        z-index: 2001;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        text-align: center;
+    }
+
+    #desync-banner.show {
+        display: block;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            transform: translate(-50%, -100%);
+            opacity: 0;
+        }
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    }
+
+    #desync-banner strong {
+        font-size: 16px;
+    }
+
+    #desync-banner small {
+        display: block;
+        margin-top: 5px;
+        opacity: 0.9;
+    }
+
+    /* Panel de interacción */
+    #interaction-panel {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.9);
+        padding: 15px;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .interaction-btn {
+        width: 50px;
+        height: 50px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        font-size: 20px;
+        position: relative;
+    }
+
+    .interaction-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: scale(1.1);
+    }
+
+    .interaction-btn.active {
+        background: #e74c3c;
+        border-color: #e74c3c;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+        }
+    }
+
+    .interaction-btn .badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: bold;
+    }
+
+    /* Modal de pregunta */
+    #question-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.95);
+        color: #333;
+        padding: 30px;
+        border-radius: 12px;
+        display: none;
+        z-index: 2000;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        min-width: 400px;
+        max-width: 500px;
+    }
+
+    #question-modal.show {
+        display: block;
+    }
+
+    #question-input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #4e73df;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 15px;
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    /* Modal de reacciones */
+    #reaction-picker {
+        position: fixed;
+        bottom: 90px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.95);
+        padding: 15px;
+        border-radius: 12px;
+        display: none;
+        z-index: 1001;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #reaction-picker.show {
+        display: flex;
+        gap: 10px;
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    .reaction-option {
+        font-size: 30px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        padding: 5px;
+    }
+
+    .reaction-option:hover {
+        transform: scale(1.3);
+    }
+
     /* Modal de texto */
     #text-modal {
         position: fixed;
@@ -324,6 +556,51 @@
     </button>
 </div>
 
+<!-- Controles de navegación -->
+<div id="navigation-controls">
+    <button id="nav-prev" title="Slide anterior">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button id="sync-toggle" class="synced" title="Sincronizado con presentador">
+        <i class="fas fa-sync"></i> Sincronizado
+    </button>
+    <button id="nav-next" title="Siguiente slide">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+</div>
+
+<!-- Banner de desincronización -->
+<div id="desync-banner">
+    <strong><i class="fas fa-unlink me-2"></i>Desincronizado</strong>
+    <small>Estás en el slide <span id="current-viewing"></span>, el profesor está en <span id="presenter-at"></span></small>
+</div>
+
+<!-- Panel de interacción -->
+<div id="interaction-panel">
+    <button class="interaction-btn" id="raise-hand-btn" title="Levantar mano">
+        <i class="fas fa-hand-paper"></i>
+    </button>
+    <button class="interaction-btn" id="ask-question-btn" title="Hacer pregunta">
+        <i class="fas fa-question-circle"></i>
+    </button>
+    <button class="interaction-btn" id="understanding-btn" title="Medidor de comprensión">
+        <i class="fas fa-brain"></i>
+    </button>
+    <button class="interaction-btn" id="reaction-btn" title="Reacciones rápidas">
+        <i class="fas fa-smile"></i>
+    </button>
+</div>
+
+<!-- Picker de reacciones -->
+<div id="reaction-picker">
+    <span class="reaction-option" data-reaction="👍">👍</span>
+    <span class="reaction-option" data-reaction="❤️">❤️</span>
+    <span class="reaction-option" data-reaction="😮">😮</span>
+    <span class="reaction-option" data-reaction="🤔">🤔</span>
+    <span class="reaction-option" data-reaction="👏">👏</span>
+    <span class="reaction-option" data-reaction="🎉">🎉</span>
+</div>
+
 <div id="slide-info">
     <i class="fas fa-file-pdf me-2"></i>
     Slide <span id="current-slide"><?php echo $slide_number; ?></span> / <span id="total-slides"><?php echo count($test_data['pdf_images']); ?></span>
@@ -349,12 +626,38 @@
     </div>
 </div>
 
+<!-- Modal de pregunta -->
+<div id="question-modal">
+    <h4 style="margin-bottom: 15px;"><i class="fas fa-question-circle me-2"></i>Hacer una pregunta</h4>
+    <textarea id="question-input" placeholder="Escribe tu pregunta aquí... (será enviada de forma anónima)"></textarea>
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="question-anonymous" checked>
+        <label class="form-check-label" for="question-anonymous">
+            Enviar de forma anónima
+        </label>
+    </div>
+    <div class="modal-buttons">
+        <button class="modal-btn modal-btn-secondary" id="question-cancel">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" id="question-send">Enviar pregunta</button>
+    </div>
+</div>
+
 <script>
 const codigo = '<?php echo $codigo_sesion; ?>';
 const participanteId = '<?php echo $participante_id; ?>';
+const participanteNombre = '<?php echo isset($nombre_participante) ? addslashes($nombre_participante) : "Estudiante"; ?>';
 let currentSequenceIndex = <?php echo $sequence_index; ?>;
+let presenterSequenceIndex = <?php echo $sequence_index; ?>; // Índice del presentador
+let viewingSequenceIndex = <?php echo $sequence_index; ?>; // Índice que está viendo el estudiante
 const slideNumber = <?php echo $slide_number; ?>;
+const totalSlides = <?php echo count($test_data['pdf_images']); ?>;
 const serverUrl = window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+const slideSequence = <?php echo json_encode($test_data['pdf_sequence']); ?>;
+
+// Estado de sincronización
+let isSynced = true;
+let handRaised = false;
+let currentUnderstanding = null; // 'confused' o 'understood'
 
 // Variables de estado del canvas
 let canvas, ctx;
@@ -667,7 +970,7 @@ function loadAnnotations() {
         });
 }
 
-// Verificar cambios en la secuencia
+// Verificar cambios en la secuencia (modo inteligente con sincronización)
 function checkSequenceUpdate() {
     const loadingIndicator = document.getElementById('loading-indicator');
     loadingIndicator.classList.add('show');
@@ -679,8 +982,13 @@ function checkSequenceUpdate() {
 
             if (data.success && data.sequence_index !== undefined) {
                 const newIndex = parseInt(data.sequence_index);
+                presenterSequenceIndex = newIndex;
 
-                if (newIndex !== currentSequenceIndex) {
+                // Actualizar banner si está desincronizado
+                updateSyncStatus();
+
+                // Solo recargar si está sincronizado Y el índice cambió
+                if (isSynced && newIndex !== currentSequenceIndex) {
                     // Guardar antes de cambiar de slide
                     saveAnnotations();
 
@@ -699,6 +1007,235 @@ function checkSequenceUpdate() {
         });
 }
 
+// Actualizar estado de sincronización visual
+function updateSyncStatus() {
+    const desyncBanner = document.getElementById('desync-banner');
+    const syncToggle = document.getElementById('sync-toggle');
+
+    if (!isSynced && presenterSequenceIndex !== viewingSequenceIndex) {
+        // Mostrar banner de desincronización
+        desyncBanner.classList.add('show');
+        document.getElementById('current-viewing').textContent = getSlideNumberFromIndex(viewingSequenceIndex);
+        document.getElementById('presenter-at').textContent = getSlideNumberFromIndex(presenterSequenceIndex);
+
+        syncToggle.classList.remove('synced');
+        syncToggle.innerHTML = '<i class="fas fa-unlink"></i> Desincronizado';
+    } else {
+        desyncBanner.classList.remove('show');
+        syncToggle.classList.add('synced');
+        syncToggle.innerHTML = '<i class="fas fa-sync"></i> Sincronizado';
+    }
+
+    // Actualizar botones de navegación
+    updateNavigationButtons();
+}
+
+// Obtener número de slide desde índice de secuencia
+function getSlideNumberFromIndex(index) {
+    if (index < 0 || index >= slideSequence.length) return '?';
+    const item = slideSequence[index];
+    return item.type === 'slide' ? item.number : `Pregunta ${item.id}`;
+}
+
+// Actualizar estado de botones de navegación
+function updateNavigationButtons() {
+    const prevBtn = document.getElementById('nav-prev');
+    const nextBtn = document.getElementById('nav-next');
+
+    // Puede retroceder si no está en el primer slide
+    prevBtn.disabled = viewingSequenceIndex <= 0;
+
+    // Puede avanzar solo hasta donde está el presentador
+    nextBtn.disabled = viewingSequenceIndex >= presenterSequenceIndex;
+}
+
+// Navegación manual
+function navigateTo(direction) {
+    const targetIndex = viewingSequenceIndex + direction;
+
+    // Validar límites
+    if (targetIndex < 0 || targetIndex >= slideSequence.length) return;
+    if (targetIndex > presenterSequenceIndex) return; // No puede adelantarse al profesor
+
+    // Desincroni zar automáticamente
+    if (isSynced) {
+        isSynced = false;
+    }
+
+    // Guardar anotaciones actuales
+    saveAnnotations();
+
+    // Navegar al nuevo slide
+    viewingSequenceIndex = targetIndex;
+    const targetItem = slideSequence[targetIndex];
+
+    // Construir URL para navegar
+    let url = `participante.php?codigo=${codigo}`;
+    window.location.href = url;
+}
+
+// Toggle de sincronización
+document.getElementById('sync-toggle').addEventListener('click', () => {
+    if (isSynced) {
+        // Desincronizar
+        isSynced = false;
+        viewingSequenceIndex = currentSequenceIndex;
+    } else {
+        // Resincronizar - volver a seguir al presentador
+        isSynced = true;
+
+        // Si el presentador está en un slide diferente, navegar allí
+        if (presenterSequenceIndex !== currentSequenceIndex) {
+            saveAnnotations();
+            window.location.reload();
+        }
+    }
+
+    updateSyncStatus();
+});
+
+// Botones de navegación
+document.getElementById('nav-prev').addEventListener('click', () => navigateTo(-1));
+document.getElementById('nav-next').addEventListener('click', () => navigateTo(1));
+
+// ========== INTERACCIONES ==========
+
+// Levantar mano
+document.getElementById('raise-hand-btn').addEventListener('click', () => {
+    handRaised = !handRaised;
+    const btn = document.getElementById('raise-hand-btn');
+
+    if (handRaised) {
+        btn.classList.add('active');
+    } else {
+        btn.classList.remove('active');
+    }
+
+    // Enviar estado al servidor
+    sendInteraction('raise_hand', { raised: handRaised });
+});
+
+// Hacer pregunta
+document.getElementById('ask-question-btn').addEventListener('click', () => {
+    document.getElementById('question-modal').classList.add('show');
+    document.getElementById('question-input').value = '';
+    document.getElementById('question-input').focus();
+});
+
+document.getElementById('question-cancel').addEventListener('click', () => {
+    document.getElementById('question-modal').classList.remove('show');
+});
+
+document.getElementById('question-send').addEventListener('click', () => {
+    const question = document.getElementById('question-input').value.trim();
+    const anonymous = document.getElementById('question-anonymous').checked;
+
+    if (question) {
+        sendInteraction('question', {
+            question: question,
+            anonymous: anonymous,
+            slide_number: slideNumber
+        });
+
+        document.getElementById('question-modal').classList.remove('show');
+
+        // Feedback visual
+        const btn = document.getElementById('ask-question-btn');
+        btn.style.background = '#1cc88a';
+        setTimeout(() => {
+            btn.style.background = '';
+        }, 2000);
+    }
+});
+
+// Medidor de comprensión
+document.getElementById('understanding-btn').addEventListener('click', () => {
+    // Ciclar entre: null -> confused -> understood -> null
+    if (currentUnderstanding === null) {
+        currentUnderstanding = 'confused';
+    } else if (currentUnderstanding === 'confused') {
+        currentUnderstanding = 'understood';
+    } else {
+        currentUnderstanding = null;
+    }
+
+    const btn = document.getElementById('understanding-btn');
+
+    if (currentUnderstanding === 'confused') {
+        btn.style.background = '#e74c3c';
+        btn.innerHTML = '<i class="fas fa-frown"></i>';
+    } else if (currentUnderstanding === 'understood') {
+        btn.style.background = '#1cc88a';
+        btn.innerHTML = '<i class="fas fa-smile"></i>';
+    } else {
+        btn.style.background = '';
+        btn.innerHTML = '<i class="fas fa-brain"></i>';
+    }
+
+    sendInteraction('understanding', {
+        level: currentUnderstanding,
+        slide_number: slideNumber
+    });
+});
+
+// Reacciones rápidas
+document.getElementById('reaction-btn').addEventListener('click', () => {
+    const picker = document.getElementById('reaction-picker');
+    picker.classList.toggle('show');
+});
+
+document.querySelectorAll('.reaction-option').forEach(option => {
+    option.addEventListener('click', () => {
+        const reaction = option.dataset.reaction;
+
+        sendInteraction('reaction', {
+            reaction: reaction,
+            slide_number: slideNumber
+        });
+
+        // Ocultar picker
+        document.getElementById('reaction-picker').classList.remove('show');
+
+        // Feedback visual
+        const btn = document.getElementById('reaction-btn');
+        btn.innerHTML = reaction;
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-smile"></i>';
+        }, 3000);
+    });
+});
+
+// Enviar interacción al servidor
+function sendInteraction(type, data) {
+    const interactionData = {
+        codigo_sesion: codigo,
+        id_participante: participanteId,
+        nombre_participante: participanteNombre,
+        type: type,
+        data: data,
+        timestamp: new Date().toISOString()
+    };
+
+    fetch(serverUrl + 'api/guardar_interaccion.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(interactionData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Interacción enviada:', type);
+        } else {
+            console.error('Error al enviar interacción:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error al enviar interacción:', error);
+    });
+}
+
 // Precargar slides
 function preloadAllSlides() {
     const slides = <?php echo json_encode($test_data['pdf_images']); ?>;
@@ -714,7 +1251,8 @@ window.addEventListener('load', function() {
     initCanvas();
     loadAnnotations();
     preloadAllSlides();
-    console.log('Visor con anotaciones iniciado');
+    updateSyncStatus(); // Inicializar estado de sincronización
+    console.log('Visor con anotaciones y navegación libre iniciado');
 });
 
 // Redimensionar canvas al cambiar tamaño de ventana
