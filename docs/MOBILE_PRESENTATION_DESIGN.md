@@ -80,28 +80,175 @@ Sistema de presentación dual que permite al docente controlar una proyección d
       │                         │                         │
 ```
 
-### Flujo de Activación
+### Flujo de Activación (Estilo WhatsApp Web)
+
+**Filosofía**: El docente se loguea UNA sola vez en su móvil, luego vincula la proyección escaneando QR (o ingresando código).
+
+#### Opción A: Escaneo QR (Recomendado) 📱 → 🖥️
 
 ```
-1. Docente en presentador.php
-   └─► Click "Activar Control Móvil"
-       └─► POST /api/generar_id_presentacion.php
-           ├─ Genera ID único: PRE-X7K9M
-           ├─ Crea token JWT
-           ├─ Guarda en data/presentation_tokens/ABC123.json
-           └─ Muestra QR + ID en pantalla
+1. PC/Proyector en aula (NO requiere login del docente)
+   └─► Accede a: proyeccion.php
+       └─► Muestra pantalla de emparejamiento:
+           ├─ QR Code (se regenera cada 30 segundos)
+           ├─ Código alternativo: "A7K9-M2X1" (formato corto)
+           └─ "Escanea con SimpleMenti en tu móvil"
 
-2. Docente escanea QR desde móvil
-   └─► Abre: control-movil.php?token=PRE-X7K9M
-       └─► Valida token
-           └─► Muestra interfaz de control
+2. Docente en su móvil/tablet (YA logueado)
+   └─► Abre: control-movil.php (su sesión activa)
+       └─► Click botón "📹 Conectar Proyección"
+           └─► Activa escáner de QR (HTML5 getUserMedia)
+               └─► Escanea QR de la pantalla
+                   └─► POST /api/vincular_proyeccion.php
+                       ├─ Valida sesión del móvil (autenticada)
+                       ├─ Valida QR no expirado (<30s)
+                       ├─ Crea vinculación en data/projection_links/{pair_code}.json
+                       ├─ Envía señal SSE a proyección: "pair_success"
+                       └─ Proyección se activa automáticamente
 
-3. PC en aula
-   └─► Navega a: proyeccion.php
-       └─► Ingresa ID: PRE-X7K9M
-           └─► Valida token
-               └─► Inicia modo proyección fullscreen
-                   └─► Conecta SSE para sincronización
+3. ✅ Vinculación completada
+   ├─ Proyección muestra presentación en fullscreen
+   ├─ Móvil muestra controles activos
+   └─ Sincronización en tiempo real activa
+```
+
+#### Opción B: Código Manual (Fallback sin cámara) ⌨️
+
+```
+1. PC/Proyector
+   └─► proyeccion.php muestra:
+       "Ingrese código de su sesión: [____-____]"
+
+2. Docente en móvil (logueado)
+   └─► En control-movil.php ve su código de sesión:
+       ┌─────────────────────────────┐
+       │ Tu código de proyección:    │
+       │                             │
+       │      A7K9-M2X1              │
+       │                             │
+       │ Ingrésalo en la pantalla    │
+       └─────────────────────────────┘
+   └─► Docente ingresa código en el PC
+       └─► Proyección valida código
+           └─► Se vinculan automáticamente
+
+3. ✅ Vinculación completada
+```
+
+#### Ventajas de este Enfoque
+
+✅ **UX Superior**:
+- Docente solo se loguea una vez (en su dispositivo personal)
+- No necesita credenciales en PC público del aula
+- Proceso familiar (como WhatsApp Web, Telegram)
+
+✅ **Seguridad Mejorada**:
+- No expone credenciales en PC compartido
+- QR expira en 30 segundos (evita replay attacks)
+- Sesión siempre controlada desde el móvil del docente
+
+✅ **Simplicidad**:
+- Menos pasos para el usuario
+- PC del aula no requiere configuración
+- Funciona incluso sin teclado (solo QR)
+
+✅ **Flexibilidad**:
+- Opción QR para rapidez
+- Opción código manual como fallback
+- Docente puede desvincular remotamente desde móvil
+
+---
+
+## 👤 Login del Docente en Móvil
+
+**Pregunta clave**: ¿Cómo se autentica el docente en su dispositivo móvil?
+
+### Opción 1: Login con Código de Sesión (Recomendado)
+
+El docente ya tiene una sesión activa en el sistema. Simplemente la vincula con su móvil:
+
+```
+1. Docente tiene sesión activa "ABC123" en su presentación
+
+2. Desde su móvil, accede a: control-movil.php
+   └─► Pantalla de login:
+       ┌─────────────────────────────┐
+       │  SimpleMenti - Control      │
+       │                             │
+       │  Código de sesión:          │
+       │  [ABC123]                   │
+       │                             │
+       │  [Conectar]                 │
+       └─────────────────────────────┘
+
+3. Ingresa código "ABC123" → Valida sesión activa → Login exitoso
+
+4. Ahora puede vincular proyecciones (escanear QR)
+```
+
+**Ventajas**:
+- Sin credenciales (email/password) necesarias
+- Código temporal y corto (6 caracteres)
+- Múltiples dispositivos pueden controlar misma sesión (tablet + móvil)
+
+### Opción 2: Login con Credenciales (Alternativa)
+
+Si el docente no tiene sesión activa, puede loguear con email/password:
+
+```
+1. Accede a: control-movil.php
+
+2. Si no está autenticado, muestra login tradicional:
+   - Email
+   - Password
+   - [Iniciar Sesión]
+
+3. Tras login, muestra sus presentaciones activas
+
+4. Selecciona presentación → Obtiene código de sesión → Puede vincular proyección
+```
+
+### Opción 3: QR Dual (Innovador)
+
+Combinar ambos enfoques:
+
+```
+1. Docente en presentador.php (PC personal) genera QR especial
+
+2. QR contiene:
+   {
+     "type": "mobile_login",
+     "session_id": "ABC123",
+     "auth_token": "temp_xyz789",
+     "expires": 60
+   }
+
+3. Escanea desde móvil → Login automático + vinculación de sesión
+
+4. Ya puede vincular proyecciones
+```
+
+**Flujo completo recomendado**:
+
+```
+PC Personal (casa/oficina)          Móvil                    PC Aula
+─────────────────────────          ─────                    ───────
+
+presentador.php
+├─ Genera QR "Login Móvil"
+                                    Escanea QR
+                                    ├─ Auto-login
+                                    └─ control-movil.php
+                                        (sesión ABC123)
+
+                                                             proyeccion.php
+                                                             └─ Muestra QR
+                                                                "Emparejamiento"
+
+                                    Escanea QR proyección
+                                    └─ Vincula ABC123 ↔ proyección
+
+✅ Proyección activa, control desde móvil
 ```
 
 ---
@@ -115,8 +262,11 @@ Sistema de presentación dual que permite al docente controlar una proyección d
 ├── proyeccion.php                 # Vista de proyección para PC aula
 │
 ├── api/
-│   ├── generar_id_presentacion.php    # Genera ID + token JWT
-│   ├── validar_token_presentacion.php # Valida token activo
+│   ├── generar_codigo_emparejamiento.php  # Genera QR + código para proyección
+│   ├── vincular_proyeccion.php            # Vincula móvil ↔ proyección
+│   ├── desvincular_proyeccion.php         # Desvincula desde móvil
+│   ├── validar_vinculacion.php            # Valida vinculación activa
+│   │
 │   ├── control-movil/
 │   │   ├── avanzar.php                # Avanzar slide
 │   │   ├── retroceder.php             # Retroceder slide
@@ -127,6 +277,7 @@ Sistema de presentación dual que permite al docente controlar una proyección d
 │   │
 │   └── proyeccion/
 │       ├── stream-state.php           # SSE stream para cambios de estado
+│       ├── validar_codigo.php         # Validar código ingresado manualmente
 │       └── get-state.php              # Obtener estado actual (fallback)
 │
 ├── includes/
@@ -148,82 +299,268 @@ Sistema de presentación dual que permite al docente controlar una proyección d
 │   └── proyeccion.css                 # Estilos proyección fullscreen
 │
 └── data/
-    └── presentation_tokens/
-        └── {session_id}.json          # Token + metadata sesión
+    └── projection_links/
+        └── {pair_code}.json           # Vinculación móvil ↔ proyección
 ```
 
 ---
 
 ## 💾 Modelo de Datos
 
-### Archivo: `data/presentation_tokens/{session_id}.json`
+### Archivo: `data/projection_links/{pair_code}.json`
+
+**Propósito**: Almacena la vinculación entre un dispositivo móvil (control) y una proyección.
 
 ```json
 {
-  "session_id": "ABC123",
-  "presentation_id": "demo_test",
-  "token": "PRE-X7K9M",
-  "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "pair_code": "A7K9-M2X1",
+  "qr_data": {
+    "type": "projection_pair",
+    "code": "A7K9-M2X1",
+    "timestamp": "2025-11-22T10:30:00"
+  },
   "created_at": "2025-11-22T10:30:00",
-  "expires_at": "2025-11-23T10:30:00",
+  "expires_at": "2025-11-22T10:30:30",
+  "status": "waiting|paired|disconnected",
+
+  "session": {
+    "session_id": "ABC123",
+    "presentation_id": "demo_test",
+    "created_by": "profesor@example.com"
+  },
+
   "mobile_device": {
-    "user_agent": "Mozilla/5.0 (iPhone...)",
+    "session_token": "mobile_session_xyz789",
+    "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0...)",
     "ip": "192.168.1.100",
-    "connected_at": "2025-11-22T10:31:15"
+    "paired_at": "2025-11-22T10:31:15"
   },
+
   "projection_device": {
-    "user_agent": "Mozilla/5.0 (Windows...)",
+    "session_id": "projection_abc456",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)...",
     "ip": "192.168.1.50",
-    "connected_at": "2025-11-22T10:32:00"
+    "connected_at": "2025-11-22T10:31:16",
+    "screen_resolution": "1920x1080"
   },
+
   "state": {
     "current_slide": 3,
+    "total_slides": 10,
     "pointer": {
       "enabled": true,
       "x": 0.5,
       "y": 0.3
     },
-    "last_update": "2025-11-22T10:35:42"
+    "last_update": "2025-11-22T10:35:42",
+    "last_heartbeat": "2025-11-22T10:35:50"
   }
 }
+```
+
+### Estados de Vinculación
+
+| Estado | Descripción |
+|--------|-------------|
+| `waiting` | QR generado, esperando escaneo desde móvil |
+| `paired` | Móvil y proyección vinculados correctamente |
+| `disconnected` | Conexión perdida (timeout de heartbeat) |
+
+### Ciclo de Vida
+
+```
+1. proyeccion.php carga → genera pair_code → estado: "waiting"
+   ↓
+2. móvil escanea QR → vincular_proyeccion.php → estado: "paired"
+   ↓
+3. Ambos dispositivos mantienen heartbeat cada 5s
+   ↓
+4. Si heartbeat falla >15s → estado: "disconnected"
+   ↓
+5. Usuario cierra proyección → archivo se elimina
 ```
 
 ---
 
 ## 🔄 APIs - Especificación Detallada
 
-### 1. Generar ID de Presentación
+### 1. Generar Código de Emparejamiento (Proyección)
 
-**Endpoint**: `POST /api/generar_id_presentacion.php`
+**Endpoint**: `GET /api/generar_codigo_emparejamiento.php`
 
-**Request**:
-```json
-{
-  "codigo_sesion": "ABC123"
-}
-```
+**Llamado por**: `proyeccion.php` al cargar (sin autenticación)
 
 **Response**:
 ```json
 {
   "success": true,
-  "token": "PRE-X7K9M",
-  "qr_url": "https://example.com/control-movil.php?token=PRE-X7K9M",
-  "expires_at": "2025-11-23T10:30:00"
+  "pair_code": "A7K9-M2X1",
+  "qr_data": {
+    "type": "projection_pair",
+    "code": "A7K9-M2X1",
+    "timestamp": "2025-11-22T10:30:00",
+    "server_url": "https://simplementi.example.com"
+  },
+  "qr_image": "data:image/png;base64,iVBORw0KGgoAAAANSUhE...",
+  "expires_in": 30
 }
+```
+
+**Proceso del servidor**:
+```php
+// 1. Generar código único de 8 caracteres (formato: XXXX-XXXX)
+$pair_code = generarCodigoEmparejamiento(); // ej: "A7K9-M2X1"
+
+// 2. Crear archivo de vinculación
+$data = [
+  'pair_code' => $pair_code,
+  'created_at' => date('c'),
+  'expires_at' => date('c', time() + 30), // 30 segundos
+  'status' => 'waiting',
+  'qr_data' => [
+    'type' => 'projection_pair',
+    'code' => $pair_code,
+    'timestamp' => date('c'),
+    'server_url' => getServerUrl()
+  ]
+];
+
+file_put_contents("data/projection_links/{$pair_code}.json", json_encode($data));
+
+// 3. Generar QR como imagen base64
+$qr_image = generarQRBase64(json_encode($data['qr_data']));
+
+// 4. Retornar
+return json_encode([
+  'success' => true,
+  'pair_code' => $pair_code,
+  'qr_data' => $data['qr_data'],
+  'qr_image' => $qr_image,
+  'expires_in' => 30
+]);
 ```
 
 ---
 
-### 2. Control Móvil - Avanzar Slide
+### 2. Vincular Proyección (desde Móvil)
+
+**Endpoint**: `POST /api/vincular_proyeccion.php`
+
+**Llamado por**: Control móvil tras escanear QR
+
+**Request**:
+```json
+{
+  "qr_data": {
+    "type": "projection_pair",
+    "code": "A7K9-M2X1",
+    "timestamp": "2025-11-22T10:30:00",
+    "server_url": "https://simplementi.example.com"
+  },
+  "session_id": "ABC123"
+}
+```
+
+**Headers**:
+```
+Cookie: PHPSESSID=xyz789... (sesión autenticada del docente en móvil)
+```
+
+**Response (success)**:
+```json
+{
+  "success": true,
+  "pair_code": "A7K9-M2X1",
+  "session": {
+    "session_id": "ABC123",
+    "presentation_id": "demo_test",
+    "current_slide": 1,
+    "total_slides": 10
+  },
+  "message": "Proyección vinculada correctamente"
+}
+```
+
+**Response (error)**:
+```json
+{
+  "success": false,
+  "error": "qr_expired|already_paired|invalid_session",
+  "message": "El código QR ha expirado. Genera uno nuevo."
+}
+```
+
+**Proceso del servidor**:
+```php
+// 1. Validar sesión del móvil
+session_start();
+if (!isset($_SESSION['auth_test'])) {
+  return error('invalid_session', 'No estás autenticado');
+}
+
+// 2. Validar QR no expirado (<30s)
+$qr_data = json_decode($_POST['qr_data'], true);
+$pair_code = $qr_data['code'];
+$timestamp = strtotime($qr_data['timestamp']);
+
+if (time() - $timestamp > 30) {
+  return error('qr_expired', 'El código QR ha expirado');
+}
+
+// 3. Cargar archivo de vinculación
+$link_file = "data/projection_links/{$pair_code}.json";
+if (!file_exists($link_file)) {
+  return error('invalid_code', 'Código inválido');
+}
+
+$link = json_decode(file_get_contents($link_file), true);
+
+// 4. Verificar no ya emparejado
+if ($link['status'] === 'paired') {
+  return error('already_paired', 'Esta proyección ya está vinculada');
+}
+
+// 5. Actualizar vinculación
+$link['status'] = 'paired';
+$link['session'] = [
+  'session_id' => $_POST['session_id'],
+  'presentation_id' => obtenerPresentacionId($_POST['session_id']),
+  'created_by' => $_SESSION['user_email'] ?? 'unknown'
+];
+$link['mobile_device'] = [
+  'session_token' => session_id(),
+  'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+  'ip' => $_SERVER['REMOTE_ADDR'],
+  'paired_at' => date('c')
+];
+
+file_put_contents($link_file, json_encode($link));
+
+// 6. Notificar a proyección vía SSE (si está conectada)
+notificarProyeccion($pair_code, 'pair_success', $link['session']);
+
+return success([
+  'pair_code' => $pair_code,
+  'session' => $link['session']
+]);
+```
+
+---
+
+### 3. Control Móvil - Avanzar Slide
 
 **Endpoint**: `POST /api/control-movil/avanzar.php`
 
 **Request**:
 ```json
 {
-  "token": "PRE-X7K9M"
+  "pair_code": "A7K9-M2X1"
 }
+```
+
+**Headers**:
+```
+Cookie: PHPSESSID=xyz789... (sesión autenticada)
 ```
 
 **Response**:
@@ -250,7 +587,7 @@ function avanzarSlide() {
   // 2. Enviar al servidor en background
   fetch('/api/control-movil/avanzar.php', {
     method: 'POST',
-    body: JSON.stringify({token: presentationToken})
+    body: JSON.stringify({pair_code: pairCode})
   })
   .then(res => res.json())
   .then(data => {
@@ -265,14 +602,14 @@ function avanzarSlide() {
 
 ---
 
-### 3. Actualizar Puntero
+### 4. Actualizar Puntero
 
 **Endpoint**: `POST /api/control-movil/actualizar_puntero.php`
 
 **Request**:
 ```json
 {
-  "token": "PRE-X7K9M",
+  "pair_code": "A7K9-M2X1",
   "x": 0.5,
   "y": 0.3,
   "enabled": true
@@ -305,7 +642,7 @@ function updatePointer(x, y) {
     fetch('/api/control-movil/actualizar_puntero.php', {
       method: 'POST',
       body: JSON.stringify({
-        token: presentationToken,
+        pair_code: pairCode,
         x: x / window.innerWidth,  // Normalizado 0-1
         y: y / window.innerHeight,
         enabled: true
@@ -317,14 +654,17 @@ function updatePointer(x, y) {
 
 ---
 
-### 4. Stream de Estado (Proyección)
+### 5. Stream de Estado (Proyección)
 
-**Endpoint**: `GET /api/proyeccion/stream-state.php?token=PRE-X7K9M`
+**Endpoint**: `GET /api/proyeccion/stream-state.php?pair_code=A7K9-M2X1`
 
 **Tecnología**: Server-Sent Events (SSE)
 
 **Response Stream**:
 ```
+event: pair_success
+data: {"session_id": "ABC123", "presentation_id": "demo_test", "current_slide": 1}
+
 event: slide_change
 data: {"slide": 4, "type": "pdf"}
 
@@ -333,13 +673,22 @@ data: {"x": 0.5, "y": 0.3, "enabled": true}
 
 event: interaction
 data: {"type": "raise_hand", "count": 3}
+
+event: heartbeat
+data: {"timestamp": "2025-11-22T10:35:50"}
 ```
 
 **Cliente (Proyección)**:
 ```javascript
 const eventSource = new EventSource(
-  '/api/proyeccion/stream-state.php?token=' + token
+  '/api/proyeccion/stream-state.php?pair_code=' + pairCode
 );
+
+// Evento inicial cuando móvil escanea QR
+eventSource.addEventListener('pair_success', (e) => {
+  const data = JSON.parse(e.data);
+  iniciarProyeccion(data.session_id, data.presentation_id);
+});
 
 eventSource.addEventListener('slide_change', (e) => {
   const data = JSON.parse(e.data);
@@ -354,9 +703,9 @@ eventSource.addEventListener('pointer_update', (e) => {
 
 ---
 
-### 5. Estado Actual (Control Móvil)
+### 6. Estado Actual (Control Móvil)
 
-**Endpoint**: `GET /api/control-movil/estado.php?token=PRE-X7K9M`
+**Endpoint**: `GET /api/control-movil/estado.php?pair_code=A7K9-M2X1`
 
 **Response**:
 ```json
