@@ -18,38 +18,102 @@
         
         <div class="mb-3">
             <label class="form-label">Opciones <span class="text-danger">*</span></label>
+            <div class="form-text mb-2">Seleccione la respuesta correcta con el botón circular. El feedback es opcional y específico para cada opción.</div>
             <div id="opciones-container">
-                <div class="input-group mb-2">
-                    <span class="input-group-text">A</span>
-                    <input type="text" class="form-control" name="opciones[]" required>
-                    <div class="input-group-text">
-                        <input class="form-check-input mt-0" type="radio" name="respuesta_correcta_index" value="0">
+                <div class="opcion-item mb-3 p-3 border rounded">
+                    <div class="row align-items-center mb-2">
+                        <div class="col-auto">
+                            <span class="badge bg-primary">A</span>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="opciones[]" placeholder="Texto de la opción" required>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="respuesta_correcta_index" value="0" id="correcta_0">
+                                <label class="form-check-label" for="correcta_0">Correcta</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto" style="width: 50px;"></div>
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm" name="feedbacks[]" placeholder="Feedback para esta opción (opcional)">
+                            <small class="text-muted">Este mensaje se mostrará a quien elija esta opción</small>
+                        </div>
                     </div>
                 </div>
-                <div class="input-group mb-2">
-                    <span class="input-group-text">B</span>
-                    <input type="text" class="form-control" name="opciones[]" required>
-                    <div class="input-group-text">
-                        <input class="form-check-input mt-0" type="radio" name="respuesta_correcta_index" value="1">
+                <div class="opcion-item mb-3 p-3 border rounded">
+                    <div class="row align-items-center mb-2">
+                        <div class="col-auto">
+                            <span class="badge bg-primary">B</span>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="opciones[]" placeholder="Texto de la opción" required>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="respuesta_correcta_index" value="1" id="correcta_1">
+                                <label class="form-check-label" for="correcta_1">Correcta</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto" style="width: 50px;"></div>
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm" name="feedbacks[]" placeholder="Feedback para esta opción (opcional)">
+                            <small class="text-muted">Este mensaje se mostrará a quien elija esta opción</small>
+                        </div>
                     </div>
                 </div>
-                <div class="input-group mb-2">
-                    <span class="input-group-text">C</span>
-                    <input type="text" class="form-control" name="opciones[]" required>
-                    <div class="input-group-text">
-                        <input class="form-check-input mt-0" type="radio" name="respuesta_correcta_index" value="2">
+                <div class="opcion-item mb-3 p-3 border rounded">
+                    <div class="row align-items-center mb-2">
+                        <div class="col-auto">
+                            <span class="badge bg-primary">C</span>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="opciones[]" placeholder="Texto de la opción" required>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="respuesta_correcta_index" value="2" id="correcta_2">
+                                <label class="form-check-label" for="correcta_2">Correcta</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto" style="width: 50px;"></div>
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm" name="feedbacks[]" placeholder="Feedback para esta opción (opcional)">
+                            <small class="text-muted">Este mensaje se mostrará a quien elija esta opción</small>
+                        </div>
                     </div>
                 </div>
-                <div class="input-group mb-2">
-                    <span class="input-group-text">D</span>
-                    <input type="text" class="form-control" name="opciones[]" required>
-                    <div class="input-group-text">
-                        <input class="form-check-input mt-0" type="radio" name="respuesta_correcta_index" value="3">
+                <div class="opcion-item mb-3 p-3 border rounded">
+                    <div class="row align-items-center mb-2">
+                        <div class="col-auto">
+                            <span class="badge bg-primary">D</span>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="opciones[]" placeholder="Texto de la opción" required>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="respuesta_correcta_index" value="3" id="correcta_3">
+                                <label class="form-check-label" for="correcta_3">Correcta</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto" style="width: 50px;"></div>
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm" name="feedbacks[]" placeholder="Feedback para esta opción (opcional)">
+                            <small class="text-muted">Este mensaje se mostrará a quien elija esta opción</small>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="form-text">Seleccione la respuesta correcta con el botón circular.</div>
-            
+
             <div class="mt-2">
                 <button type="button" id="agregar-opcion" class="btn btn-sm btn-outline-primary">
                     <i class="fas fa-plus me-1"></i> Agregar opción

@@ -82,6 +82,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     unset($pregunta['respuesta_correcta']);
                 }
+
+                // Procesar feedbacks (opcional, uno por opción)
+                if (isset($_POST['feedbacks']) && is_array($_POST['feedbacks'])) {
+                    $feedbacks_array = $_POST['feedbacks'];
+                    $feedbacks_map = [];
+
+                    // Asociar cada feedback con su opción correspondiente
+                    foreach ($opciones as $index => $opcion) {
+                        if (isset($feedbacks_array[$index]) && !empty(trim($feedbacks_array[$index]))) {
+                            $feedbacks_map[$opcion] = trim($feedbacks_array[$index]);
+                        }
+                    }
+
+                    // Solo agregar feedbacks si hay al menos uno, sino eliminar el campo
+                    if (!empty($feedbacks_map)) {
+                        $pregunta['feedbacks'] = $feedbacks_map;
+                    } else {
+                        unset($pregunta['feedbacks']);
+                    }
+                } else {
+                    // Si no se enviaron feedbacks, eliminar el campo
+                    unset($pregunta['feedbacks']);
+                }
                 break;
             case 'verdadero_falso':
                 $respuesta_correcta = $_POST['respuesta_correcta'] ?? '';
@@ -162,18 +185,43 @@ $tipo_pregunta_texto = ucfirst(str_replace('_', ' ', $pregunta['tipo']));
                 <?php switch ($pregunta['tipo']):
                     case 'opcion_multiple': ?>
                         <h5>Opciones</h5>
+                        <div class="form-text mb-2">El feedback es opcional y específico para cada opción. Cada participante verá solo el feedback de la opción que eligió.</div>
                         <div id="opciones-container">
-                            <?php foreach ($pregunta['opciones'] as $index => $opcion): ?>
-                            <div class="input-group mb-2">
-                                <input type="text" name="opciones[]" class="form-control" value="<?php echo htmlspecialchars($opcion); ?>" required>
-                                <div class="input-group-text">
-                                    <input class="form-check-input mt-0" type="radio" name="respuesta_correcta_index" value="<?php echo $index; ?>" <?php echo ($opcion === ($pregunta['respuesta_correcta'] ?? '')) ? 'checked' : ''; ?>>
+                            <?php foreach ($pregunta['opciones'] as $index => $opcion):
+                                $letra = chr(65 + $index);  // A, B, C, ...
+                                $feedback_opcion = isset($pregunta['feedbacks'][$opcion]) ? $pregunta['feedbacks'][$opcion] : '';
+                            ?>
+                            <div class="opcion-item mb-3 p-3 border rounded">
+                                <div class="row align-items-center mb-2">
+                                    <div class="col-auto">
+                                        <span class="badge bg-primary"><?php echo $letra; ?></span>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" name="opciones[]" class="form-control" value="<?php echo htmlspecialchars($opcion); ?>" placeholder="Texto de la opción" required>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="respuesta_correcta_index" value="<?php echo $index; ?>" id="correcta_edit_<?php echo $index; ?>" <?php echo ($opcion === ($pregunta['respuesta_correcta'] ?? '')) ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="correcta_edit_<?php echo $index; ?>">Correcta</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.opcion-item').remove();">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove();">Eliminar</button>
+                                <div class="row">
+                                    <div class="col-auto" style="width: 50px;"></div>
+                                    <div class="col">
+                                        <input type="text" class="form-control form-control-sm" name="feedbacks[]" value="<?php echo htmlspecialchars($feedback_opcion); ?>" placeholder="Feedback para esta opción (opcional)">
+                                        <small class="text-muted">Este mensaje se mostrará a quien elija esta opción</small>
+                                    </div>
+                                </div>
                             </div>
                             <?php endforeach; ?>
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="agregar-opcion">Agregar opción</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="agregar-opcion"><i class="fas fa-plus me-1"></i> Agregar opción</button>
                         <hr>
                         <?php break; ?>
 
@@ -217,15 +265,38 @@ document.addEventListener('DOMContentLoaded', function() {
     if (agregarOpcionBtn) {
         agregarOpcionBtn.addEventListener('click', function() {
             const container = document.getElementById('opciones-container');
-            const newIndex = container.children.length;
+            const newIndex = container.querySelectorAll('.opcion-item').length;
+            const nuevaLetra = String.fromCharCode(65 + newIndex); // A, B, C, ...
+
             const div = document.createElement('div');
-            div.className = 'input-group mb-2';
+            div.className = 'opcion-item mb-3 p-3 border rounded';
             div.innerHTML = `
-                <input type="text" name="opciones[]" class="form-control" required>
-                <div class="input-group-text">
-                    <input class="form-check-input mt-0" type="radio" name="respuesta_correcta_index" value="${newIndex}">
+                <div class="row align-items-center mb-2">
+                    <div class="col-auto">
+                        <span class="badge bg-primary">${nuevaLetra}</span>
+                    </div>
+                    <div class="col">
+                        <input type="text" name="opciones[]" class="form-control" placeholder="Texto de la opción" required>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="respuesta_correcta_index" value="${newIndex}" id="correcta_edit_${newIndex}">
+                            <label class="form-check-label" for="correcta_edit_${newIndex}">Correcta</label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.opcion-item').remove();">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove();">Eliminar</button>
+                <div class="row">
+                    <div class="col-auto" style="width: 50px;"></div>
+                    <div class="col">
+                        <input type="text" class="form-control form-control-sm" name="feedbacks[]" placeholder="Feedback para esta opción (opcional)">
+                        <small class="text-muted">Este mensaje se mostrará a quien elija esta opción</small>
+                    </div>
+                </div>
             `;
             container.appendChild(div);
         });
