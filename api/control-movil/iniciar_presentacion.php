@@ -105,6 +105,11 @@ function crearSesionPresentacion($sessionId, $presentationId) {
         'configuracion' => $presentationData['configuracion'] ?? []
     ];
 
+    // Si hay secuencia de PDF, inicializar el índice
+    if (!empty($presentationData['pdf_sequence'])) {
+        $sessionData['pdf_sequence_index'] = 0;
+    }
+
     // Guardar con el formato: data/respuestas/{presentacion_id}/sesion_{codigo}.json
     $sessionFile = $presentationDir . '/sesion_' . $sessionId . '.json';
     file_put_contents($sessionFile, json_encode($sessionData, JSON_PRETTY_PRINT));

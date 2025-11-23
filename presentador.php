@@ -55,13 +55,23 @@ if (empty($codigo_sesion)) {
         include('includes/presentador/navbar.php');
     }
 
+    // Detectar si es presentación solo de PDF (sin preguntas)
+    $es_solo_pdf = $total_preguntas === 0 && !empty($test_data['pdf_enabled']);
+
     // Si es sesión móvil y está en intro (pregunta_actual = 0), avanzar automáticamente
-    if ($is_mobile_session && $pregunta_actual_index === 0) {
-        // Avanzar a la primera pregunta/diapositiva
+    if ($is_mobile_session && $pregunta_actual_index === 0 && !$es_solo_pdf) {
+        // Solo avanzar si hay preguntas
+        // Para presentaciones solo de PDF, dejar pregunta_actual en 0
         $sessionFile = "data/respuestas/{$test_id}/sesion_{$codigo_sesion}.json";
         if (file_exists($sessionFile)) {
             $sessionData = json_decode(file_get_contents($sessionFile), true);
             $sessionData['pregunta_actual'] = 1;
+
+            // Inicializar pdf_sequence_index si hay secuencia de PDF
+            if (!empty($test_data['pdf_sequence'])) {
+                $sessionData['pdf_sequence_index'] = 0;
+            }
+
             file_put_contents($sessionFile, json_encode($sessionData, JSON_PRETTY_PRINT));
 
             // Redirigir para recargar con el nuevo estado
@@ -88,7 +98,8 @@ if (empty($codigo_sesion)) {
         include('includes/presentador/pantalla_inicio.php');
     } elseif ($mostrar_respuesta && isset($pregunta_actual['respuesta_correcta'])) {
         include('includes/presentador/pantalla_respuesta.php');
-    } elseif ($pregunta_actual_index <= $total_preguntas) {
+    } elseif ($pregunta_actual_index <= $total_preguntas || $es_solo_pdf) {
+        // Mostrar contenido si hay preguntas o si es solo PDF
         // Verificar si hay PDF con secuencia configurada
         $tiene_pdf_con_secuencia = !empty($test_data['pdf_enabled']) &&
                                     isset($test_data['pdf_sequence']) &&
