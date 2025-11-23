@@ -3,6 +3,17 @@
  * Funciones auxiliares para el sistema de control móvil
  */
 
+// Polyfill para PHP < 8.0
+if (!function_exists('str_ends_with')) {
+    function str_ends_with($haystack, $needle) {
+        $length = strlen($needle);
+        if ($length == 0) {
+            return true;
+        }
+        return (substr($haystack, -$length) === $needle);
+    }
+}
+
 /**
  * Genera un código de emparejamiento único (formato: XXXX-XXXX)
  * @return string
@@ -169,7 +180,7 @@ function limpiarCodigosExpirados() {
 
     $archivos = scandir($linksDir);
     foreach ($archivos as $archivo) {
-        if ($archivo === '.' || $archivo === '..' || substr($archivo, -5) !== '.json') {
+        if ($archivo === '.' || $archivo === '..' || !str_ends_with($archivo, '.json')) {
             continue;
         }
 
@@ -232,7 +243,7 @@ function tieneControlMovilConectado($sessionId) {
 
     $archivos = scandir($linksDir);
     foreach ($archivos as $archivo) {
-        if ($archivo === '.' || $archivo === '..' || substr($archivo, -5) !== '.json') {
+        if ($archivo === '.' || $archivo === '..' || !str_ends_with($archivo, '.json')) {
             continue;
         }
 
