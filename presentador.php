@@ -37,13 +37,38 @@ if (empty($codigo_sesion)) {
 } else {
     // Incluir la verificación de sesión
     include('includes/presentador/verificacion.php');
-    
+
+    // Detectar si es una sesión iniciada desde control móvil (sin login en PC)
+    $is_mobile_session = !isset($_SESSION['auth_test']);
+
     // Incluir la cabecera HTML
     include('includes/presentador/head.php');
-    
-    // Mostrar la navbar
-    include('includes/presentador/navbar.php');
-    
+
+    // Solo mostrar navbar si NO es sesión móvil
+    if (!$is_mobile_session) {
+        include('includes/presentador/navbar.php');
+    }
+
+    // Si es sesión móvil y está en intro (pregunta_actual = 0), avanzar automáticamente
+    if ($is_mobile_session && $pregunta_actual_index === 0) {
+        // Avanzar a la primera pregunta/diapositiva
+        $sessionFile = "data/respuestas/{$test_id}/sesion_{$codigo_sesion}.json";
+        if (file_exists($sessionFile)) {
+            $sessionData = json_decode(file_get_contents($sessionFile), true);
+            $sessionData['pregunta_actual'] = 1;
+            file_put_contents($sessionFile, json_encode($sessionData, JSON_PRETTY_PRINT));
+
+            // Redirigir para recargar con el nuevo estado
+            header("Location: presentador.php?codigo=$codigo_sesion");
+            exit;
+        }
+    }
+
+    // Para sesiones móviles, nunca mostrar intro
+    if ($is_mobile_session) {
+        $show_intro = false;
+    }
+
     // Incluir la barra de progreso
     ?>
     <div class="container py-4">
@@ -51,7 +76,7 @@ if (empty($codigo_sesion)) {
             <div class="slide-indicator-progress" style="width: <?php echo $show_intro ? 0 : ($pregunta_actual_index / ($total_preguntas + 1)) * 100; ?>%"></div>
         </div>
     <?php
-    
+
     // Determinar qué pantalla mostrar según el estado
     if ($show_intro) {
         include('includes/presentador/pantalla_inicio.php');
