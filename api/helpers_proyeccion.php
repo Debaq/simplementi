@@ -187,3 +187,33 @@ function limpiarCodigosExpirados() {
 
     return $eliminados;
 }
+
+/**
+ * Actualiza el estado de una vinculación
+ * @param string $pairCode Código de emparejamiento
+ * @param string $newStatus Nuevo estado (waiting, paired, active)
+ * @param array $additionalData Datos adicionales a actualizar
+ * @return bool
+ */
+function actualizarEstadoVinculacion($pairCode, $newStatus, $additionalData = []) {
+    $linkFile = __DIR__ . '/../data/projection_links/' . $pairCode . '.json';
+
+    if (!file_exists($linkFile)) {
+        return false;
+    }
+
+    $linkData = json_decode(file_get_contents($linkFile), true);
+    $linkData['status'] = $newStatus;
+
+    // Merge additional data
+    foreach ($additionalData as $key => $value) {
+        if (is_array($value) && isset($linkData[$key])) {
+            $linkData[$key] = array_merge($linkData[$key], $value);
+        } else {
+            $linkData[$key] = $value;
+        }
+    }
+
+    file_put_contents($linkFile, json_encode($linkData, JSON_PRETTY_PRINT));
+    return true;
+}

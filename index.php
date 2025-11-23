@@ -256,52 +256,75 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
     </footer>
 
     <!-- Modal Control Móvil -->
-    <div class="modal fade" id="modalControlMovil" tabindex="-1">
+    <div class="modal fade" id="modalControlMovil" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">
                         <i class="fas fa-mobile-alt me-2"></i>
-                        Control Móvil
+                        Control Móvil Sincronizado
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id="btn-close-modal"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>¿Cómo funciona el Control Móvil?</strong>
+                <div class="modal-body text-center">
+                    <!-- Loading state -->
+                    <div id="loading-qr" style="display: none;">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Generando QR...</span>
+                        </div>
+                        <p>Generando código QR...</p>
                     </div>
 
-                    <h6 class="fw-bold mb-3">Pasos para controlar desde tu móvil:</h6>
+                    <!-- QR state -->
+                    <div id="qr-display" style="display: none;">
+                        <div class="alert alert-success mb-3">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>QR generado</strong>
+                        </div>
 
-                    <ol class="text-start mb-4">
-                        <li class="mb-3">
-                            <strong>Inicia la presentación</strong><br>
-                            <small class="text-muted">Haz clic en "Iniciar Presentación" arriba</small>
-                        </li>
-                        <li class="mb-3">
-                            <strong>Genera el código QR</strong><br>
-                            <small class="text-muted">En la barra superior de la presentación, haz clic en el menú (☰) → "Conectar Dispositivo Móvil"</small>
-                        </li>
-                        <li class="mb-3">
-                            <strong>Escanea con tu móvil</strong><br>
-                            <small class="text-muted">Usa la cámara de tu teléfono para escanear el QR</small>
-                        </li>
-                        <li class="mb-3">
-                            <strong>¡Listo!</strong><br>
-                            <small class="text-muted">Controla slides, ve participantes, usa el puntero láser virtual</small>
-                        </li>
-                    </ol>
+                        <div class="mb-3">
+                            <img id="qr-image" src="" alt="QR Code" class="img-fluid border rounded" style="max-width: 300px;">
+                        </div>
 
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Importante:</strong> Los códigos QR expiran en 30 segundos por seguridad
+                        <div class="mb-3">
+                            <h5>Código: <span id="pair-code" class="badge bg-primary fs-5"></span></h5>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-clock me-2"></i>
+                            Expira en <strong id="countdown">120</strong> segundos
+                        </div>
+
+                        <div id="waiting-connection">
+                            <div class="mb-3">
+                                <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                                <strong>Esperando conexión...</strong>
+                            </div>
+                            <ol class="text-start small">
+                                <li>Escanea el QR con tu móvil</li>
+                                <li>Inicia sesión si es necesario</li>
+                                <li>Selecciona presentación</li>
+                                <li>El PC iniciará automáticamente</li>
+                            </ol>
+                        </div>
+
+                        <div id="connected-state" style="display: none;">
+                            <div class="alert alert-info">
+                                <i class="fas fa-mobile-alt me-2"></i>
+                                <strong>Móvil conectado</strong><br>
+                                <small>Esperando que inicies desde el móvil...</small>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="text-center">
-                        <button class="btn btn-primary btn-lg" data-bs-dismiss="modal" onclick="iniciarPresentacion()">
-                            <i class="fas fa-play me-2"></i>
-                            Iniciar Presentación Ahora
+                    <!-- Error state -->
+                    <div id="error-qr" style="display: none;">
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <span id="error-message"></span>
+                        </div>
+                        <button class="btn btn-primary" onclick="generarQR()">
+                            Reintentar
                         </button>
                     </div>
                 </div>
@@ -311,24 +334,132 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Control Móvil desde Dashboard
-        let currentPresentationId = null;
+        // Control Móvil Sincronizado
         const modal = new bootstrap.Modal(document.getElementById('modalControlMovil'));
+        let currentPairCode = null;
+        let pollingInterval = null;
+        let countdownInterval = null;
 
-        // Abrir modal de instrucciones al hacer clic en "Control Móvil"
+        // Abrir modal y generar QR al hacer clic en "Control Móvil"
         document.querySelectorAll('.btn-control-movil').forEach(btn => {
             btn.addEventListener('click', function() {
-                currentPresentationId = this.dataset.presentationId;
                 modal.show();
+                generarQR();
             });
         });
 
-        // Función para iniciar presentación desde el modal
-        function iniciarPresentacion() {
-            if (currentPresentationId) {
-                window.location.href = '?test=' + encodeURIComponent(currentPresentationId);
+        // Generar QR
+        async function generarQR() {
+            mostrarEstado('loading');
+
+            try {
+                const response = await fetch('api/generar_codigo_emparejamiento.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    currentPairCode = data.pair_code;
+
+                    document.getElementById('qr-image').src = data.qr_image;
+                    document.getElementById('pair-code').textContent = data.pair_code;
+
+                    mostrarEstado('qr');
+                    iniciarCountdown(data.expires_in);
+                    iniciarPolling();
+                } else {
+                    mostrarEstado('error', data.message || 'Error al generar QR');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarEstado('error', 'Error de conexión');
             }
         }
+
+        // Polling para detectar cuando el móvil inicie la presentación
+        function iniciarPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+
+            pollingInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`api/check_pair_status.php?code=${currentPairCode}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Actualizar UI según estado
+                        if (data.status === 'paired') {
+                            // Móvil conectado
+                            document.getElementById('waiting-connection').style.display = 'none';
+                            document.getElementById('connected-state').style.display = 'block';
+                        }
+
+                        if (data.status === 'active' && data.session_id) {
+                            // Presentación iniciada desde móvil
+                            detenerPolling();
+
+                            // Redirigir a presentador
+                            window.location.href = `presentador.php?codigo=${data.session_id}`;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error en polling:', error);
+                }
+            }, 2000); // Cada 2 segundos
+        }
+
+        // Countdown
+        function iniciarCountdown(segundos) {
+            let tiempoRestante = segundos;
+            const countdownElement = document.getElementById('countdown');
+
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval = setInterval(() => {
+                tiempoRestante--;
+                countdownElement.textContent = tiempoRestante;
+
+                if (tiempoRestante <= 0) {
+                    clearInterval(countdownInterval);
+                    detenerPolling();
+                    mostrarEstado('error', 'El código ha expirado. Genera uno nuevo.');
+                }
+            }, 1000);
+        }
+
+        // Detener polling
+        function detenerPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+        }
+
+        // Mostrar estados
+        function mostrarEstado(estado, mensaje = '') {
+            document.getElementById('loading-qr').style.display = estado === 'loading' ? 'block' : 'none';
+            document.getElementById('qr-display').style.display = estado === 'qr' ? 'block' : 'none';
+            document.getElementById('error-qr').style.display = estado === 'error' ? 'block' : 'none';
+
+            if (estado === 'error') {
+                document.getElementById('error-message').textContent = mensaje;
+                detenerPolling();
+            }
+        }
+
+        // Limpiar al cerrar modal
+        document.getElementById('btn-close-modal').addEventListener('click', () => {
+            detenerPolling();
+        });
+
+        document.getElementById('modalControlMovil').addEventListener('hidden.bs.modal', () => {
+            detenerPolling();
+        });
     </script>
 </body>
 </html>
