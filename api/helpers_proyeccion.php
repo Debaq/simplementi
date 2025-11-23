@@ -169,7 +169,7 @@ function limpiarCodigosExpirados() {
 
     $archivos = scandir($linksDir);
     foreach ($archivos as $archivo) {
-        if ($archivo === '.' || $archivo === '..' || !str_ends_with($archivo, '.json')) {
+        if ($archivo === '.' || $archivo === '..' || substr($archivo, -5) !== '.json') {
             continue;
         }
 
@@ -232,7 +232,7 @@ function tieneControlMovilConectado($sessionId) {
 
     $archivos = scandir($linksDir);
     foreach ($archivos as $archivo) {
-        if ($archivo === '.' || $archivo === '..' || !str_ends_with($archivo, '.json')) {
+        if ($archivo === '.' || $archivo === '..' || substr($archivo, -5) !== '.json') {
             continue;
         }
 
