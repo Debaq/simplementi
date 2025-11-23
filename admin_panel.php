@@ -426,6 +426,10 @@ if ($seccion === 'presentaciones') {
                                                     onclick="generarCodigoPresentador('<?php echo htmlspecialchars($presentacion['id']); ?>', '<?php echo htmlspecialchars($presentacion['titulo']); ?>')">
                                                 <i class="fas fa-key"></i>
                                             </button>
+                                            <button class="btn btn-warning" title="Control Móvil"
+                                                    onclick="abrirControlMovil('<?php echo htmlspecialchars($presentacion['id']); ?>', '<?php echo htmlspecialchars($presentacion['titulo']); ?>')">
+                                                <i class="fas fa-mobile-alt"></i>
+                                            </button>
                                             <a href="?seccion=presentaciones&accion=eliminar_presentacion&id=<?php echo urlencode($presentacion['id']); ?>"
                                                class="btn btn-danger" title="Eliminar"
                                                onclick="return confirm('¿Está seguro de eliminar esta presentación? Esta acción no se puede deshacer.')">
@@ -835,6 +839,33 @@ if ($seccion === 'presentaciones') {
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
                 }, 1500);
+            });
+        }
+
+        // Función para abrir control móvil
+        function abrirControlMovil(idPresentacion, tituloPresentacion) {
+            // Mostrar confirmación
+            if (!confirm('¿Abrir control móvil para "' + tituloPresentacion + '"?\n\nEsto creará una nueva sesión y abrirá el control móvil en una nueva pestaña.')) {
+                return;
+            }
+
+            // Generar control móvil
+            fetch('api/generar_control_movil.php?test=' + encodeURIComponent(idPresentacion))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Abrir control móvil en nueva pestaña
+                    window.open(data.control_url, '_blank');
+
+                    // Mostrar notificación
+                    alert('Control móvil abierto en nueva pestaña\n\nCódigo de sesión: ' + data.codigo_sesion);
+                } else {
+                    alert('Error al generar control móvil: ' + (data.message || 'Error desconocido'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error de conexión al generar control móvil');
             });
         }
     </script>
