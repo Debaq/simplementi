@@ -88,5 +88,13 @@ $_SESSION['user_name'] = $user_found['nombre'] ?? $user_found['usuario'];
 $_SESSION['user_role'] = $user_found['rol'] ?? 'editor';
 
 // Redirigir a la página original
-header('Location: ../../' . $redirect_to);
+// Si $redirect_to es una ruta absoluta (empieza con /), usarla directamente
+// Si es relativa, agregar el prefijo ../../
+if (strpos($redirect_to, '/') === 0) {
+    // Ruta absoluta
+    header('Location: ' . $redirect_to);
+} else {
+    // Ruta relativa
+    header('Location: ../../' . $redirect_to);
+}
 exit;
