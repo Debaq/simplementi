@@ -375,8 +375,24 @@
 
         // Actualizar UI con el estado
         function actualizarUI(data) {
-            // Actualizar slide indicator
-            actualizarSlideIndicator(data.session.current_item);
+            // Detectar si la presentación tiene diapositivas
+            const hasPdf = data.session.presentation.pdf_enabled;
+            const slidePreviewSection = document.querySelector('.bg-white.border-bottom.p-3:has(#slide-preview)');
+            const navigationSection = document.querySelector('.bg-white.border-bottom.p-3:has(#btn-prev)');
+
+            // Ocultar controles de diapositivas si no hay PDF
+            if (!hasPdf) {
+                if (slidePreviewSection) slidePreviewSection.style.display = 'none';
+                if (navigationSection) navigationSection.style.display = 'none';
+            } else {
+                if (slidePreviewSection) slidePreviewSection.style.display = 'block';
+                if (navigationSection) navigationSection.style.display = 'block';
+            }
+
+            // Actualizar slide indicator (solo si hay PDF)
+            if (hasPdf) {
+                actualizarSlideIndicator(data.session.current_item);
+            }
 
             // Actualizar participantes
             participantsCount.textContent = data.session.participants_count;
@@ -388,9 +404,11 @@
             renderManos(data.interactions.hands_raised);
             renderPreguntas(data.interactions.questions);
 
-            // Deshabilitar botones según posición
-            btnPrev.disabled = (data.session.current_item.index === 0);
-            btnNext.disabled = (data.session.current_item.index >= data.session.current_item.total - 1);
+            // Deshabilitar botones según posición (solo si hay PDF)
+            if (hasPdf) {
+                btnPrev.disabled = (data.session.current_item.index === 0);
+                btnNext.disabled = (data.session.current_item.index >= data.session.current_item.total - 1);
+            }
         }
 
         // Actualizar indicador de slide

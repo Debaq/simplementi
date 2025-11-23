@@ -83,20 +83,20 @@ function generarCodigoSesion() {
  * Crea los archivos de sesión para la presentación
  */
 function crearSesionPresentacion($sessionId, $presentationId) {
-    // Crear directorio de respuestas si no existe
-    $responseDir = __DIR__ . '/../../data/respuestas';
-    if (!file_exists($responseDir)) {
-        mkdir($responseDir, 0755, true);
+    // Crear directorio de respuestas/{presentacion_id} si no existe
+    $presentationDir = __DIR__ . '/../../data/respuestas/' . $presentationId;
+    if (!file_exists($presentationDir)) {
+        mkdir($presentationDir, 0755, true);
     }
 
     // Cargar datos de la presentación
     $presentationFile = __DIR__ . '/../../data/presentaciones/' . $presentationId . '.json';
     $presentationData = json_decode(file_get_contents($presentationFile), true);
 
-    // Crear archivo de sesión
+    // Crear archivo de sesión con el formato esperado por presentador.php
     $sessionData = [
         'codigo_sesion' => $sessionId,
-        'presentacion_id' => $presentationId,
+        'id_presentacion' => $presentationId,  // Nota: 'id_presentacion' no 'presentacion_id'
         'fecha_inicio' => date('c'),
         'estado' => 'activa',
         'pregunta_actual' => 0,
@@ -105,7 +105,8 @@ function crearSesionPresentacion($sessionId, $presentationId) {
         'configuracion' => $presentationData['configuracion'] ?? []
     ];
 
-    $sessionFile = $responseDir . '/' . $sessionId . '.json';
+    // Guardar con el formato: data/respuestas/{presentacion_id}/sesion_{codigo}.json
+    $sessionFile = $presentationDir . '/sesion_' . $sessionId . '.json';
     file_put_contents($sessionFile, json_encode($sessionData, JSON_PRETTY_PRINT));
 
     return true;
