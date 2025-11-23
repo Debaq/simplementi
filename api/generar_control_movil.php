@@ -99,12 +99,12 @@ try {
     // 5. Construir URL del control móvil
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'];
-    $base_path = dirname($_SERVER['PHP_SELF']);
-    if ($base_path === '/' || $base_path === '\\') {
-        $base_path = '';
-    }
 
-    $control_url = $protocol . '://' . $host . $base_path . '/../control-movil.php?code=' . $pair_code;
+    // Obtener el directorio base de la aplicación
+    $script_dir = dirname($_SERVER['SCRIPT_NAME']);
+    $base_path = rtrim(str_replace('/api', '', $script_dir), '/');
+
+    $control_url = $protocol . '://' . $host . $base_path . '/control-movil.php?code=' . $pair_code;
 
     $response['success'] = true;
     $response['control_url'] = $control_url;

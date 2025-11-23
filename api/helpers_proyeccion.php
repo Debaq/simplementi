@@ -230,6 +230,27 @@ function actualizarEstadoVinculacion($pairCode, $newStatus, $additionalData = []
 }
 
 /**
+ * Guarda una nueva vinculación de control móvil
+ * @param string $pairCode Código de emparejamiento
+ * @param array $linkData Datos de la vinculación
+ * @return bool
+ */
+function guardarVinculacion($pairCode, $linkData) {
+    $linksDir = __DIR__ . '/../data/projection_links';
+
+    // Crear directorio si no existe
+    if (!is_dir($linksDir)) {
+        mkdir($linksDir, 0755, true);
+    }
+
+    $linkFile = $linksDir . '/' . $pairCode . '.json';
+
+    $success = file_put_contents($linkFile, json_encode($linkData, JSON_PRETTY_PRINT));
+
+    return $success !== false;
+}
+
+/**
  * Verifica si hay un control móvil conectado a una sesión
  * @param string $sessionId Código de sesión
  * @return bool
