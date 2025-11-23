@@ -180,6 +180,27 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
                                 </div>
                             </form>
                         </div>
+
+                        <!-- Divider -->
+                        <div class="divider-modern mt-3">
+                            <span>o</span>
+                        </div>
+
+                        <!-- Control Móvil General -->
+                        <div class="join-section mt-3">
+                            <div class="text-center mb-2">
+                                <div class="icon-box mx-auto" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                                    <i class="fas fa-mobile-alt text-white"></i>
+                                </div>
+                                <h6 class="fw-bold mb-2">Control Móvil</h6>
+                                <p class="text-muted small mb-2">Conecta tu dispositivo para controlar</p>
+                            </div>
+                            <div class="d-grid">
+                                <button class="btn btn-success btn-lg" id="btn-generar-qr-general">
+                                    <i class="fas fa-qrcode me-2"></i> Generar QR de Conexión
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -229,17 +250,10 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
                                         </div>
                                     </div>
                                     <div class="card-footer bg-transparent border-0 p-2">
-                                        <div class="d-grid gap-2">
-                                            <a href="?test=<?php echo urlencode($presentacion['id']); ?>"
-                                               class="btn btn-primary-modern text-decoration-none">
-                                                <i class="fas fa-play me-2"></i> Iniciar Presentación
-                                            </a>
-                                            <button class="btn btn-outline-primary btn-sm btn-control-movil"
-                                                    data-presentation-id="<?php echo htmlspecialchars($presentacion['id']); ?>"
-                                                    data-presentation-title="<?php echo htmlspecialchars($presentacion['titulo']); ?>">
-                                                <i class="fas fa-mobile-alt me-2"></i> Control Móvil
-                                            </button>
-                                        </div>
+                                        <a href="?test=<?php echo urlencode($presentacion['id']); ?>"
+                                           class="btn btn-primary-modern w-100 text-decoration-none">
+                                            <i class="fas fa-play me-2"></i> Iniciar Presentación
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -344,13 +358,14 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
         let pollingInterval = null;
         let countdownInterval = null;
 
-        // Abrir modal y generar QR al hacer clic en "Control Móvil"
-        document.querySelectorAll('.btn-control-movil').forEach(btn => {
-            btn.addEventListener('click', function() {
+        // Botón general de generar QR
+        const btnGenerarQRGeneral = document.getElementById('btn-generar-qr-general');
+        if (btnGenerarQRGeneral) {
+            btnGenerarQRGeneral.addEventListener('click', function() {
                 modal.show();
                 generarQR();
             });
-        });
+        }
 
         // Generar QR
         async function generarQR() {
