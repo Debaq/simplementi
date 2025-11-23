@@ -41,6 +41,14 @@ $total_items = $tiene_secuencia ? count($test_data['pdf_sequence']) : 0;
         </div>
     </div>
 
+    <?php if ($is_mobile_session): ?>
+    <!-- Auto-redirect para sesiones móviles -->
+    <script>
+        // Para sesiones móviles, iniciar fullscreen automáticamente
+        window.location.href = 'presentacion_fullscreen.php?codigo=<?php echo $codigo_sesion; ?>&index=0';
+    </script>
+    <?php endif; ?>
+
 <?php else: ?>
     <!-- Vista antigua (si no hay secuencia configurada) -->
     <?php

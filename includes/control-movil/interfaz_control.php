@@ -540,6 +540,9 @@
                 // Actualizar slide indicator
                 actualizarSlideIndicator(data.session.current_item);
 
+                // Actualizar imagen del slide
+                actualizarImagenSlide();
+
                 // Deshabilitar botones según posición
                 btnPrev.disabled = (data.session.current_item.index === 0);
                 btnNext.disabled = (data.session.current_item.index >= data.session.current_item.total - 1);
@@ -565,6 +568,44 @@
         function actualizarSlideIndicator(item) {
             const text = item.title || `${item.type} ${item.index + 1}/${item.total}`;
             slideIndicator.textContent = text;
+        }
+
+        // Actualizar imagen del slide
+        async function actualizarImagenSlide() {
+            try {
+                const response = await fetch(serverUrl + 'api/control-movil/get_slide_image.php?pair_code=' + pairCode);
+                const data = await response.json();
+
+                const slidePreview = document.getElementById('slide-preview');
+
+                if (data.success && data.type === 'slide' && data.slide_image) {
+                    // Mostrar la imagen del slide
+                    slidePreview.innerHTML = `
+                        <img src="${data.slide_image}"
+                             alt="Slide ${data.slide_number}"
+                             class="img-fluid rounded"
+                             style="max-height: 200px; width: 100%; object-fit: contain;">
+                    `;
+                } else if (data.type === 'question') {
+                    // Es una pregunta, mostrar indicador
+                    slidePreview.innerHTML = `
+                        <div class="text-center p-3">
+                            <i class="fas fa-question-circle fa-3x text-primary"></i>
+                            <p class="mt-2 mb-0">Pregunta</p>
+                        </div>
+                    `;
+                } else {
+                    // Error o no hay slide
+                    slidePreview.innerHTML = `
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-image fa-3x"></i>
+                        </p>
+                        <p class="small text-muted mt-2">No disponible</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error obteniendo imagen de slide:', error);
+            }
         }
 
         // Renderizar lista de participantes

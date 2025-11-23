@@ -34,13 +34,17 @@ if (!$linkData) {
     returnError('invalid_code', 'Código de emparejamiento inválido o expirado');
 }
 
-// Verificar que esté vinculado
-if ($linkData['status'] !== 'paired') {
+// Verificar que esté vinculado o activo
+if ($linkData['status'] !== 'paired' && $linkData['status'] !== 'active') {
     returnError('not_paired', 'El dispositivo no está vinculado');
 }
 
-$sessionId = $linkData['session']['session_id'];
-$presentationId = $linkData['session']['presentation_id'];
+$sessionId = $linkData['session_id'] ?? null;
+$presentationId = $linkData['presentation_id'] ?? null;
+
+if (!$sessionId || !$presentationId) {
+    returnError('invalid_link_data', 'Datos de vinculación incompletos');
+}
 
 // Buscar archivo de sesión
 $sessionFile = __DIR__ . '/../../data/respuestas/' . $presentationId . '/sesion_' . $sessionId . '.json';
