@@ -217,3 +217,34 @@ function actualizarEstadoVinculacion($pairCode, $newStatus, $additionalData = []
     file_put_contents($linkFile, json_encode($linkData, JSON_PRETTY_PRINT));
     return true;
 }
+
+/**
+ * Verifica si hay un control móvil conectado a una sesión
+ * @param string $sessionId Código de sesión
+ * @return bool
+ */
+function tieneControlMovilConectado($sessionId) {
+    $linksDir = __DIR__ . '/../data/projection_links';
+
+    if (!is_dir($linksDir)) {
+        return false;
+    }
+
+    $archivos = scandir($linksDir);
+    foreach ($archivos as $archivo) {
+        if ($archivo === '.' || $archivo === '..' || !str_ends_with($archivo, '.json')) {
+            continue;
+        }
+
+        $filePath = $linksDir . '/' . $archivo;
+        $linkData = json_decode(file_get_contents($filePath), true);
+
+        // Verificar si está activo y vinculado a esta sesión
+        if (isset($linkData['status']) && $linkData['status'] === 'active' &&
+            isset($linkData['session_id']) && $linkData['session_id'] === $sessionId) {
+            return true;
+        }
+    }
+
+    return false;
+}

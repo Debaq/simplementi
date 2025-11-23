@@ -38,8 +38,14 @@ if (empty($codigo_sesion)) {
     // Incluir la verificación de sesión
     include('includes/presentador/verificacion.php');
 
+    // Incluir helpers para detectar control móvil
+    require_once 'api/helpers_proyeccion.php';
+
     // Detectar si es una sesión iniciada desde control móvil (sin login en PC)
     $is_mobile_session = !isset($_SESSION['auth_test']);
+
+    // Detectar si hay un control móvil conectado actualmente
+    $has_mobile_control = tieneControlMovilConectado($codigo_sesion);
 
     // Incluir la cabecera HTML
     include('includes/presentador/head.php');
@@ -88,16 +94,20 @@ if (empty($codigo_sesion)) {
                                     isset($test_data['pdf_sequence']) &&
                                     !empty($test_data['pdf_sequence']);
 
+        // Determinar ancho de columnas según si hay control móvil
+        $col_presentacion = $has_mobile_control ? 'col-lg-12' : 'col-lg-8';
+        $col_panel = $has_mobile_control ? 'col-lg-12 d-none' : 'col-lg-4';
+
         // Si hay PDF con secuencia, mostrar solo la pantalla de PDF (modo presentación)
         // Si no, mostrar el flujo tradicional de preguntas
         if ($tiene_pdf_con_secuencia) {
             // Modo presentación con PDF - solo mostrar el botón de fullscreen
             ?>
             <div class="row">
-                <div class="col-lg-8">
+                <div class="<?php echo $col_presentacion; ?>">
                     <?php include('includes/presentador/pantalla_pdf.php'); ?>
                 </div>
-                <div class="col-lg-4">
+                <div class="<?php echo $col_panel; ?>">
                     <?php include('includes/presentador/panel_participantes.php'); ?>
                 </div>
             </div>
@@ -106,7 +116,7 @@ if (empty($codigo_sesion)) {
             // Modo tradicional - mostrar preguntas individualmente
             ?>
             <div class="row">
-                <div class="col-lg-8">
+                <div class="<?php echo $col_presentacion; ?>">
                     <?php
                     // Si hay PDF habilitado (pero sin secuencia), mostrar también la pantalla del PDF
                     if (!empty($test_data['pdf_enabled'])) {
@@ -115,7 +125,7 @@ if (empty($codigo_sesion)) {
                     include('includes/presentador/pantalla_pregunta.php');
                     ?>
                 </div>
-                <div class="col-lg-4">
+                <div class="<?php echo $col_panel; ?>">
                     <?php include('includes/presentador/panel_participantes.php'); ?>
                 </div>
             </div>
