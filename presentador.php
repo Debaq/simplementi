@@ -37,13 +37,54 @@ if (empty($codigo_sesion)) {
 } else {
     // Incluir la verificación de sesión
     include('includes/presentador/verificacion.php');
-    
+
+    // Incluir helpers para detectar control móvil
+    require_once 'api/helpers_proyeccion.php';
+
+    // Detectar si es una sesión iniciada desde control móvil (sin login en PC)
+    $is_mobile_session = !isset($_SESSION['auth_test']);
+
+    // Detectar si hay un control móvil conectado actualmente
+    $has_mobile_control = tieneControlMovilConectado($codigo_sesion);
+
     // Incluir la cabecera HTML
     include('includes/presentador/head.php');
-    
-    // Mostrar la navbar
-    include('includes/presentador/navbar.php');
-    
+
+    // Solo mostrar navbar si NO es sesión móvil
+    if (!$is_mobile_session) {
+        include('includes/presentador/navbar.php');
+    }
+
+    // Detectar si es presentación solo de PDF (sin preguntas)
+    $es_solo_pdf = $total_preguntas === 0 && !empty($test_data['pdf_enabled']);
+
+    // Si es sesión móvil y está en intro (pregunta_actual = 0), avanzar automáticamente
+    if ($is_mobile_session && $pregunta_actual_index === 0 && !$es_solo_pdf) {
+        // Solo avanzar si hay preguntas
+        // Para presentaciones solo de PDF, dejar pregunta_actual en 0
+        $sessionFile = "data/respuestas/{$test_id}/sesion_{$codigo_sesion}.json";
+        if (file_exists($sessionFile)) {
+            $sessionData = json_decode(file_get_contents($sessionFile), true);
+            $sessionData['pregunta_actual'] = 1;
+
+            // Inicializar pdf_sequence_index si hay secuencia de PDF
+            if (!empty($test_data['pdf_sequence'])) {
+                $sessionData['pdf_sequence_index'] = 0;
+            }
+
+            file_put_contents($sessionFile, json_encode($sessionData, JSON_PRETTY_PRINT));
+
+            // Redirigir para recargar con el nuevo estado
+            header("Location: presentador.php?codigo=$codigo_sesion");
+            exit;
+        }
+    }
+
+    // Para sesiones móviles, nunca mostrar intro
+    if ($is_mobile_session) {
+        $show_intro = false;
+    }
+
     // Incluir la barra de progreso
     ?>
     <div class="container py-4">
@@ -51,17 +92,22 @@ if (empty($codigo_sesion)) {
             <div class="slide-indicator-progress" style="width: <?php echo $show_intro ? 0 : ($pregunta_actual_index / ($total_preguntas + 1)) * 100; ?>%"></div>
         </div>
     <?php
-    
+
     // Determinar qué pantalla mostrar según el estado
     if ($show_intro) {
         include('includes/presentador/pantalla_inicio.php');
     } elseif ($mostrar_respuesta && isset($pregunta_actual['respuesta_correcta'])) {
         include('includes/presentador/pantalla_respuesta.php');
-    } elseif ($pregunta_actual_index <= $total_preguntas) {
+    } elseif ($pregunta_actual_index <= $total_preguntas || $es_solo_pdf) {
+        // Mostrar contenido si hay preguntas o si es solo PDF
         // Verificar si hay PDF con secuencia configurada
         $tiene_pdf_con_secuencia = !empty($test_data['pdf_enabled']) &&
                                     isset($test_data['pdf_sequence']) &&
                                     !empty($test_data['pdf_sequence']);
+
+        // Determinar ancho de columnas según si hay control móvil
+        $col_presentacion = $has_mobile_control ? 'col-lg-12' : 'col-lg-8';
+        $col_panel = $has_mobile_control ? 'col-lg-12 d-none' : 'col-lg-4';
 
         // Si hay PDF con secuencia, mostrar solo la pantalla de PDF (modo presentación)
         // Si no, mostrar el flujo tradicional de preguntas
@@ -69,10 +115,10 @@ if (empty($codigo_sesion)) {
             // Modo presentación con PDF - solo mostrar el botón de fullscreen
             ?>
             <div class="row">
-                <div class="col-lg-8">
+                <div class="<?php echo $col_presentacion; ?>">
                     <?php include('includes/presentador/pantalla_pdf.php'); ?>
                 </div>
-                <div class="col-lg-4">
+                <div class="<?php echo $col_panel; ?>">
                     <?php include('includes/presentador/panel_participantes.php'); ?>
                 </div>
             </div>
@@ -81,7 +127,7 @@ if (empty($codigo_sesion)) {
             // Modo tradicional - mostrar preguntas individualmente
             ?>
             <div class="row">
-                <div class="col-lg-8">
+                <div class="<?php echo $col_presentacion; ?>">
                     <?php
                     // Si hay PDF habilitado (pero sin secuencia), mostrar también la pantalla del PDF
                     if (!empty($test_data['pdf_enabled'])) {
@@ -90,7 +136,7 @@ if (empty($codigo_sesion)) {
                     include('includes/presentador/pantalla_pregunta.php');
                     ?>
                 </div>
-                <div class="col-lg-4">
+                <div class="<?php echo $col_panel; ?>">
                     <?php include('includes/presentador/panel_participantes.php'); ?>
                 </div>
             </div>

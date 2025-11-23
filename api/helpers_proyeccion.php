@@ -3,6 +3,17 @@
  * Funciones auxiliares para el sistema de control móvil
  */
 
+// Polyfill para PHP < 8.0
+if (!function_exists('str_ends_with')) {
+    function str_ends_with($haystack, $needle) {
+        $length = strlen($needle);
+        if ($length == 0) {
+            return true;
+        }
+        return (substr($haystack, -$length) === $needle);
+    }
+}
+
 /**
  * Genera un código de emparejamiento único (formato: XXXX-XXXX)
  * @return string
@@ -186,4 +197,65 @@ function limpiarCodigosExpirados() {
     }
 
     return $eliminados;
+}
+
+/**
+ * Actualiza el estado de una vinculación
+ * @param string $pairCode Código de emparejamiento
+ * @param string $newStatus Nuevo estado (waiting, paired, active)
+ * @param array $additionalData Datos adicionales a actualizar
+ * @return bool
+ */
+function actualizarEstadoVinculacion($pairCode, $newStatus, $additionalData = []) {
+    $linkFile = __DIR__ . '/../data/projection_links/' . $pairCode . '.json';
+
+    if (!file_exists($linkFile)) {
+        return false;
+    }
+
+    $linkData = json_decode(file_get_contents($linkFile), true);
+    $linkData['status'] = $newStatus;
+
+    // Merge additional data
+    foreach ($additionalData as $key => $value) {
+        if (is_array($value) && isset($linkData[$key])) {
+            $linkData[$key] = array_merge($linkData[$key], $value);
+        } else {
+            $linkData[$key] = $value;
+        }
+    }
+
+    file_put_contents($linkFile, json_encode($linkData, JSON_PRETTY_PRINT));
+    return true;
+}
+
+/**
+ * Verifica si hay un control móvil conectado a una sesión
+ * @param string $sessionId Código de sesión
+ * @return bool
+ */
+function tieneControlMovilConectado($sessionId) {
+    $linksDir = __DIR__ . '/../data/projection_links';
+
+    if (!is_dir($linksDir)) {
+        return false;
+    }
+
+    $archivos = scandir($linksDir);
+    foreach ($archivos as $archivo) {
+        if ($archivo === '.' || $archivo === '..' || !str_ends_with($archivo, '.json')) {
+            continue;
+        }
+
+        $filePath = $linksDir . '/' . $archivo;
+        $linkData = json_decode(file_get_contents($filePath), true);
+
+        // Verificar si está activo y vinculado a esta sesión
+        if (isset($linkData['status']) && $linkData['status'] === 'active' &&
+            isset($linkData['session_id']) && $linkData['session_id'] === $sessionId) {
+            return true;
+        }
+    }
+
+    return false;
 }

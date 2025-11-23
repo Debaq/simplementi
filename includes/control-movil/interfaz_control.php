@@ -64,8 +64,8 @@
             </div>
         </div>
 
-        <!-- Controles de navegación -->
-        <div class="bg-white border-bottom p-3">
+        <!-- Controles de navegación para PDF/Slides -->
+        <div class="bg-white border-bottom p-3" id="controls-slides">
             <div class="row g-2">
                 <div class="col-6">
                     <button class="btn btn-lg btn-outline-primary w-100" id="btn-prev">
@@ -77,6 +77,30 @@
                     <button class="btn btn-lg btn-primary w-100" id="btn-next">
                         Siguiente
                         <i class="fas fa-chevron-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles para modo de Preguntas -->
+        <div class="bg-white border-bottom p-3" id="controls-questions" style="display: none;">
+            <div class="row g-2">
+                <div class="col-12 mb-2">
+                    <button class="btn btn-lg btn-primary w-100" id="btn-next-question">
+                        <i class="fas fa-arrow-right me-2"></i>
+                        Siguiente Pregunta
+                    </button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-lg btn-outline-success w-100" id="btn-show-answer">
+                        <i class="fas fa-eye me-2"></i>
+                        Ver Respuesta
+                    </button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-lg btn-outline-danger w-100" id="btn-end-session">
+                        <i class="fas fa-stop me-2"></i>
+                        Finalizar
                     </button>
                 </div>
             </div>
@@ -245,9 +269,28 @@
             ERROR: [50, 100, 50, 100, 50]  // Patrón de error
         };
 
-        // Navegación
+        // Navegación slides
         btnPrev.addEventListener('click', () => retroceder());
         btnNext.addEventListener('click', () => avanzar());
+
+        // Controles de preguntas
+        const btnNextQuestion = document.getElementById('btn-next-question');
+        const btnShowAnswer = document.getElementById('btn-show-answer');
+        const btnEndSession = document.getElementById('btn-end-session');
+
+        if (btnNextQuestion) {
+            btnNextQuestion.addEventListener('click', () => siguientePregunta());
+        }
+        if (btnShowAnswer) {
+            btnShowAnswer.addEventListener('click', () => toggleRespuesta());
+        }
+        if (btnEndSession) {
+            btnEndSession.addEventListener('click', () => {
+                if (confirm('¿Deseas finalizar la sesión?')) {
+                    finalizarSesion();
+                }
+            });
+        }
 
         // Desconectar
         btnDisconnect.addEventListener('click', () => {
@@ -344,6 +387,112 @@
             }
         }
 
+        // ============================================================
+        // CONTROLES DE PREGUNTAS
+        // ============================================================
+
+        // Siguiente pregunta
+        async function siguientePregunta() {
+            vibrar(VIBRATION.LIGHT);
+            btnNextQuestion.disabled = true;
+            btnNextQuestion.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Avanzando...';
+
+            try {
+                const response = await fetch(serverUrl + 'api/avanzar_pregunta.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ codigo_sesion: sessionId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    vibrar(VIBRATION.SUCCESS);
+                    await obtenerEstado();
+                } else {
+                    vibrar(VIBRATION.ERROR);
+                    alert('Error: ' + (data.message || 'No se pudo avanzar'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                vibrar(VIBRATION.ERROR);
+                alert('Error de conexión');
+            } finally {
+                btnNextQuestion.disabled = false;
+                btnNextQuestion.innerHTML = '<i class="fas fa-arrow-right me-2"></i> Siguiente Pregunta';
+            }
+        }
+
+        // Mostrar/ocultar respuesta
+        async function toggleRespuesta() {
+            vibrar(VIBRATION.LIGHT);
+            btnShowAnswer.disabled = true;
+
+            try {
+                const response = await fetch(serverUrl + 'api/toggle_respuesta.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ codigo_sesion: sessionId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    vibrar(VIBRATION.SUCCESS);
+                    // Actualizar texto del botón
+                    if (data.mostrar_respuesta) {
+                        btnShowAnswer.innerHTML = '<i class="fas fa-eye-slash me-2"></i> Ocultar Respuesta';
+                    } else {
+                        btnShowAnswer.innerHTML = '<i class="fas fa-eye me-2"></i> Ver Respuesta';
+                    }
+                } else {
+                    vibrar(VIBRATION.ERROR);
+                    alert('Error: ' + (data.message || 'No se pudo cambiar'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                vibrar(VIBRATION.ERROR);
+                alert('Error de conexión');
+            } finally {
+                btnShowAnswer.disabled = false;
+            }
+        }
+
+        // Finalizar sesión
+        async function finalizarSesion() {
+            vibrar(VIBRATION.MEDIUM);
+            btnEndSession.disabled = true;
+
+            try {
+                const response = await fetch(serverUrl + 'api/finalizar_sesion.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ codigo_sesion: sessionId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    vibrar(VIBRATION.SUCCESS);
+                    alert('Sesión finalizada correctamente');
+                    window.location.href = 'index.php';
+                } else {
+                    vibrar(VIBRATION.ERROR);
+                    alert('Error: ' + (data.message || 'No se pudo finalizar'));
+                    btnEndSession.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                vibrar(VIBRATION.ERROR);
+                alert('Error de conexión');
+                btnEndSession.disabled = false;
+            }
+        }
+
+        // ============================================================
+        // ESTADO Y SINCRONIZACIÓN
+        // ============================================================
+
         // Función para obtener estado
         async function obtenerEstado() {
             try {
@@ -375,8 +524,34 @@
 
         // Actualizar UI con el estado
         function actualizarUI(data) {
-            // Actualizar slide indicator
-            actualizarSlideIndicator(data.session.current_item);
+            // Detectar si la presentación tiene diapositivas
+            const hasPdf = data.session.presentation.pdf_enabled;
+            const slidePreviewSection = document.querySelector('.bg-white.border-bottom.p-3:has(#slide-preview)');
+            const controlsSlides = document.getElementById('controls-slides');
+            const controlsQuestions = document.getElementById('controls-questions');
+
+            // Mostrar controles según tipo de presentación
+            if (hasPdf) {
+                // Modo PDF/Slides
+                if (slidePreviewSection) slidePreviewSection.style.display = 'block';
+                if (controlsSlides) controlsSlides.style.display = 'block';
+                if (controlsQuestions) controlsQuestions.style.display = 'none';
+
+                // Actualizar slide indicator
+                actualizarSlideIndicator(data.session.current_item);
+
+                // Actualizar imagen del slide
+                actualizarImagenSlide();
+
+                // Deshabilitar botones según posición
+                btnPrev.disabled = (data.session.current_item.index === 0);
+                btnNext.disabled = (data.session.current_item.index >= data.session.current_item.total - 1);
+            } else {
+                // Modo solo Preguntas
+                if (slidePreviewSection) slidePreviewSection.style.display = 'none';
+                if (controlsSlides) controlsSlides.style.display = 'none';
+                if (controlsQuestions) controlsQuestions.style.display = 'block';
+            }
 
             // Actualizar participantes
             participantsCount.textContent = data.session.participants_count;
@@ -387,16 +562,50 @@
             interactionsCount.textContent = totalInteractions;
             renderManos(data.interactions.hands_raised);
             renderPreguntas(data.interactions.questions);
-
-            // Deshabilitar botones según posición
-            btnPrev.disabled = (data.session.current_item.index === 0);
-            btnNext.disabled = (data.session.current_item.index >= data.session.current_item.total - 1);
         }
 
         // Actualizar indicador de slide
         function actualizarSlideIndicator(item) {
             const text = item.title || `${item.type} ${item.index + 1}/${item.total}`;
             slideIndicator.textContent = text;
+        }
+
+        // Actualizar imagen del slide
+        async function actualizarImagenSlide() {
+            try {
+                const response = await fetch(serverUrl + 'api/control-movil/get_slide_image.php?pair_code=' + pairCode);
+                const data = await response.json();
+
+                const slidePreview = document.getElementById('slide-preview');
+
+                if (data.success && data.type === 'slide' && data.slide_image) {
+                    // Mostrar la imagen del slide
+                    slidePreview.innerHTML = `
+                        <img src="${data.slide_image}"
+                             alt="Slide ${data.slide_number}"
+                             class="img-fluid rounded"
+                             style="max-height: 200px; width: 100%; object-fit: contain;">
+                    `;
+                } else if (data.type === 'question') {
+                    // Es una pregunta, mostrar indicador
+                    slidePreview.innerHTML = `
+                        <div class="text-center p-3">
+                            <i class="fas fa-question-circle fa-3x text-primary"></i>
+                            <p class="mt-2 mb-0">Pregunta</p>
+                        </div>
+                    `;
+                } else {
+                    // Error o no hay slide
+                    slidePreview.innerHTML = `
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-image fa-3x"></i>
+                        </p>
+                        <p class="small text-muted mt-2">No disponible</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error obteniendo imagen de slide:', error);
+            }
         }
 
         // Renderizar lista de participantes

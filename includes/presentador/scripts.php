@@ -679,5 +679,33 @@ if (preguntaActual > 0) {
         });
     });
 
+    // ============================================================
+    // SINCRONIZACIÓN CON CONTROL MÓVIL
+    // ============================================================
+
+    <?php if ($has_mobile_control): ?>
+    // Hay control móvil conectado - sincronizar cambios
+    let lastPreguntaActual = preguntaActual;
+
+    function sincronizarConMovil() {
+        fetch(serverUrl + 'api/get_pregunta_actual.php?codigo=' + codigoSesion + '&t=' + new Date().getTime())
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.pregunta_actual !== lastPreguntaActual) {
+                    // La pregunta cambió desde el móvil, recargar página
+                    console.log('Pregunta cambiada desde móvil:', data.pregunta_actual);
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error sincronizando con móvil:', error);
+            });
+    }
+
+    // Sincronizar cada 2 segundos
+    setInterval(sincronizarConMovil, 2000);
+    console.log('Sincronización con control móvil activada');
+    <?php endif; ?>
+
     });
 </script>
