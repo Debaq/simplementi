@@ -24,10 +24,14 @@
                     <?php
                     switch($_GET['error']) {
                         case 'invalid_credentials':
-                            echo 'Email o contraseña incorrectos';
+                            echo 'Usuario/email o contraseña incorrectos';
                             break;
                         case 'empty_fields':
                             echo 'Por favor completa todos los campos';
+                            break;
+                        case 'no_users_file':
+                        case 'no_users':
+                            echo 'Sistema de usuarios no configurado';
                             break;
                         default:
                             echo 'Error al iniciar sesión';
@@ -42,10 +46,10 @@
 
                     <div class="mb-3">
                         <label for="email" class="form-label">
-                            <i class="fas fa-envelope me-1"></i> Email
+                            <i class="fas fa-user me-1"></i> Usuario o Email
                         </label>
-                        <input type="email" class="form-control form-control-lg" id="email" name="email"
-                               placeholder="tu@email.com" required autofocus>
+                        <input type="text" class="form-control form-control-lg" id="email" name="email"
+                               placeholder="usuario o tu@email.com" required autofocus>
                     </div>
 
                     <div class="mb-3">

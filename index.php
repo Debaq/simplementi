@@ -158,16 +158,20 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
                                 <h6 class="fw-bold mb-2">Unirse como Participante</h6>
                                 <p class="text-muted small mb-2">Ingresa el código de sesión</p>
                             </div>
-                            <form action="" method="get">
+                            <form action="" method="get" id="form-codigo">
                                 <div class="mb-2">
                                     <input
                                         type="text"
                                         name="codigo"
+                                        id="input-codigo"
                                         class="form-control code-input"
-                                        placeholder="ABC123"
+                                        placeholder="ABC123 o A7K9-M2X1"
                                         autocomplete="off"
-                                        maxlength="6"
+                                        maxlength="9"
+                                        pattern="[A-Z0-9]{6}|[A-Z0-9]{4}-[A-Z0-9]{4}"
+                                        title="Código de sesión (6 caracteres) o código de emparejamiento (XXXX-XXXX)"
                                         required>
+                                    <small class="text-muted">Código de sesión (6) o emparejamiento (8)</small>
                                 </div>
                                 <div class="d-grid">
                                     <button class="btn-success-modern" type="submit">
@@ -465,9 +469,26 @@ if (empty($test_id) && empty($codigo_sesion) && empty($accion)) {
 </html>
 <?php
 } elseif (!empty($codigo_sesion)) {
-    // Redireccionar a la página del participante
-    header("Location: participante.php?codigo=$codigo_sesion");
-    exit;
+    // Detectar tipo de código y redirigir apropiadamente
+    $codigo_limpio = strtoupper(trim($codigo_sesion));
+
+    // Si tiene guión y 9 caracteres, es código de emparejamiento
+    if (strpos($codigo_limpio, '-') !== false && strlen($codigo_limpio) === 9) {
+        // Código de emparejamiento: XXXX-XXXX
+        header("Location: control-movil.php?code=$codigo_limpio");
+        exit;
+    }
+    // Si tiene 6 caracteres sin guión, es código de sesión
+    elseif (strlen($codigo_limpio) === 6 && ctype_alnum($codigo_limpio)) {
+        // Código de sesión: ABC123
+        header("Location: participante.php?codigo=$codigo_limpio");
+        exit;
+    }
+    // Código inválido
+    else {
+        header("Location: index.php?error=invalid_code");
+        exit;
+    }
 } elseif (!empty($test_id)) {
     // Verificar si existe la presentación
     $test_file = "data/presentaciones/$test_id.json";
