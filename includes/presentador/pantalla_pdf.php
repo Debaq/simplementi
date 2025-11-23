@@ -44,8 +44,17 @@ $total_items = $tiene_secuencia ? count($test_data['pdf_sequence']) : 0;
     <?php if ($is_mobile_session): ?>
     <!-- Auto-redirect para sesiones móviles -->
     <script>
+        console.log('DEBUG: is_mobile_session = true, redirigiendo a fullscreen');
+        console.log('DEBUG: auth_test =', <?php echo isset($_SESSION['auth_test']) ? 'true' : 'false'; ?>);
+        console.log('DEBUG: user_id =', <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>);
         // Para sesiones móviles, iniciar fullscreen automáticamente
         window.location.href = 'presentacion_fullscreen.php?codigo=<?php echo $codigo_sesion; ?>&index=0';
+    </script>
+    <?php else: ?>
+    <script>
+        console.log('DEBUG: is_mobile_session = false, NO redirigiendo');
+        console.log('DEBUG: auth_test =', <?php echo isset($_SESSION['auth_test']) ? 'true' : 'false'; ?>);
+        console.log('DEBUG: user_id =', <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>);
     </script>
     <?php endif; ?>
 
