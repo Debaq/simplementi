@@ -422,6 +422,14 @@ if ($seccion === 'presentaciones') {
                                                class="btn btn-primary" title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            <button class="btn btn-info" title="Código de Presentador"
+                                                    onclick="generarCodigoPresentador('<?php echo htmlspecialchars($presentacion['id']); ?>', '<?php echo htmlspecialchars($presentacion['titulo']); ?>')">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                            <button class="btn btn-warning" title="Control Móvil"
+                                                    onclick="abrirControlMovil('<?php echo htmlspecialchars($presentacion['id']); ?>', '<?php echo htmlspecialchars($presentacion['titulo']); ?>')">
+                                                <i class="fas fa-mobile-alt"></i>
+                                            </button>
                                             <a href="?seccion=presentaciones&accion=eliminar_presentacion&id=<?php echo urlencode($presentacion['id']); ?>"
                                                class="btn btn-danger" title="Eliminar"
                                                onclick="return confirm('¿Está seguro de eliminar esta presentación? Esta acción no se puede deshacer.')">
@@ -705,6 +713,161 @@ if ($seccion === 'presentaciones') {
         </div>
     </div>
 
+    <!-- Modal para Código de Presentador -->
+    <div class="modal fade" id="modalCodigoPresentador" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key me-2"></i>
+                        Código de Presentador
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="codigo-loading" style="display: none;">
+                        <div class="spinner-border text-info mb-3"></div>
+                        <p>Generando código...</p>
+                    </div>
+
+                    <div id="codigo-display" style="display: none;">
+                        <h6 id="codigo-presentacion-titulo" class="mb-3 text-muted"></h6>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Código de sesión:</strong>
+                        </div>
+
+                        <div class="mb-3">
+                            <h2 class="text-primary">
+                                <span id="codigo-sesion" class="badge bg-primary fs-3 cursor-pointer" onclick="copiarCodigo()"></span>
+                            </h2>
+                            <small class="text-muted">Haz clic en el código para copiarlo</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <p class="mb-2"><strong>URL de presentador:</strong></p>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="url-presentador" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="copiarURL()">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <small>Este código abre directamente la presentación. Compártelo solo con presentadores autorizados.</small>
+                        </div>
+                    </div>
+
+                    <div id="codigo-error" style="display: none;">
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <span id="codigo-error-mensaje"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const modalCodigoPresentador = new bootstrap.Modal(document.getElementById('modalCodigoPresentador'));
+
+        function generarCodigoPresentador(idPresentacion, tituloPresentacion) {
+            // Mostrar modal y estado de loading
+            modalCodigoPresentador.show();
+            document.getElementById('codigo-loading').style.display = 'block';
+            document.getElementById('codigo-display').style.display = 'none';
+            document.getElementById('codigo-error').style.display = 'none';
+
+            // Generar código de sesión usando el API
+            fetch('api/generar_sesion.php?test=' + encodeURIComponent(idPresentacion))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarCodigo(data.codigo_sesion, tituloPresentacion);
+                } else {
+                    mostrarError(data.message || 'Error al generar código de sesión');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarError('Error de conexión al generar código de sesión');
+            });
+        }
+
+        function mostrarCodigo(codigoSesion, tituloPresentacion) {
+            document.getElementById('codigo-loading').style.display = 'none';
+            document.getElementById('codigo-display').style.display = 'block';
+            document.getElementById('codigo-presentacion-titulo').textContent = tituloPresentacion;
+            document.getElementById('codigo-sesion').textContent = codigoSesion;
+
+            const baseURL = window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+            const urlPresentador = baseURL + 'presentador.php?codigo=' + codigoSesion;
+            document.getElementById('url-presentador').value = urlPresentador;
+        }
+
+        function mostrarError(mensaje) {
+            document.getElementById('codigo-loading').style.display = 'none';
+            document.getElementById('codigo-display').style.display = 'none';
+            document.getElementById('codigo-error').style.display = 'block';
+            document.getElementById('codigo-error-mensaje').textContent = mensaje;
+        }
+
+        function copiarCodigo() {
+            const codigo = document.getElementById('codigo-sesion').textContent;
+            navigator.clipboard.writeText(codigo).then(() => {
+                const badge = document.getElementById('codigo-sesion');
+                const originalText = badge.textContent;
+                badge.innerHTML = '<i class="fas fa-check"></i> Copiado';
+                setTimeout(() => {
+                    badge.textContent = originalText;
+                }, 1500);
+            });
+        }
+
+        function copiarURL() {
+            const urlInput = document.getElementById('url-presentador');
+            urlInput.select();
+            navigator.clipboard.writeText(urlInput.value).then(() => {
+                const btn = event.target.closest('button');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                }, 1500);
+            });
+        }
+
+        // Función para abrir control móvil
+        function abrirControlMovil(idPresentacion, tituloPresentacion) {
+            // Mostrar confirmación
+            if (!confirm('¿Abrir control móvil para "' + tituloPresentacion + '"?\n\nEsto creará una nueva sesión y abrirá el control móvil en una nueva pestaña.')) {
+                return;
+            }
+
+            // Generar control móvil
+            fetch('api/generar_control_movil.php?test=' + encodeURIComponent(idPresentacion))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Abrir control móvil en nueva pestaña
+                    window.open(data.control_url, '_blank');
+
+                    // Mostrar notificación
+                    alert('Control móvil abierto en nueva pestaña\n\nCódigo de sesión: ' + data.codigo_sesion);
+                } else {
+                    alert('Error al generar control móvil: ' + (data.message || 'Error desconocido'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error de conexión al generar control móvil');
+            });
+        }
+    </script>
 </body>
 </html>

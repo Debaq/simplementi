@@ -686,8 +686,16 @@ if (preguntaActual > 0) {
     <?php if ($has_mobile_control): ?>
     // Hay control móvil conectado - sincronizar cambios
     let lastPreguntaActual = preguntaActual;
+    <?php
+    $tiene_secuencia_pdf = !empty($test_data['pdf_enabled']) &&
+                           isset($test_data['pdf_sequence']) &&
+                           !empty($test_data['pdf_sequence']);
+    ?>
+    const tieneSecuenciaPDF = <?php echo $tiene_secuencia_pdf ? 'true' : 'false'; ?>;
+    let lastSequenceIndex = <?php echo isset($session_data['pdf_sequence_index']) ? $session_data['pdf_sequence_index'] : 0; ?>;
 
     function sincronizarConMovil() {
+        // Verificar cambios en pregunta_actual (modo tradicional)
         fetch(serverUrl + 'api/get_pregunta_actual.php?codigo=' + codigoSesion + '&t=' + new Date().getTime())
             .then(response => response.json())
             .then(data => {
@@ -698,13 +706,32 @@ if (preguntaActual > 0) {
                 }
             })
             .catch(error => {
-                console.error('Error sincronizando con móvil:', error);
+                console.error('Error sincronizando pregunta con móvil:', error);
             });
+
+        // Si tiene secuencia PDF, verificar también cambios en pdf_sequence_index
+        if (tieneSecuenciaPDF) {
+            fetch(serverUrl + 'api/get_sequence_index.php?codigo=' + codigoSesion + '&t=' + new Date().getTime())
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.sequence_index !== undefined) {
+                        const newIndex = parseInt(data.sequence_index);
+                        if (newIndex !== lastSequenceIndex) {
+                            // El índice de secuencia cambió desde el móvil, recargar página
+                            console.log('Índice de secuencia cambiado desde móvil:', newIndex);
+                            window.location.reload();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sincronizando secuencia con móvil:', error);
+                });
+        }
     }
 
     // Sincronizar cada 2 segundos
     setInterval(sincronizarConMovil, 2000);
-    console.log('Sincronización con control móvil activada');
+    console.log('Sincronización con control móvil activada' + (tieneSecuenciaPDF ? ' (con secuencia PDF)' : ''));
     <?php endif; ?>
 
     });

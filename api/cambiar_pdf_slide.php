@@ -68,8 +68,25 @@ try {
             exit;
         }
 
-        // Actualizar slide actual
+        // Actualizar slide actual (para compatibilidad con vista antigua)
         $respuestas_data['pdf_slide_actual'] = $nuevo_slide;
+
+        // Verificar si hay secuencia PDF configurada
+        $tiene_secuencia = isset($presentacion_data['pdf_sequence']) && !empty($presentacion_data['pdf_sequence']);
+
+        if ($tiene_secuencia) {
+            // Buscar el índice en la secuencia que corresponde a este slide
+            $sequence_index = 0;
+            foreach ($presentacion_data['pdf_sequence'] as $index => $item) {
+                if ($item['type'] === 'slide' && $item['number'] == $nuevo_slide) {
+                    $sequence_index = $index;
+                    break;
+                }
+            }
+
+            // Actualizar índice de secuencia para sincronizar con participantes
+            $respuestas_data['pdf_sequence_index'] = $sequence_index;
+        }
 
         // Guardar los cambios
         $success = file_put_contents($session_file, json_encode($respuestas_data, JSON_PRETTY_PRINT));

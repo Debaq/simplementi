@@ -42,7 +42,8 @@ if (empty($codigo_sesion)) {
     require_once 'api/helpers_proyeccion.php';
 
     // Detectar si es una sesión iniciada desde control móvil (sin login en PC)
-    $is_mobile_session = !isset($_SESSION['auth_test']);
+    // Es sesión móvil solo si NO hay auth_test Y tampoco hay user_id (usuario del dashboard)
+    $is_mobile_session = !isset($_SESSION['auth_test']) && !isset($_SESSION['user_id']);
 
     // Detectar si hay un control móvil conectado actualmente
     $has_mobile_control = tieneControlMovilConectado($codigo_sesion);
